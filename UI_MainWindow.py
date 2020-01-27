@@ -162,6 +162,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         if inputFile:
             filepath = FileInput.BrowseWindow.FileCheck(inputFile)
             Ui_MainWindow.metrics = FileInput.BrowseWindow.filetypeCheck(inputFile)
+            if(len(Ui_MainWindow.metrics.columns)<1):
+                QMessageBox.about(Ui_MainWindow.tab,"Error:" ,"After removing low variance columns, there were no columns left from which to conduct any sort of analysis.")
+                Ui_MainWindow.onBrowseClicked(Ui_MainWindow)
             Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
             DataPreparation.DataPreparation.ExtractNumericColumns(Ui_MainWindow.metrics)
             DataPreparation.DataPreparation.RemoveLowVarianceColumns(Ui_MainWindow)
