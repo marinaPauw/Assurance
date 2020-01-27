@@ -304,13 +304,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         global element
         lw = 2
         Ui_MainWindow.tab.progress2.setValue(33)
+        global iIndex
         for element in range(len(NumericMetrics.columns)):
                 Ui_MainWindow.indMetrics = QtWidgets.QWidget()
                 Ui_MainWindow.indMetrics.setObjectName("indMetrics")
-                if element==1:
-                    iIndex = self.addTab(Ui_MainWindow.indMetrics, NumericMetrics.columns[element])
-                else:
-                    self.addTab(Ui_MainWindow.indMetrics, NumericMetrics.columns[element])
+                iIndex = self.addTab(Ui_MainWindow.indMetrics, NumericMetrics.columns[element])
                 indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.metrics, Ui_MainWindow.NumericMetrics, element, False)
                 vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.indMetrics)
                 hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
