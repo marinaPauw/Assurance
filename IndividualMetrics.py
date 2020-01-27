@@ -78,7 +78,7 @@ class MyIndMetricsCanvas(FigureCanvas):
             samplenames = tableContainingRownames.iloc[:,0]
 
         #Find if there are duplicates in samplenames (like n a swath/RT file for SwaMe)
-        if(samplenames.duplicated().any()):#duplicates present
+        if(len(samplenames) != len(set(samplenames))):#duplicates present
             for iii in sampleSize:#If they are numeric values they should be strings
                 tableContainingRownames.iloc[iii,1] = str(tableContainingRownames.iloc[iii,1])
             uniqueSamples = MyIndMetricsCanvas.unique(tableContainingRownames.iloc[:,0])
