@@ -35,33 +35,34 @@ class BrowseWindow(QtWidgets.QMainWindow):
         files = QtWidgets. QFileDialog()
         files.setFileMode(QFileDialog.ExistingFiles)
         inputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(Ui_MainWindow.tab,"Browse", "","All Files (*)", options=QFileDialog.Options())
-        if(len(inputFiles)>1):
-            justJSONFiles = True
-            for file in inputFiles:
-               if(".json" not in file):
-                   justJSONFiles = False
-            if not justJSONFiles :
-                QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" ,"You may select multiple mzQC files to combine into one table, but you may not select multiple files of any other type.")
-                UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+        if(inputFiles):
+            if(len(inputFiles)>1):
+                justJSONFiles = True
+                for file in inputFiles:
+                   if(".json" not in file):
+                       justJSONFiles = False
+                if not justJSONFiles :
+                    QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" ,"You may select multiple mzQC files to combine into one table, but you may not select multiple files of any other type.")
+                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
-            if(justJSONFiles==True):
-               UI_MainWindow.Ui_MainWindow.metrics =  FileInput.BrowseWindow.CombineJSONs(UI_MainWindow.Ui_MainWindow, inputFiles)
-               UI_MainWindow.Ui_MainWindow.metrics.set_index(UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-               DataPreparation.DataPreparation.ExtractNumericColumns(UI_MainWindow.Ui_MainWindow.metrics)
-               DataPreparation.DataPreparation.RemoveLowVarianceColumns(UI_MainWindow.Ui_MainWindow)
-        else:
-            inputFile = inputFiles[0]
-            counter = inputFile.count('.') 
-            if(counter==1):# .mzML
-                 BrowseWindow.datasetname,throw = inputFile.split('.')
-            elif(counter==2):#If the program lists .wiff.scan
-                 BrowseWindow.datasetname,throw,throw = inputFile.split('.')
-            elif(counter==3):
-                 BrowseWindow.datasetname,throw,throw,throw = inputFile.split('.')
+                if(justJSONFiles==True):
+                   UI_MainWindow.Ui_MainWindow.metrics =  FileInput.BrowseWindow.CombineJSONs(UI_MainWindow.Ui_MainWindow, inputFiles)
+                   UI_MainWindow.Ui_MainWindow.metrics.set_index(UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
+                   DataPreparation.DataPreparation.ExtractNumericColumns(UI_MainWindow.Ui_MainWindow.metrics)
+                   DataPreparation.DataPreparation.RemoveLowVarianceColumns(UI_MainWindow.Ui_MainWindow)
             else:
-                 BrowseWindow.datasetname = inputFile
-            UI_MainWindow.Ui_MainWindow.filename.setText("   "+inputFile+ "  ")
-            return inputFile
+                inputFile = inputFiles[0]
+                counter = inputFile.count('.') 
+                if(counter==1):# .mzML
+                     BrowseWindow.datasetname,throw = inputFile.split('.')
+                elif(counter==2):#If the program lists .wiff.scan
+                     BrowseWindow.datasetname,throw,throw = inputFile.split('.')
+                elif(counter==3):
+                     BrowseWindow.datasetname,throw,throw,throw = inputFile.split('.')
+                else:
+                     BrowseWindow.datasetname = inputFile
+                UI_MainWindow.Ui_MainWindow.filename.setText("   "+inputFile+ "  ")
+                return inputFile
 
     def GetSpectralCountsFile(Ui_MainWindow):
         inputFile, _ =QtWidgets. QFileDialog.getOpenFileName(Ui_MainWindow.tab,"Select a spectral counts file from which to create the training set:", "","All Files (*)", options=QFileDialog.Options())
