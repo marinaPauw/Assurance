@@ -68,6 +68,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
         return inputFile
     
     def filetypeCheck(inputFile):
+       try:
         if inputFile.endswith('.json'):
             with open(inputFile) as f:
              metrics = json.loads(f.read())
@@ -108,6 +109,9 @@ class BrowseWindow(QtWidgets.QMainWindow):
         else:
             QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Message from Assurance: " ,"Error: File type incorrect. Please load a .json, .tsv or .csv file. Also please ensure that the decimals are separated by '.'.")
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+       except json.decoder.JSONDecodeError:
+           QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Message from Assurance: " ,"This file does not contain data in the correct format. Please load a different file.")
+           UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
     def FileCheck(path):       
        try:
