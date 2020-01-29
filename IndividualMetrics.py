@@ -53,32 +53,32 @@ class MyIndMetricsCanvas(FigureCanvas):
         return unique_list
 
     def __init__(self, tableContainingRownames, table,element, rectangleSelection,parent=None, width=25, height=5, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+        MyIndMetricsCanvas.fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = MyIndMetricsCanvas.fig.add_subplot(111)
         sampleSize = range(len(table))
-        ax = fig.add_subplot(1,1,1)
+        MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
         plt.grid(color ="ghostwhite")
         manager = plt.get_current_fig_manager()
         manager.resize(*manager.window.maxsize())
-        samplenames = []
+        MyIndMetricsCanvas.samplenames = []
         counter = tableContainingRownames.iloc[0,0].count('.') 
         if(counter==1):# .mzML
              for iii in sampleSize:
                         temp,throw = tableContainingRownames.iloc[iii,0].split('.')
-                        samplenames.append(temp)
+                        MyIndMetricsCanvas.samplenames.append(temp)
         elif(counter==2):#For example .wiff.scan
              for iii in sampleSize:
                         temp,throw,throw = tableContainingRownames.iloc[iii,0].split('.')
-                        samplenames.append(temp)
+                        MyIndMetricsCanvas.samplenames.append(temp)
         elif(counter==3):
              for iii in sampleSize:
                         temp,throw,throw = tableContainingRownames.iloc[iii,0].split('.')
-                        samplenames.append(temp)
+                        MyIndMetricsCanvas.samplenames.append(temp)
         else:
-            samplenames = tableContainingRownames.iloc[:,0]
+            MyIndMetricsCanvas.samplenames = tableContainingRownames.iloc[:,0]
 
-        #Find if there are duplicates in samplenames (like n a swath/RT file for SwaMe)
-        if(len(samplenames) != len(set(samplenames))):#duplicates present
+        #Find if there are duplicates in MyIndMetricsCanvas.samplenames (like n a swath/RT file for SwaMe)
+        if(len(MyIndMetricsCanvas.samplenames) != len(set(MyIndMetricsCanvas.samplenames))):#duplicates present
             for iii in sampleSize:#If they are numeric values they should be strings
                 tableContainingRownames.iloc[iii,1] = str(tableContainingRownames.iloc[iii,1])
             uniqueSamples = MyIndMetricsCanvas.unique(tableContainingRownames.iloc[:,0])
@@ -89,17 +89,20 @@ class MyIndMetricsCanvas(FigureCanvas):
                     if(tableContainingRownames.iloc[ii,0]==uniqueSamples[item]):
                         rowNumList.append(ii)
                 #if(len(rowNumList)>0):
-                ax.plot(tableContainingRownames.iloc[rowNumList,1],  table.iloc[rowNumList,element], marker='o', label = uniqueSamples[item])   #(np.random.choice(range(256)),np.random.choice(range(256)),np.random.choice(range(256))))
+                MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table.iloc[rowNumList,element], marker='o', label = uniqueSamples[item])   #(np.random.choice(range(256)),np.random.choice(range(256)),np.random.choice(range(256))))
                 #else:
-                    #ax.plot(samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+                    #MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
         else:
-            ax.plot(samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
-        ax.legend(loc="upper left", bbox_to_anchor=(1,1))
-        ax.tick_params(labelrotation = 90, labelsize = 9)
-        for tick in ax.get_xticklabels():
+            MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+        if(len(MyIndMetricsCanvas.samplenames)<=32):
+            MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
+        
+
+        MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
+        for tick in MyIndMetricsCanvas.ax.get_xticklabels():
             tick.set_rotation(90)
             tick.set_size(8)
-        FigureCanvas.__init__(self, fig)
+        FigureCanvas.__init__(self, MyIndMetricsCanvas.fig)
         self.setParent(parent)
 
         FigureCanvas.setSizePolicy(self,
@@ -108,7 +111,7 @@ class MyIndMetricsCanvas(FigureCanvas):
         FigureCanvas.updateGeometry(self)
         # drawtype is 'box' or 'line' or 'none'
         if(rectangleSelection):
-            MyIndMetricsCanvas.toggle_selector.RS = RectangleSelector(ax,  MyIndMetricsCanvas.line_select_callback,
+            MyIndMetricsCanvas.toggle_selector.RS = RectangleSelector(MyIndMetricsCanvas.ax,  MyIndMetricsCanvas.line_select_callback,
                                            drawtype='box', useblit=True,
                                            button=[1, 3],  # don't use middle button
                                            minspanx=5, minspany=5,
@@ -117,6 +120,23 @@ class MyIndMetricsCanvas(FigureCanvas):
             plt.connect('key_press_event', MyIndMetricsCanvas.toggle_selector)
 
         self.compute_initial_figure()
+        if (len(MyIndMetricsCanvas.samplenames)>32):#If there are too many items for the legend to display next to the graph, we make a checkbox for the legend:
+            UI_MainWindow.Ui_MainWindow.indMetrics.Checkbox.setVisible(True)
+            UI_MainWindow.Ui_MainWindow.indMetrics.Checkboxlabel.setVisible(True)
+
+    def ShowLegend(metric):
+        if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
+            MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 2)
+        elif(len(MyIndMetricsCanvas.samplenames)>64 and len(MyIndMetricsCanvas.samplenames)<=96):
+            MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 3)
+        elif(len(MyIndMetricsCanvas.samplenames)>96 and len(MyIndMetricsCanvas.samplenames)<=128):
+            MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 4)
+        else:
+            MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 5)
+        MyIndMetricsCanvas.draw(MyIndMetricsCanvas)
+
+    def HideLegend(metric):
+        MyIndMetricsCanvas.ax.get_legend().remove()
       
     def compute_initial_figure(self):
         pass    

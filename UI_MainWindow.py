@@ -287,8 +287,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         PCAGraph.fig.canvas.mpl_connect("motion_notify_event",Ui_MainWindow.onhover)
         self.setCurrentIndex(oIndex)
 
-   
-   
     @pyqtSlot()
     def onIndMetricsClicked(self):
         #First open a pop-up window informing the user that this takes a moment:
@@ -306,10 +304,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.progress2.setValue(33)
         global iIndex
         for element in range(len(NumericMetrics.columns)):
-                Ui_MainWindow.indMetrics = QtWidgets.QWidget()
+                Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
                 Ui_MainWindow.indMetrics.setObjectName("indMetrics")
                 iIndex = self.addTab(Ui_MainWindow.indMetrics, NumericMetrics.columns[element])
-                indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.metrics, Ui_MainWindow.NumericMetrics, element, False)
                 vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.indMetrics)
                 hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
                 hbox1.addStretch()
@@ -323,6 +320,18 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
 
                 hbox2.addStretch()
+                Ui_MainWindow.indMetrics.Checkboxlabel = QtWidgets.QLabel(Ui_MainWindow.indMetrics)
+                Ui_MainWindow.indMetrics.Checkboxlabel.setObjectName("checkboxlabel")
+                Ui_MainWindow.indMetrics.Checkboxlabel.setText("Show legend:")
+                Ui_MainWindow.indMetrics.Checkboxlabel.hide()
+                Ui_MainWindow.indMetrics.Checkbox = QtWidgets.QCheckBox("Legend",Ui_MainWindow.indMetrics)
+                Ui_MainWindow.indMetrics.Checkbox.setChecked(False)
+                Ui_MainWindow.indMetrics.Checkbox.stateChanged.connect(lambda x: Ui_MainWindow.enable_legend(element) if x else Ui_MainWindow.disable_legend(element))
+                Ui_MainWindow.indMetrics.Checkbox.setVisible(False)
+                hbox2.addWidget(Ui_MainWindow.indMetrics.Checkboxlabel)
+                hbox2.addWidget(Ui_MainWindow.indMetrics.Checkbox)
+            
+                indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.metrics, Ui_MainWindow.NumericMetrics, element, False)
                 hbox2.addWidget(indMetPlot)
                 hbox2.addStretch()
                 vbox.addLayout(hbox2)
@@ -332,6 +341,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.Longitudinal.setEnabled(True)
         Ui_MainWindow.tab.progress2.setValue(100)
         self.setCurrentIndex(iIndex)
+
+    def enable_legend(metric):
+        IndividualMetrics.MyIndMetricsCanvas.ShowLegend(metric)
+    
+    def disable_legend(metric):
+        IndividualMetrics.MyIndMetricsCanvas.HideLegend(metric)
 
     @pyqtSlot()
     def onLongitudinalClicked(self):
