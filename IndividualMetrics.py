@@ -18,6 +18,8 @@ import numpy as np
 import datetime
 import UI_MainWindow
 import re
+import Legend
+
 
 class MyIndMetricsCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -96,8 +98,18 @@ class MyIndMetricsCanvas(FigureCanvas):
             MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
         if(len(MyIndMetricsCanvas.samplenames)<=32):
             MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
+        else:
+            if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
+               lgd =  MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 2)
+            elif(len(MyIndMetricsCanvas.samplenames)>64 and len(MyIndMetricsCanvas.samplenames)<=96):
+               lgd = MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 3)
+            elif(len(MyIndMetricsCanvas.samplenames)>96 and len(MyIndMetricsCanvas.samplenames)<=128):
+               lgd = MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 4)
+            else:
+               lgd = MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 5)
+            #QMessageBox.about(self,"Legend:" ,lgd)
+            Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, lgd)
         
-
         MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
         for tick in MyIndMetricsCanvas.ax.get_xticklabels():
             tick.set_rotation(90)
@@ -124,19 +136,10 @@ class MyIndMetricsCanvas(FigureCanvas):
             UI_MainWindow.Ui_MainWindow.indMetrics.Checkbox.setVisible(True)
             UI_MainWindow.Ui_MainWindow.indMetrics.Checkboxlabel.setVisible(True)
 
-    def ShowLegend(metric):
-        if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
-            MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 2)
-        elif(len(MyIndMetricsCanvas.samplenames)>64 and len(MyIndMetricsCanvas.samplenames)<=96):
-            MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 3)
-        elif(len(MyIndMetricsCanvas.samplenames)>96 and len(MyIndMetricsCanvas.samplenames)<=128):
-            MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 4)
-        else:
-            MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 5)
-        MyIndMetricsCanvas.draw(MyIndMetricsCanvas)
-
-    def HideLegend(metric):
-        MyIndMetricsCanvas.ax.get_legend().remove()
       
     def compute_initial_figure(self):
         pass    
+
+
+
+

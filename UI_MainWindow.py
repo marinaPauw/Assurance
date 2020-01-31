@@ -78,11 +78,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.tab.progress2 = QtWidgets.QProgressBar()
         self.tab.progress2.setGeometry(200, 80, 250, 20)
         
-        #To make horizontal buttons:
-        #self.tab.check_group = QtWidgets.QHBoxLayout()
-        #self.tab.check_group.stretch(1)
-        
-        #self.tab.main_layout.addLayout(self.tab.check_group)
         
         
         vbox = QtWidgets.QVBoxLayout(self.tab)
@@ -320,18 +315,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
 
                 hbox2.addStretch()
-                Ui_MainWindow.indMetrics.Checkboxlabel = QtWidgets.QLabel(Ui_MainWindow.indMetrics)
-                Ui_MainWindow.indMetrics.Checkboxlabel.setObjectName("checkboxlabel")
-                Ui_MainWindow.indMetrics.Checkboxlabel.setText("Show legend:")
-                Ui_MainWindow.indMetrics.Checkboxlabel.hide()
-                Ui_MainWindow.indMetrics.Checkbox = QtWidgets.QCheckBox("Legend",Ui_MainWindow.indMetrics)
-                Ui_MainWindow.indMetrics.Checkbox.setChecked(False)
-                Ui_MainWindow.indMetrics.Checkbox.stateChanged.connect(lambda x: Ui_MainWindow.enable_legend(element) if x else Ui_MainWindow.disable_legend(element))
-                Ui_MainWindow.indMetrics.Checkbox.setVisible(False)
-                hbox2.addWidget(Ui_MainWindow.indMetrics.Checkboxlabel)
-                hbox2.addWidget(Ui_MainWindow.indMetrics.Checkbox)
-            
-                indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.metrics, Ui_MainWindow.NumericMetrics, element, False)
+                indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.metrics, Ui_MainWindow.NumericMetrics, element, False, False)
                 hbox2.addWidget(indMetPlot)
                 hbox2.addStretch()
                 vbox.addLayout(hbox2)
@@ -588,7 +572,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.uploadLabel.setFont(Ui_MainWindow.boldfont)
 
         Ui_MainWindow.tab.chooseLabel.setText(_translate("MainWindow", "Choose the analysis you would like to conduct:"))
-        #Ui_MainWindow.setTabText(Ui_MainWindow.indexOf(Ui_MainWindow.tab), _translate("Main", "Main"))
+     
 
 
 
