@@ -23,6 +23,7 @@ import DataPreparation
 import RandomForest
 import numpy as np
 import pandas as pd
+from scipy.spatial import distance_matrix
 
 class Ui_MainWindow(QtWidgets.QTabWidget):
     def setupUi(self):
@@ -424,14 +425,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def CalculateOutliers(self):
         sampleSize = range(len(Ui_MainWindow.NumericMetrics.index))
-        for iii in sampleSize:
-            DistanceTemp = []
-            bbb = PCA.finalDf.iloc[iii,:]
-            for jjj in sampleSize:
-                xxx = PCA.finalDf.iloc[jjj,:]
-                zzz = scipy.spatial.distance.euclidean(bbb,xxx)
-                DistanceTemp.append(zzz)
-            PCA.Distances[iii] = DistanceTemp
+        PCA.Distances = pd.DataFrame(distance_matrix(PCA.finalDf.values, PCA.finalDf.values, p=2),index=PCA.finalDf.index, columns=PCA.finalDf.index)
         print(PCA.Distances)
         medianDistances = pd.DataFrame()
         Ui_MainWindow.tab.progress1.setValue(60)
