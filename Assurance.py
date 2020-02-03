@@ -1,10 +1,4 @@
-# -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\pauwmarina\Desktop\codes\Assurance\Assurance.ui'
-#
-# Created by: PyQt5 UI code generator 5.11.3
-#
-# WARNING! All changes made in this file will be lost!
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
@@ -30,10 +24,8 @@ import datetime
 import re
 import UI_MainWindow
 from PyQt5.QtWidgets import QMessageBox
-from multiprocessing import Process, freeze_support
 
 if __name__ == "__main__":
-        freeze_support()
         app = QtWidgets.QApplication(sys.argv)
         global MainWindow
         MainWindow = UI_MainWindow.Ui_MainWindow()
