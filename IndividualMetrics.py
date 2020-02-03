@@ -20,6 +20,8 @@ import UI_MainWindow
 import re
 import Legend
 import pylab
+from matplotlib.colors import hsv_to_rgb
+from cycler import cycler
 
 
 class MyIndMetricsCanvas(FigureCanvas):
@@ -61,6 +63,9 @@ class MyIndMetricsCanvas(FigureCanvas):
         sampleSize = range(len(table))
         MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
         plt.grid(color ="ghostwhite")
+        colors = [hsv_to_rgb([(i * 0.618033988749895) % 1.0, (i * 0.32) % 1.0, (i * 0.112) % 1.0])
+          for i in range(1000)]
+        plt.rc("axes", prop_cycle=(cycler('color', colors)))
         manager = plt.get_current_fig_manager()
         manager.resize(*manager.window.maxsize())
         MyIndMetricsCanvas.samplenames = []
@@ -91,7 +96,7 @@ class MyIndMetricsCanvas(FigureCanvas):
                 for ii in sampleSize:
                     if(tableContainingRownames.iloc[ii,0]==uniqueSamples[item]):
                         rowNumList.append(ii)
-                lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table.iloc[rowNumList,element], marker='o', label = uniqueSamples[item])   #(np.random.choice(range(256)),np.random.choice(range(256)),np.random.choice(range(256))))
+                lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table.iloc[rowNumList,element], marker='o', label = uniqueSamples[item])   
                
         else:
            lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
