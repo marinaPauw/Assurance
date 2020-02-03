@@ -26,10 +26,10 @@ class PCA(object):
     def CreatePCAGraph(NumericMetrics):
         #np.set_printoptions(suppress=True)
         NumericMetrics = UI_MainWindow.Ui_MainWindow.NumericMetrics
-
         ################Need to figure ut how many dimensions are needed:
         #NormalisedData = preprocessing.scale(NumericMetrics)
         robust_scaler = RobustScaler()
+        np.nan_to_num(NumericMetrics)
         NormalisedData = robust_scaler.fit_transform(NumericMetrics)
         pca = sd.PCA(n_components=len(NumericMetrics.columns))
         pca.fit_transform(NormalisedData)

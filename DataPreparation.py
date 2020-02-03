@@ -47,7 +47,8 @@ class DataPreparation(object):
             print("Non-numeric columns removed. There are now %d columns", len(NumericMetrics.columns))
             print(NumericMetrics.columns.values)
             #Now remove all columns that are not numeric, including date and starttimestamp
-            NumericMetrics.replace([np.inf, -np.inf], np.nan).dropna(axis='columns')
+            NumericMetrics = NumericMetrics.replace([np.inf, -np.inf], np.nan).dropna(axis='columns')
+            #NumericMetrics = np.nan_to_num(NumericMetrics)
             UI_MainWindow.Ui_MainWindow.NumericMetrics = NumericMetrics
 
     def RemoveLowVarianceColumns(self):
@@ -55,6 +56,10 @@ class DataPreparation(object):
         droppedColumns = []
         dpIndex = []
         threshold = 0.01
+        if(len(Nm.columns))<1:
+            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" ,"After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
+            UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+
         for i in range (len(Nm.columns)):
             variance = np.var(Nm.iloc[:,i])
             if(variance<threshold):
