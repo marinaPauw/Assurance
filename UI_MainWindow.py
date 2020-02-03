@@ -319,6 +319,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 hbox2.addWidget(indMetPlot)
                 hbox2.addStretch()
                 vbox.addLayout(hbox2)
+        
+        Ui_MainWindow.legend.show()
         Ui_MainWindow.tab.browse.setEnabled(True)
         Ui_MainWindow.tab.Outliers.setEnabled(True)
         Ui_MainWindow.tab.IndMetrics.setEnabled(True)
