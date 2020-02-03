@@ -18,6 +18,9 @@ import numpy as np
 import datetime
 import UI_MainWindow
 import re
+import Legend
+import pylab
+
 
 class MyIndMetricsCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -53,32 +56,32 @@ class MyIndMetricsCanvas(FigureCanvas):
         return unique_list
 
     def __init__(self, tableContainingRownames, table,element, rectangleSelection,parent=None, width=25, height=5, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+        MyIndMetricsCanvas.fig = Figure(figsize=(width, height), dpi=dpi)
+        #self.axes = MyIndMetricsCanvas.fig.add_subplot(111)
         sampleSize = range(len(table))
-        ax = fig.add_subplot(1,1,1)
+        MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
         plt.grid(color ="ghostwhite")
         manager = plt.get_current_fig_manager()
         manager.resize(*manager.window.maxsize())
-        samplenames = []
+        MyIndMetricsCanvas.samplenames = []
         counter = tableContainingRownames.iloc[0,0].count('.') 
         if(counter==1):# .mzML
              for iii in sampleSize:
                         temp,throw = tableContainingRownames.iloc[iii,0].split('.')
-                        samplenames.append(temp)
+                        MyIndMetricsCanvas.samplenames.append(temp)
         elif(counter==2):#For example .wiff.scan
              for iii in sampleSize:
                         temp,throw,throw = tableContainingRownames.iloc[iii,0].split('.')
-                        samplenames.append(temp)
+                        MyIndMetricsCanvas.samplenames.append(temp)
         elif(counter==3):
              for iii in sampleSize:
                         temp,throw,throw = tableContainingRownames.iloc[iii,0].split('.')
-                        samplenames.append(temp)
+                        MyIndMetricsCanvas.samplenames.append(temp)
         else:
-            samplenames = tableContainingRownames.iloc[:,0]
+            MyIndMetricsCanvas.samplenames = tableContainingRownames.iloc[:,0]
 
-        #Find if there are duplicates in samplenames (like n a swath/RT file for SwaMe)
-        if(len(samplenames) != len(set(samplenames))):#duplicates present
+        #Find if there are duplicates in MyIndMetricsCanvas.samplenames (like n a swath/RT file for SwaMe)
+        if(len(MyIndMetricsCanvas.samplenames) != len(set(MyIndMetricsCanvas.samplenames))):#duplicates present
             for iii in sampleSize:#If they are numeric values they should be strings
                 tableContainingRownames.iloc[iii,1] = str(tableContainingRownames.iloc[iii,1])
             uniqueSamples = MyIndMetricsCanvas.unique(tableContainingRownames.iloc[:,0])
@@ -88,19 +91,32 @@ class MyIndMetricsCanvas(FigureCanvas):
                 for ii in sampleSize:
                     if(tableContainingRownames.iloc[ii,0]==uniqueSamples[item]):
                         rowNumList.append(ii)
-                #if(len(rowNumList)>0):
-                ax.plot(tableContainingRownames.iloc[rowNumList,1],  table.iloc[rowNumList,element], marker='o', label = uniqueSamples[item])   #(np.random.choice(range(256)),np.random.choice(range(256)),np.random.choice(range(256))))
-                #else:
-                    #ax.plot(samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+                lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table.iloc[rowNumList,element], marker='o', label = uniqueSamples[item])   #(np.random.choice(range(256)),np.random.choice(range(256)),np.random.choice(range(256))))
+               
         else:
-            ax.plot(samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
-        ax.legend(loc="upper left", bbox_to_anchor=(1,1))
-        ax.tick_params(labelrotation = 90, labelsize = 9)
-        for tick in ax.get_xticklabels():
+           lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+        if(len(MyIndMetricsCanvas.samplenames)<=32):
+            MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
+        else:
+            figlegend = pylab.figure(figsize = (30,40))
+            handles, labels = MyIndMetricsCanvas.ax.get_legend_handles_labels()
+            if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
+              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 2, borderaxespad=0.1 )
+            elif(len(MyIndMetricsCanvas.samplenames)>64 and len(MyIndMetricsCanvas.samplenames)<=96):
+              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 3, borderaxespad=0.1 )
+            elif(len(MyIndMetricsCanvas.samplenames)>96 and len(MyIndMetricsCanvas.samplenames)<=128):
+              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 4, borderaxespad=0.1 )
+            else:
+              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 5, borderaxespad=0.1 )
+            MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
+            Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
+        
+        MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
+        for tick in MyIndMetricsCanvas.ax.get_xticklabels():
             tick.set_rotation(90)
             tick.set_size(8)
-        FigureCanvas.__init__(self, fig)
-        self.setParent(parent)
+        FigureCanvas.__init__(self, MyIndMetricsCanvas.fig)
+        #MyIndMetricsCanvas.setParent(parent)
 
         FigureCanvas.setSizePolicy(self,
                                    QtWidgets.QSizePolicy.Expanding,
@@ -108,7 +124,7 @@ class MyIndMetricsCanvas(FigureCanvas):
         FigureCanvas.updateGeometry(self)
         # drawtype is 'box' or 'line' or 'none'
         if(rectangleSelection):
-            MyIndMetricsCanvas.toggle_selector.RS = RectangleSelector(ax,  MyIndMetricsCanvas.line_select_callback,
+            MyIndMetricsCanvas.toggle_selector.RS = RectangleSelector(MyIndMetricsCanvas.ax,  MyIndMetricsCanvas.line_select_callback,
                                            drawtype='box', useblit=True,
                                            button=[1, 3],  # don't use middle button
                                            minspanx=5, minspany=5,
@@ -117,6 +133,11 @@ class MyIndMetricsCanvas(FigureCanvas):
             plt.connect('key_press_event', MyIndMetricsCanvas.toggle_selector)
 
         self.compute_initial_figure()
+
       
     def compute_initial_figure(self):
         pass    
+
+
+
+

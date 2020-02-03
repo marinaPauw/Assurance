@@ -78,11 +78,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.tab.progress2 = QtWidgets.QProgressBar()
         self.tab.progress2.setGeometry(200, 80, 250, 20)
         
-        #To make horizontal buttons:
-        #self.tab.check_group = QtWidgets.QHBoxLayout()
-        #self.tab.check_group.stretch(1)
-        
-        #self.tab.main_layout.addLayout(self.tab.check_group)
         
         
         vbox = QtWidgets.QVBoxLayout(self.tab)
@@ -287,8 +282,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         PCAGraph.fig.canvas.mpl_connect("motion_notify_event",Ui_MainWindow.onhover)
         self.setCurrentIndex(oIndex)
 
-   
-   
     @pyqtSlot()
     def onIndMetricsClicked(self):
         #First open a pop-up window informing the user that this takes a moment:
@@ -306,10 +299,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.progress2.setValue(33)
         global iIndex
         for element in range(len(NumericMetrics.columns)):
-                Ui_MainWindow.indMetrics = QtWidgets.QWidget()
+                Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
                 Ui_MainWindow.indMetrics.setObjectName("indMetrics")
                 iIndex = self.addTab(Ui_MainWindow.indMetrics, NumericMetrics.columns[element])
-                indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.metrics, Ui_MainWindow.NumericMetrics, element, False)
                 vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.indMetrics)
                 hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
                 hbox1.addStretch()
@@ -323,15 +315,24 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
 
                 hbox2.addStretch()
+                indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.metrics, Ui_MainWindow.NumericMetrics, element, False, False)
                 hbox2.addWidget(indMetPlot)
                 hbox2.addStretch()
                 vbox.addLayout(hbox2)
+        
+        Ui_MainWindow.legend.show()
         Ui_MainWindow.tab.browse.setEnabled(True)
         Ui_MainWindow.tab.Outliers.setEnabled(True)
         Ui_MainWindow.tab.IndMetrics.setEnabled(True)
         Ui_MainWindow.tab.Longitudinal.setEnabled(True)
         Ui_MainWindow.tab.progress2.setValue(100)
         self.setCurrentIndex(iIndex)
+
+    def enable_legend(metric):
+        IndividualMetrics.MyIndMetricsCanvas.ShowLegend(metric)
+    
+    def disable_legend(metric):
+        IndividualMetrics.MyIndMetricsCanvas.HideLegend(metric)
 
     @pyqtSlot()
     def onLongitudinalClicked(self):
@@ -573,7 +574,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.uploadLabel.setFont(Ui_MainWindow.boldfont)
 
         Ui_MainWindow.tab.chooseLabel.setText(_translate("MainWindow", "Choose the analysis you would like to conduct:"))
-        #Ui_MainWindow.setTabText(Ui_MainWindow.indexOf(Ui_MainWindow.tab), _translate("Main", "Main"))
+     
 
 
 
