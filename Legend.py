@@ -25,13 +25,17 @@ import UI_MainWindow
 from PyQt5.QtWidgets import QMessageBox
 
 
-class Legend(object):
+class Legend():
     """description of class"""
     def setupUI(self, lgd,parent=None):
-        vbox = QtWidgets.QVBoxLayout()
+                
+        #Setting up the tab:
+        self.legend = QtWidgets.QWidget()
+        self.legend.setWindowTitle("Legend")
+        self.legend.vbox = QtWidgets.QVBoxLayout(self.legend)
         hbox1 = QtWidgets.QHBoxLayout()
         hbox1.addStretch()
         hbox1.addWidget(lgd)
+             
         hbox1.addStretch()
-        vbox.addLayout(hbox1)
-
+        self.legend.vbox.addLayout(hbox1)

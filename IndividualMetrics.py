@@ -19,6 +19,7 @@ import datetime
 import UI_MainWindow
 import re
 import Legend
+import pylab
 
 
 class MyIndMetricsCanvas(FigureCanvas):
@@ -56,7 +57,7 @@ class MyIndMetricsCanvas(FigureCanvas):
 
     def __init__(self, tableContainingRownames, table,element, rectangleSelection,parent=None, width=25, height=5, dpi=100):
         MyIndMetricsCanvas.fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = MyIndMetricsCanvas.fig.add_subplot(111)
+        #self.axes = MyIndMetricsCanvas.fig.add_subplot(111)
         sampleSize = range(len(table))
         MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
         plt.grid(color ="ghostwhite")
@@ -90,32 +91,32 @@ class MyIndMetricsCanvas(FigureCanvas):
                 for ii in sampleSize:
                     if(tableContainingRownames.iloc[ii,0]==uniqueSamples[item]):
                         rowNumList.append(ii)
-                #if(len(rowNumList)>0):
-                MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table.iloc[rowNumList,element], marker='o', label = uniqueSamples[item])   #(np.random.choice(range(256)),np.random.choice(range(256)),np.random.choice(range(256))))
-                #else:
-                    #MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+                lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table.iloc[rowNumList,element], marker='o', label = uniqueSamples[item])   #(np.random.choice(range(256)),np.random.choice(range(256)),np.random.choice(range(256))))
+               
         else:
-            MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+           lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
         if(len(MyIndMetricsCanvas.samplenames)<=32):
             MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
         else:
+            figlegend = pylab.figure(figsize = (30,40))
+            handles, labels = MyIndMetricsCanvas.ax.get_legend_handles_labels()
             if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
-               lgd =  MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 2)
+              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 2, borderaxespad=0.1 )
             elif(len(MyIndMetricsCanvas.samplenames)>64 and len(MyIndMetricsCanvas.samplenames)<=96):
-               lgd = MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 3)
+              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 3, borderaxespad=0.1 )
             elif(len(MyIndMetricsCanvas.samplenames)>96 and len(MyIndMetricsCanvas.samplenames)<=128):
-               lgd = MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 4)
+              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 4, borderaxespad=0.1 )
             else:
-               lgd = MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 5)
-            #QMessageBox.about(self,"Legend:" ,lgd)
-            Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, lgd)
+              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 5, borderaxespad=0.1 )
+            MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
+            Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
         
         MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
         for tick in MyIndMetricsCanvas.ax.get_xticklabels():
             tick.set_rotation(90)
             tick.set_size(8)
         FigureCanvas.__init__(self, MyIndMetricsCanvas.fig)
-        self.setParent(parent)
+        #MyIndMetricsCanvas.setParent(parent)
 
         FigureCanvas.setSizePolicy(self,
                                    QtWidgets.QSizePolicy.Expanding,
@@ -132,9 +133,6 @@ class MyIndMetricsCanvas(FigureCanvas):
             plt.connect('key_press_event', MyIndMetricsCanvas.toggle_selector)
 
         self.compute_initial_figure()
-        if (len(MyIndMetricsCanvas.samplenames)>32):#If there are too many items for the legend to display next to the graph, we make a checkbox for the legend:
-            UI_MainWindow.Ui_MainWindow.indMetrics.Checkbox.setVisible(True)
-            UI_MainWindow.Ui_MainWindow.indMetrics.Checkboxlabel.setVisible(True)
 
       
     def compute_initial_figure(self):
