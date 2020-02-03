@@ -25,13 +25,13 @@
     <Compile Include="DataPreparation.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Legend.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PCA.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="RandomForest.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="CreatePCAGraph.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="FileInput.py">
