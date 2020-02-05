@@ -28,7 +28,6 @@ from scipy.spatial import distance_matrix
 class Ui_MainWindow(QtWidgets.QTabWidget):
     def setupUi(self):
       
-        self.setObjectName("Assurance")
         self.setWindowTitle("Assurance")
         self.showMaximized()
 
@@ -40,7 +39,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab = QtWidgets.QWidget()
         self.setCurrentIndex(0)
         self.tab.main_layout = QtWidgets.QVBoxLayout()
-        self.tab.setObjectName("tab")
         self.addTab(self.tab, "Home")
         self.tab.setStyleSheet("background-color: gainsboro;")
         self.setTabShape(QtWidgets.QTabWidget.Rounded)
@@ -51,16 +49,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         #All the buttons:
         self.tab.browse = QtWidgets.QPushButton(self.tab)
         self.tab.browse.setStyleSheet("background-color: rgb(240,240,240);")
-        self.tab.browse.setObjectName("browse")
         self.tab.Outliers = QtWidgets.QPushButton(self.tab)
         self.tab.Outliers.setStyleSheet("background-color: rgb(240,240,240);")
-        self.tab.Outliers.setObjectName("Outliers")
         self.tab.IndMetrics = QtWidgets.QPushButton(self.tab)
         self.tab.IndMetrics.setStyleSheet("background-color: rgb(240,240,240);")
-        self.tab.IndMetrics.setObjectName("IndMetrics")
         self.tab.Longitudinal = QtWidgets.QPushButton(self.tab)
         self.tab.Longitudinal.setStyleSheet("background-color: rgb(240,240,240);")
-        self.tab.Longitudinal.setObjectName("Longitudinal")
         self.tab.browse.clicked.connect(self.onBrowseClicked)
         self.tab.Outliers.clicked.connect(self.onOutliersClicked)
         self.tab.IndMetrics.clicked.connect(self.onIndMetricsClicked)
@@ -69,13 +63,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         #Labels and progressbars
         Ui_MainWindow.filename = QtWidgets.QLabel(self.tab)
         Ui_MainWindow.filename.setGeometry(QtCore.QRect(90, 120, 300, 20))
-        Ui_MainWindow.filename.setObjectName("filename")
         self.tab.uploadLabel = QtWidgets.QLabel()
-        self.tab.uploadLabel.setObjectName("uploadLabel")
         self.tab.progress1 = QtWidgets.QProgressBar()
         self.tab.progress1.setGeometry(200, 80, 250, 20)
         self.tab.chooseLabel = QtWidgets.QLabel()
-        self.tab.chooseLabel.setObjectName("chooseLabel")
         self.tab.progress2 = QtWidgets.QProgressBar()
         self.tab.progress2.setGeometry(200, 80, 250, 20)
         
@@ -208,24 +199,19 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         
         Ui_MainWindow.PCA = QtWidgets.QTabWidget()
-        Ui_MainWindow.PCA.setObjectName("PCA")
         Ui_MainWindow.PCA.plotlabel =  QtWidgets.QLabel(Ui_MainWindow.PCA)
         Ui_MainWindow.PCA.plotlabel.setGeometry(10,500,1000,300)
-        Ui_MainWindow.PCA.plotlabel.setObjectName("plotlabel")
         #Ui_MainWindow.PCA.PCAplot = PCAGraph.__init__("PCAplot")
         Ui_MainWindow.PCA.PCAplot = PCAGraph.PCAGraph(Ui_MainWindow.metrics,PCA.plotdata)
      
         
         Ui_MainWindow.outlierlistLabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        Ui_MainWindow.outlierlistLabel.setObjectName("outlierlistLabel")
         Ui_MainWindow.OutlierSamples = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        Ui_MainWindow.OutlierSamples.setObjectName("OutlierSamples")
         Ui_MainWindow.OutlierSamples.setAlignment(QtCore.Qt.AlignLeft)
        
         oIndex = self.addTab(Ui_MainWindow.PCA, "Outlier detection results")
         Ui_MainWindow.PCA.layout = QtWidgets.QVBoxLayout()
         Ui_MainWindow.PCA.Checkboxlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        Ui_MainWindow.PCA.Checkboxlabel.setObjectName("checkboxlabel")
         Ui_MainWindow.PCA.Checkboxlabel.setText("Toggle loadings on/off:")
         Ui_MainWindow.PCA.Checkbox = QtWidgets.QCheckBox("Loadings",Ui_MainWindow.PCA)
         Ui_MainWindow.PCA.Checkbox.setChecked(False)
@@ -301,13 +287,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         global iIndex
         for element in range(len(NumericMetrics.columns)):
                 Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
-                Ui_MainWindow.indMetrics.setObjectName("indMetrics")
                 iIndex = self.addTab(Ui_MainWindow.indMetrics, NumericMetrics.columns[element])
                 vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.indMetrics)
                 hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
                 hbox1.addStretch()
                 Ui_MainWindow.indMetrics.indPlotLabel =  QtWidgets.QLabel(Ui_MainWindow.indMetrics)
-                Ui_MainWindow.indMetrics.indPlotLabel.setObjectName("indPlotLabel")
                 Ui_MainWindow.indMetrics.indPlotLabel.setText(NumericMetrics.columns[element])
                 Ui_MainWindow.indMetrics.indPlotLabel.setFont(Ui_MainWindow.boldfont)
                 hbox1.addWidget(Ui_MainWindow.indMetrics.indPlotLabel)
@@ -356,7 +340,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             filepath = FileInput.BrowseWindow.SpectralCountsfiletypeCheck(spectralCountsFile)
             Ui_MainWindow.spectralCountTable = FileInput.BrowseWindow.filetypeCheck(spectralCountsFile)
             Ui_MainWindow.spectralCounts = QtWidgets.QWidget()
-            Ui_MainWindow.spectralCounts.setObjectName("spectralCounts")
             Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.spectralCounts, "Spectral Counts:")
             Ui_MainWindow.CreateRandomForestTab(Ui_MainWindow)
             self.setCurrentIndex(Ui_MainWindow.sIndex)
@@ -395,7 +378,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.spectralCounts)
         hbox1.addStretch()
         Ui_MainWindow.spectralCounts.PlotLabel =  QtWidgets.QLabel(Ui_MainWindow.spectralCounts)
-        Ui_MainWindow.spectralCounts.PlotLabel.setObjectName("indPlotLabel")
         Ui_MainWindow.spectralCounts.PlotLabel.setText("Spectral Counts Results - Please draw a rectangle over the samples you would like to select for the guide set:")
         font = QtGui.QFont()
         font.setPointSize(18)
@@ -458,7 +440,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.IndMetrics.setEnabled(False)
         Ui_MainWindow.tab.Longitudinal.setEnabled(False)
         Ui_MainWindow.RandomForest = QtWidgets.QWidget()
-        Ui_MainWindow.RandomForest.setObjectName("RandomForest")
         Ui_MainWindow.RandomForest.heading =  QtWidgets.QLabel(Ui_MainWindow.RandomForest)
         rFIndex = self.addTab(Ui_MainWindow.RandomForest, "Random Forest")
         
