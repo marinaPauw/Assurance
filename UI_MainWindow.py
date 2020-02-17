@@ -144,9 +144,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         if inputFile:
             filepath = FileInput.BrowseWindow.FileCheck(inputFile)
             Ui_MainWindow.metrics = FileInput.BrowseWindow.filetypeCheck(inputFile)
-            if(len(Ui_MainWindow.metrics.columns)<1):
-                QMessageBox.about(Ui_MainWindow.tab,"Error:" ,"After removing low variance columns, there were no columns left from which to conduct any sort of analysis.")
-                Ui_MainWindow.onBrowseClicked(Ui_MainWindow)
+            Ui_MainWindow.checkColumnLength(self)
             Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
             DataPreparation.DataPreparation.ExtractNumericColumns(Ui_MainWindow.metrics)
             DataPreparation.DataPreparation.RemoveLowVarianceColumns(Ui_MainWindow)
@@ -155,7 +153,13 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.IndMetrics.setEnabled(True)
         Ui_MainWindow.tab.Longitudinal.setEnabled(True)
         
-   
+    def checkColumnLength(self):
+       if(len(self.metrics.columns)<1):
+                QMessageBox.warning(self.tab,"Error:" ,"After removing low variance columns, there were no columns left from which to conduct any sort of analysis.")
+                self.onBrowseClicked()
+       else:
+          return
+
     @pyqtSlot()
     def onOutliersClicked(self):
         Ui_MainWindow.tab.browse.setEnabled(False)
