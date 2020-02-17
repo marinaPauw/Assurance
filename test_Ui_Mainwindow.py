@@ -63,5 +63,12 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
     def test_filenameGeometry(self):
         self.assertEqual(self.form.filename.geometry(), QtCore.QRect(90, 120, 300, 20))
 
+    def test_progressbar1Geometry(self):
+        self.assertEqual(self.form.tab.progress1.geometry(), QtCore.QRect(200, 80, 250, 20))
+
+    def test_progressbar2Geometry(self):
+        self.assertEqual(self.form.tab.progress2.geometry(), QtCore.QRect(200, 80, 250, 20))
+
+
 if __name__ == '__main__':
     unittest.main()
