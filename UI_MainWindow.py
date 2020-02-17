@@ -135,10 +135,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onBrowseClicked(self):
-        Ui_MainWindow.tab.browse.setEnabled(False)
-        Ui_MainWindow.tab.Outliers.setEnabled(False)
-        Ui_MainWindow.tab.IndMetrics.setEnabled(False)
-        Ui_MainWindow.tab.Longitudinal.setEnabled(False)
+        Ui_MainWindow.DisableButtons()
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, Ui_MainWindow)
         inputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
         global metrics
@@ -149,10 +146,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
             DataPreparation.DataPreparation.ExtractNumericColumns(Ui_MainWindow.metrics)
             DataPreparation.DataPreparation.RemoveLowVarianceColumns(Ui_MainWindow)
-        Ui_MainWindow.tab.browse.setEnabled(True)
-        Ui_MainWindow.tab.Outliers.setEnabled(True)
-        Ui_MainWindow.tab.IndMetrics.setEnabled(True)
-        Ui_MainWindow.tab.Longitudinal.setEnabled(True)
+        Ui_MainWindow.EnableButtons()
         
     def checkColumnLength(self):
        if(len(self.metrics.columns)<1):
@@ -163,33 +157,21 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onOutliersClicked(self):
-        Ui_MainWindow.tab.browse.setEnabled(False)
-        Ui_MainWindow.tab.Outliers.setEnabled(False)
-        Ui_MainWindow.tab.IndMetrics.setEnabled(False)
-        Ui_MainWindow.tab.Longitudinal.setEnabled(False)
+        Ui_MainWindow.DisableButtons()
 
         Ui_MainWindow.tab.progress1.show()
         Ui_MainWindow.tab.progress1.setValue(10)
 
         # Check if you have the correct number of variables/samples
-        if(len(Ui_MainWindow.NumericMetrics.columns) < 3):
-            QMessageBox.about(self, "Warning:", "There are less than three \
-                              numeric columns in the dataset. PCA will not \
-                              be performed.")
-            Ui_MainWindow.tab.browse.setEnabled(True)
-            Ui_MainWindow.tab.Outliers.setEnabled(True)
-            Ui_MainWindow.tab.IndMetrics.setEnabled(True)
-            Ui_MainWindow.tab.Longitudinal.setEnabled(True)
-            return
+        Ui_MainWindow.checkColumnNumberForPCA()
+        Ui_MainWindow.EnableButtons()
+        return
 
         if(len(Ui_MainWindow.NumericMetrics.iloc[:, 0]) < 4):
             QMessageBox.about(self, "Warning:", "There are less than three\
                               samples in the dataset. PCA will not be \
                               performed.")
-            Ui_MainWindow.tab.browse.setEnabled(True)
-            Ui_MainWindow.tab.Outliers.setEnabled(True)
-            Ui_MainWindow.tab.IndMetrics.setEnabled(True)
-            Ui_MainWindow.tab.Longitudinal.setEnabled(True)
+            Ui_MainWindow.EnableButtons()
             return
 
         sampleToVariableRatio = PCA.PCA.\
@@ -267,14 +249,23 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         hbox2.setAlignment(QtCore.Qt.AlignCenter)
         vbox2.addLayout(hbox2)
         Ui_MainWindow.retranslateUi2(Ui_MainWindow.PCA)
-        Ui_MainWindow.tab.browse.setEnabled(True)
-        Ui_MainWindow.tab.Outliers.setEnabled(True)
-        Ui_MainWindow.tab.IndMetrics.setEnabled(True)
-        Ui_MainWindow.tab.Longitudinal.setEnabled(True)
+        Ui_MainWindow.EnableButtons()
         Ui_MainWindow.tab.progress1.setValue(100)
         PCAGraph.fig.canvas.mpl_connect("motion_notify_event",
                                         Ui_MainWindow.onhover)
         self.setCurrentIndex(oIndex)
+
+    def EnableButtons(self):
+        Ui_MainWindow.tab.browse.setEnabled(True)
+        Ui_MainWindow.tab.Outliers.setEnabled(True)
+        Ui_MainWindow.tab.IndMetrics.setEnabled(True)
+        Ui_MainWindow.tab.Longitudinal.setEnabled(True)
+
+    def disableButtons(self):
+        Ui_MainWindow.tab.browse.setEnabled(False)
+        Ui_MainWindow.tab.Outliers.setEnabled(False)
+        Ui_MainWindow.tab.IndMetrics.setEnabled(False)
+        Ui_MainWindow.tab.Longitudinal.setEnabled(False)
 
     @pyqtSlot()
     def onIndMetricsClicked(self):
@@ -324,6 +315,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.progress2.setValue(100)
         self.setCurrentIndex(iIndex)
 
+    def checkColumnNumberForPCA(self):
+        if(len(Ui_MainWindow.NumericMetrics.columns) < 3):
+            QMessageBox.about(self, "Warning:", "There are less than three \
+                              numeric columns in the dataset. PCA will not \
+                              be performed.")
+
     def enable_legend(metric):
         IndividualMetrics.MyIndMetricsCanvas.ShowLegend(metric)
 
@@ -332,10 +329,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onLongitudinalClicked(self):
-        Ui_MainWindow.tab.browse.setEnabled(False)
-        Ui_MainWindow.tab.Outliers.setEnabled(False)
-        Ui_MainWindow.tab.IndMetrics.setEnabled(False)
-        Ui_MainWindow.tab.Longitudinal.setEnabled(False)
+        Ui_MainWindow.DisableButtons()
         Ui_MainWindow.predictionArea = [0, 0, 0, 0]
         # Bools to keep track:
         Ui_MainWindow.goodPredicted = False
@@ -479,10 +473,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onRandomForestClicked(self):
-        Ui_MainWindow.tab.browse.setEnabled(False)
-        Ui_MainWindow.tab.Outliers.setEnabled(False)
-        Ui_MainWindow.tab.IndMetrics.setEnabled(False)
-        Ui_MainWindow.tab.Longitudinal.setEnabled(False)
+        Ui_MainWindow.DisableButtons()
         Ui_MainWindow.RandomForest = QtWidgets.QWidget()
         Ui_MainWindow.RandomForest.heading = QtWidgets.QLabel(
             Ui_MainWindow.RandomForest)
@@ -547,10 +538,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.RandomForest.predictionbtn.clicked.connect(
             self.moveToPrediction)
         Ui_MainWindow.RandomForest.backbtn.clicked.connect(self.moveToSource)
-        Ui_MainWindow.tab.browse.setEnabled(True)
-        Ui_MainWindow.tab.Outliers.setEnabled(True)
-        Ui_MainWindow.tab.IndMetrics.setEnabled(True)
-        Ui_MainWindow.tab.Longitudinal.setEnabled(True)
+        Ui_MainWindow.EnableButtons
 
     def moveToPrediction(self):
         items = Ui_MainWindow.RandomForest.items
