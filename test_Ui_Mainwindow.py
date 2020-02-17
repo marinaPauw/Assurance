@@ -48,7 +48,19 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
     def test_backgroundcolor(self):
         self.assertEqual(self.form.tab.styleSheet(), "background-color: gainsboro;")
 
-   # def 
+    def test_browsebuttonbackgroundcolor(self):
+        self.assertEqual(self.form.tab.browse.styleSheet(), "background-color: rgb(240,240,240);")
+
+    def test_outlierbuttonbackgroundcolor(self):
+        self.assertEqual(self.form.tab.Outliers.styleSheet(), "background-color: rgb(240,240,240);")
+
+    def test_indmetricsbuttonbackgroundcolor(self):
+        self.assertEqual(self.form.tab.IndMetrics.styleSheet(), "background-color: rgb(240,240,240);")
+
+    def test_longitudinalbuttonbackgroundcolor(self):
+        self.assertEqual(self.form.tab.Longitudinal.styleSheet(), "background-color: rgb(240,240,240);")
+
+
 
 if __name__ == '__main__':
     unittest.main()
