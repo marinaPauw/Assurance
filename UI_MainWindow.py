@@ -42,9 +42,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.addTab(self.tab, "Home")
         self.tab.setStyleSheet("background-color: gainsboro;")
         self.setTabShape(QtWidgets.QTabWidget.Rounded)
-        qbtn = QtWidgets.QPushButton('Quit', self)
-        qbtn.clicked.connect(self.close)
-        qbtn.move(50, 50)  
         
         #All the buttons:
         self.tab.browse = QtWidgets.QPushButton(self.tab)
