@@ -11,6 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>Assurance</Name>
     <RootNamespace>Assurance</RootNamespace>
+    <TestFramework>unittest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,6 +44,7 @@
     <Compile Include="PCAGraph.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="test_Ui_Mainwindow.py" />
     <Compile Include="UI_MainWindow.py">
       <SubType>Code</SubType>
     </Compile>
