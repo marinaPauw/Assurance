@@ -37,10 +37,8 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
         self.form = Assurance.UI_MainWindow.Ui_MainWindow()
         self.form.setupUi()
 
-# Default tests:
+    # Default tests:
     def test_WindowTitle(self):
-        #QTest.mouseClick(self.form.tab.browse, Qt.LeftButton)
-        #self.assertEqual(self.form.tab, "Browse..")
         self.assertEqual(self.form.windowTitle(), "Assurance")
 
     def test_WindowMaximized(self):
@@ -106,7 +104,6 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
     def test_Filename(self):
         self.assertEqual(self.form.filename.text(), "   File...                         ")
 
-
     def test_OutliersText(self):
         self.assertEqual(self.form.tab.Outliers.text(), "Detect Outliers")
 
@@ -116,12 +113,15 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
     def test_chooseLabelText(self):
         self.assertEqual(self.form.tab.chooseLabel.text(), "Choose the analysis you would like to conduct:")
 
-    def test_WindowResize( self ):
+    def test_WindowResize(self):
         self.form.resize( 123, 456 )
         size= QtCore.QSize( 123, 456 )
         self.assertEqual( self.form.size(), size )
 
-
+    # OnBrowseWindowClicked
+    def test_checkColumnLengthIfZeroColumns(self):
+        self.form.metrics =  pd.DataFrame()
+        self.assertWarns(UserWarning,self.form.checkColumnLength())
 
 
 if __name__ == '__main__':
