@@ -25,10 +25,6 @@ import numpy as np
 class BrowseWindow(QtWidgets.QMainWindow):
     def __init__(self, Ui_MainWindow):
         self.title="Load file"
-        UI_MainWindow.Ui_MainWindow.tab.browse.setEnabled(True)
-        UI_MainWindow.Ui_MainWindow.tab.Outliers.setEnabled(True)
-        UI_MainWindow.Ui_MainWindow.tab.IndMetrics.setEnabled(True)
-        UI_MainWindow.Ui_MainWindow.tab.Longitudinal.setEnabled(True)
         global inputFile 
 
     def GetInputFile(Ui_MainWindow):

@@ -71,7 +71,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         vbox = QtWidgets.QVBoxLayout(self.tab)
         hbox = QtWidgets.QHBoxLayout()
         hbox.addStretch()
-        #hbox.SetMinimumSize(QtCore.QSize(100, 50))
         vbox.addLayout(hbox)
         hbox6 = QtWidgets.QHBoxLayout()
         hbox6.addStretch()
@@ -151,6 +150,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
             DataPreparation.DataPreparation.ExtractNumericColumns(Ui_MainWindow.metrics)
             DataPreparation.DataPreparation.RemoveLowVarianceColumns(Ui_MainWindow)
+        Ui_MainWindow.tab.browse.setEnabled(True)
+        Ui_MainWindow.tab.Outliers.setEnabled(True)
+        Ui_MainWindow.tab.IndMetrics.setEnabled(True)
+        Ui_MainWindow.tab.Longitudinal.setEnabled(True)
         
    
     @pyqtSlot()
@@ -539,11 +542,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.Longitudinal.setText(_translate("MainWindow", "Longitudinal analysis"))
         Ui_MainWindow.tab.browse.setText(_translate("MainWindow", "Browse.."))
         Ui_MainWindow.filename.setText(_translate("MainWindow", "   File...                         "))
-        
         Ui_MainWindow.filename.setStyleSheet("background-color: white;")
         Ui_MainWindow.tab.uploadLabel.setText(_translate("MainWindow", "Upload a file (Either json, csv or tsv format):"))
         Ui_MainWindow.tab.uploadLabel.setFont(Ui_MainWindow.boldfont)
-
         Ui_MainWindow.tab.chooseLabel.setText(_translate("MainWindow", "Choose the analysis you would like to conduct:"))
      
 
