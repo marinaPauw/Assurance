@@ -60,7 +60,8 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
     def test_longitudinalbuttonbackgroundcolor(self):
         self.assertEqual(self.form.tab.Longitudinal.styleSheet(), "background-color: rgb(240,240,240);")
 
-
+    def test_filenameGeometry(self):
+        self.assertEqual(self.form.filename.geometry(), QtCore.QRect(90, 120, 300, 20))
 
 if __name__ == '__main__':
     unittest.main()
