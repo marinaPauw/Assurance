@@ -24,7 +24,8 @@ import numpy as np
 
 class BrowseWindow(QtWidgets.QMainWindow):
     def __init__(self, Ui_MainWindow):
-        self.title="Load file"
+        self.title = "Load file"
+        UI_MainWindow.Ui_MainWindow.EnableButtons()
         global inputFile 
 
     def GetInputFile(Ui_MainWindow):
@@ -199,12 +200,12 @@ class BrowseWindow(QtWidgets.QMainWindow):
         for file in inputFiles:
                 #Input reading of jsonfiles here:
             with open(file) as f:
-            metrics = json.loads(f.read())
+                metrics = json.loads(f.read())
             metricsDf = pd.DataFrame(metrics)
             columnNames = []
             for ii in metricsDf["mzQC"]["runQuality"]:
                 for iii in ii["qualityParameters"]:
-                columnNames.append(iii["name"])
+                    columnNames.append(iii["name"])
             PCAInput = pd.DataFrame(columns=columnNames)
             myPIArray = PCAInput.values
             tempVec = []
@@ -220,6 +221,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
                               "There are not enough samples in your file \
                               to conduct analysis. Please choose \
                               another file.")
-                UI_MainWindow.Ui_MainWindow.onBrowseClicked(
+            UI_MainWindow.Ui_MainWindow.onBrowseClicked(
                     UI_MainWindow.Ui_MainWindow)
         return Allmetrics
