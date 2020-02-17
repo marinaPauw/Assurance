@@ -15,3 +15,11 @@ lib64/
 parts/
 sdist/
 var/
+
+*.iml
+
+*.xml
+
+.vs/Assurance/v16/
+
+.vscode/
