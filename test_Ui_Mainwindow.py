@@ -123,6 +123,10 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
         self.form.metrics =  pd.DataFrame()
         self.assertWarns(UserWarning,self.form.checkColumnLength())
 
+    # OnOutliersClicked
+    def test_columnNumberWarningPCA(self):
+        self.form.metrics =  pd.DataFrame()
+        self.assertWarns(UserWarning,self.form.checkColumnNumberForPCA())
 
 if __name__ == '__main__':
     unittest.main()
