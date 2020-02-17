@@ -37,6 +37,7 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
         self.form = Assurance.UI_MainWindow.Ui_MainWindow()
         self.form.setupUi()
 
+# Default tests:
     def test_WindowTitle(self):
         #QTest.mouseClick(self.form.tab.browse, Qt.LeftButton)
         #self.assertEqual(self.form.tab, "Browse..")
@@ -47,6 +48,9 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
 
     def test_backgroundcolor(self):
         self.assertEqual(self.form.tab.styleSheet(), "background-color: gainsboro;")
+
+    def test_filenameBackgroundcolor(self):
+        self.assertEqual(self.form.filename.styleSheet(), "background-color: white;")
 
     def test_browsebuttonbackgroundcolor(self):
         self.assertEqual(self.form.tab.browse.styleSheet(), "background-color: rgb(240,240,240);")
@@ -68,6 +72,56 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
 
     def test_progressbar2Geometry(self):
         self.assertEqual(self.form.tab.progress2.geometry(), QtCore.QRect(200, 80, 250, 20))
+
+    def test_browsebtnHeight(self):
+        self.assertEqual(self.form.tab.browse.height(), 30)
+    
+    def test_OutliersHeight(self):
+        self.assertEqual(self.form.tab.Outliers.height(), 50)
+
+    def test_OutliersWidth(self):
+        self.assertEqual(self.form.tab.Outliers.width(), 150)
+
+    def test_IndMetricsHeight(self):
+        self.assertEqual(self.form.tab.IndMetrics.height(), 50)
+
+    def test_IndMetricsWidth(self):
+        self.assertEqual(self.form.tab.IndMetrics.width(), 150)
+
+    def test_LongitudinalHeight(self):
+        self.assertEqual(self.form.tab.Longitudinal.height(), 50)
+
+    def test_LongitudinalWidth(self):
+        self.assertEqual(self.form.tab.Longitudinal.width(), 150)
+
+    def test_BrowseText(self):
+        self.assertEqual(self.form.tab.browse.text(), "Browse..")
+
+    def test_IndMetricsText(self):
+        self.assertEqual(self.form.tab.IndMetrics.text(), "Individual metrics")
+
+    def test_LongitudinalText(self):
+        self.assertEqual(self.form.tab.Longitudinal.text(), "Longitudinal analysis")
+
+    def test_Filename(self):
+        self.assertEqual(self.form.filename.text(), "   File...                         ")
+
+
+    def test_OutliersText(self):
+        self.assertEqual(self.form.tab.Outliers.text(), "Detect Outliers")
+
+    def test_uploadLabelText(self):
+        self.assertEqual(self.form.tab.uploadLabel.text(), "Upload a file (Either json, csv or tsv format):")
+
+    def test_chooseLabelText(self):
+        self.assertEqual(self.form.tab.chooseLabel.text(), "Choose the analysis you would like to conduct:")
+
+    def test_WindowResize( self ):
+        self.form.resize( 123, 456 )
+        size= QtCore.QSize( 123, 456 )
+        self.assertEqual( self.form.size(), size )
+
+
 
 
 if __name__ == '__main__':
