@@ -25,7 +25,7 @@ import numpy as np
 class BrowseWindow(QtWidgets.QMainWindow):
     def __init__(self, Ui_MainWindow):
         self.title = "Load file"
-        UI_MainWindow.Ui_MainWindow.EnableButtons()
+        UI_MainWindow.Ui_MainWindow.EnableButtons(self)
         global inputFile 
 
     def GetInputFile(Ui_MainWindow):
@@ -45,10 +45,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                        justJSONFiles = False
                 if not justJSONFiles :
                     QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,
-                                      "Error:" ,"You may select multiple \
-                                      mzQC files to combine into one table,\
-                                      but you may not select multiple files \
-                                      of any other type.")
+                                      "Error:" ,"You may select multiple mzQC files to combine into one table, but you may not select multiple files of any other type.")
                     UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
                 if(justJSONFiles==True):
@@ -57,9 +54,9 @@ class BrowseWindow(QtWidgets.QMainWindow):
                            UI_MainWindow.Ui_MainWindow, inputFiles)
                    UI_MainWindow.Ui_MainWindow.metrics.set_index(
                        UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-                   DataPreparation.DataPreparation.ExtractNumericColumns(
+                   DataPreparation.DataPrep.ExtractNumericColumns(
                        UI_MainWindow.Ui_MainWindow.metrics)
-                   DataPreparation.DataPreparation.RemoveLowVarianceColumns(
+                   DataPreparation.DataPrep.RemoveLowVarianceColumns(
                        UI_MainWindow.Ui_MainWindow)
             else:
                 inputFile = inputFiles[0]
@@ -131,12 +128,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
             return metrics
 
         else:
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,
-                              "Message from Assurance: ",
-                              "Error: File type incorrect. Please load a \
-                                  .json, .tsv or .csv file. Also please \
-                                      ensure that the decimals are separated\
-                                           by '.'.")
+            QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
+                              "Message from Assurance: ", "Error: File type incorrect. Please load a.json, .tsv or .csv file. Also please ensure that the decimals are separated by '.'.")
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(
                 UI_MainWindow.Ui_MainWindow)
        except json.decoder.JSONDecodeError:
