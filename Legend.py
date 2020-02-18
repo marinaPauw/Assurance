@@ -39,3 +39,4 @@ class Legend():
              
         hbox1.addStretch()
         self.legend.vbox.addLayout(hbox1)
+        self.legend.show()
