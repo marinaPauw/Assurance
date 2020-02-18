@@ -175,7 +175,13 @@ class BrowseWindow(QtWidgets.QMainWindow):
         for file in inputFiles:
                 #Input reading of jsonfiles here:
             with open(file) as f:
-                metrics = json.loads(f.read())
+                try:
+                    metrics = json.loads(f.read())
+                except:
+                    QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"Error:", 
+                                            "Upload failed. Please check the content of the files and try again.")
+                    
+                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
             metricsDf = pd.DataFrame(metrics)
             columnNames = []
             for ii in metricsDf["mzQC"]["runQuality"]:
