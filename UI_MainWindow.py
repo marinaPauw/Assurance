@@ -266,10 +266,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def onIndMetricsClicked(self):
         # First open a pop-up window informing the user
         # that this takes a moment:
-        Ui_MainWindow.tab.browse.setEnabled(False)
-        Ui_MainWindow.tab.Outliers.setEnabled(False)
-        Ui_MainWindow.tab.IndMetrics.setEnabled(False)
-        Ui_MainWindow.tab.Longitudinal.setEnabled(False)
+        Ui_MainWindow.DisableButtons(self)
         Ui_MainWindow.tab.progress2.show()
         Ui_MainWindow.tab.progress2.setValue(10)
         NumericMetrics = Ui_MainWindow.NumericMetrics
