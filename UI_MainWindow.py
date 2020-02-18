@@ -135,7 +135,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onBrowseClicked(self):
-        Ui_MainWindow.DisableButtons()
+        Ui_MainWindow.DisableButtons(self)
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, Ui_MainWindow)
         inputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
         global metrics
@@ -144,9 +144,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.metrics = FileInput.BrowseWindow.filetypeCheck(inputFile)
             Ui_MainWindow.checkColumnLength(self)
             Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
-            DataPreparation.DataPreparation.ExtractNumericColumns(Ui_MainWindow.metrics)
-            DataPreparation.DataPreparation.RemoveLowVarianceColumns(Ui_MainWindow)
-        Ui_MainWindow.EnableButtons()
+            DataPreparation.DataPrep.ExtractNumericColumns(Ui_MainWindow.metrics)
+            DataPreparation.DataPrep.RemoveLowVarianceColumns(Ui_MainWindow)
+        Ui_MainWindow.EnableButtons(self)
         
     def checkColumnLength(self):
        if(len(self.metrics.columns)<1):
@@ -157,15 +157,15 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onOutliersClicked(self):
-        Ui_MainWindow.DisableButtons()
+        self.DisableButtons()
 
         Ui_MainWindow.tab.progress1.show()
         Ui_MainWindow.tab.progress1.setValue(10)
 
         # Check if you have the correct number of variables/samples
-        Ui_MainWindow.checkColumnNumberForPCA()
-        Ui_MainWindow.EnableButtons()
-        return
+        Ui_MainWindow.checkColumnNumberForPCA(self)
+        Ui_MainWindow.EnableButtons(self)
+        #return
 
         if(len(Ui_MainWindow.NumericMetrics.iloc[:, 0]) < 4):
             QMessageBox.about(self, "Warning:", "There are less than three\
@@ -249,7 +249,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         hbox2.setAlignment(QtCore.Qt.AlignCenter)
         vbox2.addLayout(hbox2)
         Ui_MainWindow.retranslateUi2(Ui_MainWindow.PCA)
-        Ui_MainWindow.EnableButtons()
+        Ui_MainWindow.EnableButtons(self)
         Ui_MainWindow.tab.progress1.setValue(100)
         PCAGraph.fig.canvas.mpl_connect("motion_notify_event",
                                         Ui_MainWindow.onhover)
@@ -261,7 +261,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.IndMetrics.setEnabled(True)
         Ui_MainWindow.tab.Longitudinal.setEnabled(True)
 
-    def disableButtons(self):
+    def DisableButtons(self):
         Ui_MainWindow.tab.browse.setEnabled(False)
         Ui_MainWindow.tab.Outliers.setEnabled(False)
         Ui_MainWindow.tab.IndMetrics.setEnabled(False)
@@ -307,11 +307,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             hbox2.addStretch()
             vbox.addLayout(hbox2)
 
-        Ui_MainWindow.legend.show()
-        Ui_MainWindow.tab.browse.setEnabled(True)
-        Ui_MainWindow.tab.Outliers.setEnabled(True)
-        Ui_MainWindow.tab.IndMetrics.setEnabled(True)
-        Ui_MainWindow.tab.Longitudinal.setEnabled(True)
+        #Ui_MainWindow.legend.show()
+        Ui_MainWindow.EnableButtons(self)
         Ui_MainWindow.tab.progress2.setValue(100)
         self.setCurrentIndex(iIndex)
 
@@ -329,7 +326,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onLongitudinalClicked(self):
-        Ui_MainWindow.DisableButtons()
+        Ui_MainWindow.DisableButtons(self)
         Ui_MainWindow.predictionArea = [0, 0, 0, 0]
         # Bools to keep track:
         Ui_MainWindow.goodPredicted = False
@@ -339,12 +336,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
         # InputtingFile:
         QMessageBox.about(self,  "You have selected Longitudinal analysis.",
-                          "You will be asked to select a separated value file\
-                          (.tsv or .csv) containing two columns. The first \
-                          should contain the filename and the second the \
-                          spectral counts. From the corresponding graph you \
-                          will select which samples are to be used for the \
-                          guide set.")
+                          "You will be asked to select a separated value file (.tsv or .csv) containing two columns. The first should contain the filename and the second the spectral counts. From the corresponding graph you will select which samples are to be used for the guide set.")
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, Ui_MainWindow)
         spectralCountsFile = FileInput.BrowseWindow.GetSpectralCountsFile(
             Ui_MainWindow)
@@ -473,7 +465,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onRandomForestClicked(self):
-        Ui_MainWindow.DisableButtons()
+        Ui_MainWindow.DisableButtons(self)
         Ui_MainWindow.RandomForest = QtWidgets.QWidget()
         Ui_MainWindow.RandomForest.heading = QtWidgets.QLabel(
             Ui_MainWindow.RandomForest)
@@ -484,8 +476,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
         hboxLabel = QtWidgets.QHBoxLayout(Ui_MainWindow.RandomForest)
         hboxLabel.addStretch()
-        decisionLabel = QtWidgets.QLabel("Please choose which samples\
-       to use for the guide set:")
+        decisionLabel = QtWidgets.QLabel("Please choose which samples to use for the guide set:")
         decisionLabel.setFont(Ui_MainWindow.boldfont)
         hboxLabel.addWidget(decisionLabel)
         hboxLabel.addStretch()
@@ -538,7 +529,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.RandomForest.predictionbtn.clicked.connect(
             self.moveToPrediction)
         Ui_MainWindow.RandomForest.backbtn.clicked.connect(self.moveToSource)
-        Ui_MainWindow.EnableButtons
+        Ui_MainWindow.EnableButtons()
 
     def moveToPrediction(self):
         items = Ui_MainWindow.RandomForest.items
@@ -569,8 +560,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.outlierlistLabel.setText(
             "The following runs were identified as outliers: ")
         Ui_MainWindow.PCA.plotlabel.setText(
-            "Principal components analysis of quality metrics \
-            for outlier detection:")
+            "Principal components analysis of quality metrics for outlier detection:")
         font = QtGui.QFont()
         font.setPointSize(18)
         if(len(Ui_MainWindow.outlierlist) > 0):
@@ -591,15 +581,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.Longitudinal.setText(_translate("MainWindow",
                                                "Longitudinal analysis"))
         Ui_MainWindow.tab.browse.setText(_translate("MainWindow", "Browse.."))
-        Ui_MainWindow.filename.setText(_translate("MainWindow", "   \
-                                                  File...                  "))
+        Ui_MainWindow.filename.setText(_translate("MainWindow", "   File...                  "))
         Ui_MainWindow.filename.setStyleSheet("background-color: white;")
-        Ui_MainWindow.tab.uploadLabel.setText(_translate("MainWindow",
-                                                         "Upload a file (\
-                                                         Either json, csv \
-                                                         or tsv format):"))
+        Ui_MainWindow.tab.uploadLabel.setText(_translate("MainWindow", "Upload a file (Either json, csv or tsv format):"))
         Ui_MainWindow.tab.uploadLabel.setFont(Ui_MainWindow.boldfont)
-        Ui_MainWindow.tab.chooseLabel.setText(_translate("MainWindow",
-                                                         "Choose the analysis\
-                                                         you would like to \
-                                                         conduct:"))
+        Ui_MainWindow.tab.chooseLabel.setText(_translate("MainWindow", "Choose the analysis you would like to conduct:"))
+        Ui_MainWindow.DisableButtons(self)
+        Ui_MainWindow.tab.browse.setEnabled(True)
