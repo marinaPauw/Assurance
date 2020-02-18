@@ -100,7 +100,7 @@ class MyIndMetricsCanvas(FigureCanvas):
                
         else:
            lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
-        if(len(MyIndMetricsCanvas.samplenames)<=32):
+        if(len(MyIndMetricsCanvas.samplenames)<=32 or len(MyIndMetricsCanvas.samplenames) == len(set(MyIndMetricsCanvas.samplenames))):
             MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
         else:
             figlegend = pylab.figure(figsize = (30,40))
