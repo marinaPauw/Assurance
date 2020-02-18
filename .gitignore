@@ -23,3 +23,5 @@ var/
 .vs/Assurance/v16/
 
 .vscode/
+
+*.pdf
