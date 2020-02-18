@@ -168,9 +168,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         #return
 
         if(len(Ui_MainWindow.NumericMetrics.iloc[:, 0]) < 4):
-            QMessageBox.about(self, "Warning:", "There are less than three\
-                              samples in the dataset. PCA will not be \
-                              performed.")
+            QMessageBox.about(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
             Ui_MainWindow.EnableButtons()
             return
 
@@ -179,10 +177,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         if(sampleToVariableRatio < 5):
             if(len(Ui_MainWindow.NumericMetrics.iloc[:, 0]) < 100):
                 QMessageBox.about(self, "Warning:",
-                                  "Consider consulting PCA literature to \
-                                  ascertain whether the ratio of sample \
-                                  size to number of variables is sufficient\
-                                  to perform PCA in this dataset.")
+                                  "Consider consulting PCA literature to ascertain whether the ratio of sample size to number of variables is sufficient to perform PCA in this dataset.")
 
         # Create PCA
 
