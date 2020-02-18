@@ -74,8 +74,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
     def GetSpectralCountsFile(Ui_MainWindow):
         inputFile, _ =QtWidgets. QFileDialog.getOpenFileName(
-            Ui_MainWindow.tab,"Select a spectral counts file from which to \
-            create the training set:", "","All Files (*)", options=\
+            Ui_MainWindow.tab,"Select a spectral counts file from which to create the training set:", "","All Files (*)", options=\
             QFileDialog.Options())
         return inputFile
     
@@ -100,20 +99,16 @@ class BrowseWindow(QtWidgets.QMainWindow):
             PCAInput = pd.DataFrame(myPIArray, columns=columnNames)
             metrics = PCAInput
             if(metrics.iloc[:, 0].count() < 2) :
-                QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:", 
-                                  "There are not enough samples in your file\
-                                  to conduct analysis. Please choose another\
-                                  file.")
+                QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"Error:", 
+                                  "There are not enough samples in your file to conduct analysis. Please choose another file.")
                 UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
             return metrics
 
         elif inputFile.endswith('.csv'):
             metrics = pd.DataFrame(pd.read_csv(inputFile, sep=","))
             if(metrics.iloc[:, 0].count() < 2):
-                QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                                  "There are not enough samples in your file\
-                                  to conduct analysis. Please choose another\
-                                  file.")
+                QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
+                                  "There are not enough samples in your file to conduct analysis. Please choose another file.")
                 UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
             return metrics
 
@@ -121,9 +116,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
             metrics = pd.DataFrame(pd.read_csv(inputFile, sep="\t"))
             if(metrics.iloc[:, 0].count() < 2):
                 QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                                  "There are not enough samples in your file\
-                                  to conduct analysis. Please choose another\
-                                  file.")
+                                  "There are not enough samples in your file to conduct analysis. Please choose another file.")
                 UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
             return metrics
 
@@ -133,10 +126,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(
                 UI_MainWindow.Ui_MainWindow)
        except json.decoder.JSONDecodeError:
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Message from \
-                             Assurance: ", "This file does not contain data \
-                             in the correct format. Please load a different \
-                             file.")
+            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Message from Assurance: ", "This file does not contain data in the correct format. Please load a different file.")
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(
                 UI_MainWindow.Ui_MainWindow)
 
@@ -151,10 +141,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
     def SpectralCountsFileMatchNames(self, spectralCounts):
         if(UI_MainWindow.Ui_MainWindow.metrics.iloc[:, 0] != spectralCounts.\
             iloc[:, 0]):
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:", "The\
-                              column first column of the spectral counts file\
-                              does not match that of the quality metrics \
-                              input file. Try again.")
+            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:", "Thefirst column of the spectral counts file does not match that of the quality metrics input file. Try again.")
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
     def SpectralCountsfiletypeCheck(inputFile):
@@ -171,20 +158,15 @@ class BrowseWindow(QtWidgets.QMainWindow):
             return spectralCounts
 
         else:
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message from \
-                Assurance: ", "Error: File type incorrect. Please load a \
-                    .json, .tsv or .csv file. Also please ensure that the \
-                        decimals are separated by '.'.")
-            UI_MainWindow.Ui_MainWindow.onLongitudinalClicked()
+            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message from Assurance: ", "Error: File type incorrect. Please load a .json, .tsv or .csv file. Also please ensure that the decimals are separated by '.'.")
+            UI_MainWindow.Ui_MainWindow.onLongitudinalClicked(UI_MainWindow.Ui_MainWindow)
 
     def SpectralCountsFileMatchNames(self, spectralCounts):
         for i in range(0, len(spectralCounts.iloc[:, 0])):
             if(UI_MainWindow.Ui_MainWindow.metrics.iloc[i, 0] !=
                spectralCounts.iloc[i, 0]):
-                QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                                  "The column first column of the spectral \
-                                  counts file does not match that of the\
-                                  quality metrics input file. Try again.")
+                QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
+                                  "The first column of the spectral counts file does not match that of the quality metrics input file. Try again.")
                 UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
     def CombineJSONs(self, inputFiles):

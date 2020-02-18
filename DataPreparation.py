@@ -66,10 +66,7 @@ class DataPrep(object):
         threshold = 0.01
         if (len(Nm.columns)) < 1:
             QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                              "After removing low variance columns, there\
-                                  were no columns left from which to conduct\
-                                       any sort of analysis. Please select \
-                                           another dataset.")
+                              "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
                                                         Ui_MainWindow)
 
@@ -82,10 +79,7 @@ class DataPrep(object):
         # Nm.drop(Nm.columns[dpIndex[i]],axis=1,inplace=True)
         if (len(Nm.columns)) < 1:
             QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                              "After removing low variance columns, there\
-                                   were no columns left from which to conduct\
-                                        any sort of analysis. Please select \
-                                            another dataset.")
+                              "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
                                                         Ui_MainWindow)
 
