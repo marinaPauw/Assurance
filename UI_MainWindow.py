@@ -385,8 +385,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.spectralCounts.PlotLabel = QtWidgets.QLabel(
             Ui_MainWindow.spectralCounts)
         Ui_MainWindow.spectralCounts.PlotLabel.setText(
-            "Spectral Counts Results - Please draw a rectangle over \
-            the samples you would like to select for the guide set:")
+            "Spectral Counts Results - Please draw a rectangle over the samples you would like to select for the guide set:")
         font = QtGui.QFont()
         font.setPointSize(18)
         hbox1.addWidget(Ui_MainWindow.spectralCounts.PlotLabel)
