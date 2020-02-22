@@ -274,10 +274,13 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         lw = 2
         Ui_MainWindow.tab.progress2.setValue(33)
         global iIndex
+        last=False
         for element in range(len(NumericMetrics.columns)):
             Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
             iIndex = self.addTab(Ui_MainWindow.indMetrics,
                                  NumericMetrics.columns[element])
+            if element == len(NumericMetrics.columns):
+                last = True
             vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.indMetrics)
             hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
             hbox1.addStretch()
