@@ -10,6 +10,7 @@ from sklearn import decomposition as sd
 from sklearn import preprocessing
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler, RobustScaler
+import matplotlib as mpl
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.widgets  import RectangleSelector
@@ -84,7 +85,10 @@ class MyIndMetricsCanvas(FigureCanvas):
                         MyIndMetricsCanvas.samplenames.append(temp)
         else:
             MyIndMetricsCanvas.samplenames = tableContainingRownames.iloc[:,0]
-
+        MyIndMetricsCanvas.ax.get_yaxis().get_major_formatter().set_scientific(False)
+        Ymax = table.iloc[:,element].max()
+        if Ymax > 10000:
+            MyIndMetricsCanvas.ax.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.0e'))
         #Find if there are duplicates in MyIndMetricsCanvas.samplenames (like n a swath/RT file for SwaMe)
         if(len(MyIndMetricsCanvas.samplenames) != len(set(MyIndMetricsCanvas.samplenames))):#duplicates present
             for iii in sampleSize:#If they are numeric values they should be strings
@@ -113,13 +117,16 @@ class MyIndMetricsCanvas(FigureCanvas):
               figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 4, borderaxespad=0.1 )
             else:
               figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 5, borderaxespad=0.1 )
-            MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
-            Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
+        if element == len(table.columns)-1:
+                MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
+                Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
         
         MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
         for tick in MyIndMetricsCanvas.ax.get_xticklabels():
             tick.set_rotation(90)
             tick.set_size(8)
+        for tick in MyIndMetricsCanvas.ax.get_yticklabels():
+            tick.set_rotation(90)
         FigureCanvas.__init__(self, MyIndMetricsCanvas.fig)
         #MyIndMetricsCanvas.setParent(parent)
 
