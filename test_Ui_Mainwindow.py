@@ -57,10 +57,10 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
         self.assertEqual(self.form.tab.Outliers.styleSheet(), "background-color: rgb(240,240,240);")
 
     def test_indmetricsbuttonbackgroundcolor(self):
-        self.assertEqual(self.form.tab.IndMetrics.styleSheet(), "background-color: rgb(240,240,240);")
+        self.assertEqual(self.form.tab.IndMetrics.styleSheet(), 'background-color:             rgb(240,240,240);')
 
     def test_longitudinalbuttonbackgroundcolor(self):
-        self.assertEqual(self.form.tab.Longitudinal.styleSheet(), "background-color: rgb(240,240,240);")
+        self.assertEqual(self.form.tab.Longitudinal.styleSheet(),'background-color:             rgb(240,240,240);')
 
     def test_filenameGeometry(self):
         self.assertEqual(self.form.filename.geometry(), QtCore.QRect(90, 120, 300, 20))
@@ -102,7 +102,7 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
         self.assertEqual(self.form.tab.Longitudinal.text(), "Longitudinal analysis")
 
     def test_Filename(self):
-        self.assertEqual(self.form.filename.text(), "   File...                         ")
+        self.assertEqual(self.form.filename.text(), '   File...                  ')
 
     def test_OutliersText(self):
         self.assertEqual(self.form.tab.Outliers.text(), "Detect Outliers")
@@ -125,7 +125,7 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
 
     # OnOutliersClicked
     def test_columnNumberWarningPCA(self):
-        self.form.metrics =  pd.DataFrame()
+        self.form.NumericMetrics = pd.DataFrame();
         self.assertWarns(UserWarning,self.form.checkColumnNumberForPCA())
 
 if __name__ == '__main__':
