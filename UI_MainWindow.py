@@ -305,16 +305,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.setCurrentIndex(iIndex)
 
     def checkColumnNumberForPCA(self):
-        if(len(Ui_MainWindow.NumericMetrics.columns) < 3):
-            QMessageBox.about(self, "Warning:", "There are less than three \
-                              numeric columns in the dataset. PCA will not \
-                              be performed.")
-
-    def enable_legend(metric):
-        IndividualMetrics.MyIndMetricsCanvas.ShowLegend(metric)
-
-    def disable_legend(metric):
-        IndividualMetrics.MyIndMetricsCanvas.HideLegend(metric)
+        if(len(self.NumericMetrics.columns) < 3):
+            QMessageBox.about(self, "Warning:", "There are less than three numeric columns in the dataset. PCA will not be performed.")
 
     @pyqtSlot()
     def onLongitudinalClicked(self):
