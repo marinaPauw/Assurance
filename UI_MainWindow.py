@@ -52,11 +52,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.tab.Outliers = QtWidgets.QPushButton(self.tab)
         self.tab.Outliers.setStyleSheet("background-color: rgb(240,240,240);")
         self.tab.IndMetrics = QtWidgets.QPushButton(self.tab)
-        self.tab.IndMetrics.setStyleSheet("background-color: \
-            rgb(240,240,240);")
+        self.tab.IndMetrics.setStyleSheet("background-color: rgb(240,240,240);")
         self.tab.Longitudinal = QtWidgets.QPushButton(self.tab)
-        self.tab.Longitudinal.setStyleSheet("background-color: \
-            rgb(240,240,240);")
+        self.tab.Longitudinal.setStyleSheet("background-color: rgb(240,240,240);")
         self.tab.browse.clicked.connect(self.onBrowseClicked)
         self.tab.Outliers.clicked.connect(self.onOutliersClicked)
         self.tab.IndMetrics.clicked.connect(self.onIndMetricsClicked)
@@ -164,13 +162,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
         # Check if you have the correct number of variables/samples
         Ui_MainWindow.checkColumnNumberForPCA(self)
+        Ui_MainWindow.checkSampleNumberForPCA(self)
         Ui_MainWindow.EnableButtons(self)
         #return
 
-        if(len(Ui_MainWindow.NumericMetrics.iloc[:, 0]) < 4):
-            QMessageBox.about(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
-            Ui_MainWindow.EnableButtons()
-            return
+        
 
         sampleToVariableRatio = PCA.PCA.\
             calculateSampleToVariableRatio(self, Ui_MainWindow.NumericMetrics)
@@ -305,10 +301,15 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.setCurrentIndex(iIndex)
 
     def checkColumnNumberForPCA(self):
-        if(len(Ui_MainWindow.NumericMetrics.columns) < 3):
-            QMessageBox.about(self, "Warning:", "There are less than three \
+        if(len(self.NumericMetrics.columns) < 3):
+            QMessageBox.warning(self, "Warning:", "There are less than three \
                               numeric columns in the dataset. PCA will not \
                               be performed.")
+
+    def checkSampleNumberForPCA(self):
+        if(len(self.NumericMetrics.index) < 4):
+            QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
+            
 
     def enable_legend(metric):
         IndividualMetrics.MyIndMetricsCanvas.ShowLegend(metric)
