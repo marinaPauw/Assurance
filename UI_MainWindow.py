@@ -139,10 +139,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         global metrics
         if inputFile:
             filepath = FileInput.BrowseWindow.FileCheck(inputFile)
-            Ui_MainWindow.metrics = FileInput.BrowseWindow.filetypeCheck(inputFile)
+            self.metrics = FileInput.BrowseWindow.filetypeCheck(inputFile)
             Ui_MainWindow.checkColumnLength(self)
-            Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
-            DataPreparation.DataPrep.ExtractNumericColumns(Ui_MainWindow.metrics)
+            self.metrics.set_index(self.metrics.iloc[:,0])
+            DataPreparation.DataPrep.ExtractNumericColumns(self.metrics)
             DataPreparation.DataPrep.RemoveLowVarianceColumns(Ui_MainWindow)
         Ui_MainWindow.EnableButtons(self)
         
@@ -181,7 +181,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.PCA = QtWidgets.QTabWidget()
         Ui_MainWindow.PCA.plotlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
         Ui_MainWindow.PCA.plotlabel.setGeometry(10, 500, 1000, 300)
-        Ui_MainWindow.PCA.PCAplot = PCAGraph.PCAGraph(Ui_MainWindow.metrics,
+        Ui_MainWindow.PCA.PCAplot = PCAGraph.PCAGraph(self.metrics,
                                                       PCA.plotdata)
 
         Ui_MainWindow.outlierlistLabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
@@ -284,7 +284,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
             hbox2.addStretch()
             indMetPlot = IndividualMetrics.MyIndMetricsCanvas(
-                    Ui_MainWindow.metrics,
+                    self.metrics,
                     Ui_MainWindow.NumericMetrics, element, False, False)
             hbox2.addWidget(indMetPlot)
             hbox2.addStretch()
@@ -365,12 +365,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         PCAGraph.annot.xyann = (PCA.plotdata[closestx[0], 0],
                                 PCA.plotdata[closestx[0], 1])
         samplenames = DataPreparation.DataPrep.FindRealSampleNames(
-            Ui_MainWindow, Ui_MainWindow.metrics.iloc[:, 0])
+            Ui_MainWindow, self.metrics.iloc[:, 0])
         if(len(samplenames) != len(set(samplenames))):
             # if there are duplicates in the filenames column like RTsegments
             # or per swath metrics
             sampleNameColumn1Combination = samplenames[closestx[0]] + "-" \
-                + str(Ui_MainWindow.metrics.iloc[closestx[0], 1])
+                + str(self.metrics.iloc[closestx[0], 1])
             text = sampleNameColumn1Combination.format(PCA.plotdata[
                                                        closestx[0], 0],
                                                        PCA.plotdata[
@@ -427,22 +427,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def CalculateOutliers(self):
         sampleSize = range(len(Ui_MainWindow.NumericMetrics.index))
         PCA.Distances = self.calculateDistanceMatrix(PCA.finalDf)
-        #PCA.Distances = pd.DataFrame(distance_matrix(
-        #    PCA.finalDf.values, PCA.finalDf.values, p=2),
-        #    index=PCA.finalDf.index, columns=PCA.finalDf.index)
-        print(PCA.Distances)
-        medianDistances = pd.DataFrame()
         Ui_MainWindow.tab.progress1.setValue(60)
-        medianDistances["Filename"] = Ui_MainWindow.metrics.iloc[:, 0]
-        medianDistances["MedianDistance"] = 'default value'
-        for iterator in sampleSize:
-            medianDistances["MedianDistance"][iterator] = np.percentile(
-                PCA.Distances[iterator], 50)
-        print(medianDistances)
-        Q1 = np.percentile(medianDistances["MedianDistance"], 25)
-        Q3 = np.percentile(medianDistances["MedianDistance"], 75)
-        IQR = Q3 - Q1
-        outlierDistance = Q3 + 1.5*IQR
+        self.metrics.index = self.metrics.iloc[:,0]
+        medianDistances = Ui_MainWindow.createMedianDistances(self, sampleSize)
+        outlierDistance = Ui_MainWindow.calculateOutLierDistances(self, medianDistances)
         Ui_MainWindow.tab.progress1.setValue(65)
 
         # Zscores:
@@ -457,6 +445,22 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.progress1.setValue(75)
         Outliers = medianDistances[medianDistances["outlier"]]
         return Outliers
+
+    def createMedianDistances(self, sampleSize):
+        medianDistances = pd.DataFrame()
+        medianDistances["Filename"] = self.metrics.index
+        medianDistances["MedianDistance"] = 'default value'
+        for iterator in sampleSize:
+            medianDistances["MedianDistance"][iterator] = np.percentile(
+                PCA.Distances[iterator], 50)
+        return medianDistances
+
+    def calculateOutLierDistances(self, medianDistances):
+        Q1 = np.percentile(medianDistances["MedianDistance"], 25)
+        Q3 = np.percentile(medianDistances["MedianDistance"], 75)
+        IQR = Q3 - Q1
+        outlierDistance = Q3 + 1.5*IQR
+        return outlierDistance
 
     @pyqtSlot()
     def onRandomForestClicked(self):
@@ -495,7 +499,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.RandomForest.predictionbtn.setEnabled(False)
         Ui_MainWindow.RandomForest.backbtn = QtWidgets.QPushButton('<-', self)
         Ui_MainWindow.RandomForest.backbtn.setEnabled(False)
-        for element in Ui_MainWindow.metrics.iloc[:, 0]:
+        for element in self.metrics.iloc[:, 0]:
             QtWidgets.QListWidgetItem(element,
                                       Ui_MainWindow.RandomForest.sourceList)
         hbox2.addWidget(Ui_MainWindow.RandomForest.sourceList)
