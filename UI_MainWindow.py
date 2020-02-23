@@ -426,9 +426,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def CalculateOutliers(self):
         sampleSize = range(len(Ui_MainWindow.NumericMetrics.index))
-        PCA.Distances = pd.DataFrame(distance_matrix(
-            PCA.finalDf.values, PCA.finalDf.values, p=2),
-            index=PCA.finalDf.index, columns=PCA.finalDf.index)
+        PCA.Distances = self.calculateDistanceMatrix(PCA.finalDf)
+        #PCA.Distances = pd.DataFrame(distance_matrix(
+        #    PCA.finalDf.values, PCA.finalDf.values, p=2),
+        #    index=PCA.finalDf.index, columns=PCA.finalDf.index)
         print(PCA.Distances)
         medianDistances = pd.DataFrame()
         Ui_MainWindow.tab.progress1.setValue(60)
@@ -524,6 +525,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             self.moveToPrediction)
         Ui_MainWindow.RandomForest.backbtn.clicked.connect(self.moveToSource)
         Ui_MainWindow.EnableButtons()
+
+    def calculateDistanceMatrix(self, df):
+        PCA.Distances = pd.DataFrame(distance_matrix(
+            df.values, df.values, p=2),
+            index=df.index, columns=df.index)
+        return PCA.Distances
 
     def moveToPrediction(self):
         items = Ui_MainWindow.RandomForest.items
