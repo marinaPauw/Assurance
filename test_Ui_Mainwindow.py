@@ -102,7 +102,7 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
         self.assertEqual(self.form.tab.Longitudinal.text(), "Longitudinal analysis")
 
     def test_Filename(self):
-        self.assertEqual(self.form.filename.text(), "   File...                         ")
+        self.assertEqual(self.form.filename.text(), "   File...                  ")
 
     def test_OutliersText(self):
         self.assertEqual(self.form.tab.Outliers.text(), "Detect Outliers")
