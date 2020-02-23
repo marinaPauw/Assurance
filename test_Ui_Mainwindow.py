@@ -148,7 +148,6 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
         
         medianDistances = pd.DataFrame( list(range(1,120)), columns = ["MedianDistance"])
         mD = self.form.calculateOutLierDistances( medianDistances)
-        mylist = list(range(1,120))
         self.assertEqual(mD,178)
 
 if __name__ == '__main__':
