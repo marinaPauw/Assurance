@@ -161,14 +161,14 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.progress1.setValue(10)
 
         # Check if you have the correct number of variables/samples
-        Ui_MainWindow.checkColumnNumberForPCA(self)
-        Ui_MainWindow.checkSampleNumberForPCA(self)
-        Ui_MainWindow.EnableButtons(self)
+        self.checkColumnNumberForPCA()
+        self.checkSampleNumberForPCA()
+        self.EnableButtons()
         
         sampleToVariableRatio = PCA.PCA.\
             calculateSampleToVariableRatio(self, Ui_MainWindow.NumericMetrics)
         
-        Ui_Mainwindow.checkSampleToVariableRatio(sampleToVariableRatio);
+        self.checkSampleToVariableRatio(sampleToVariableRatio);
        
         # Create PCA
 
