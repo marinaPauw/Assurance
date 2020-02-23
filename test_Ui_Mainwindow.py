@@ -132,5 +132,9 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
         self.form.NumericMetrics =  pd.DataFrame()
         self.assertWarns(UserWarning,self.form.checkSampleNumberForPCA())
 
+    def test_sampleToVariableRatio(self):
+        self.form.NumericMetrics =  pd.DataFrame()
+        self.assertWarns(UserWarning,self.form.checkSampleToVariableRatio(2))
+
 if __name__ == '__main__':
     unittest.main()

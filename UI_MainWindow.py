@@ -164,17 +164,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.checkColumnNumberForPCA(self)
         Ui_MainWindow.checkSampleNumberForPCA(self)
         Ui_MainWindow.EnableButtons(self)
-        #return
-
         
-
         sampleToVariableRatio = PCA.PCA.\
             calculateSampleToVariableRatio(self, Ui_MainWindow.NumericMetrics)
-        if(sampleToVariableRatio < 5):
-            if(len(Ui_MainWindow.NumericMetrics.iloc[:, 0]) < 100):
-                QMessageBox.about(self, "Warning:",
-                                  "Consider consulting PCA literature to ascertain whether the ratio of sample size to number of variables is sufficient to perform PCA in this dataset.")
-
+        
+        Ui_Mainwindow.checkSampleToVariableRatio(sampleToVariableRatio);
+       
         # Create PCA
 
         PCA.PCA.CreatePCAGraph(Ui_MainWindow.NumericMetrics)
@@ -310,6 +305,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         if(len(self.NumericMetrics.index) < 4):
             QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
             
+    def checkSampleToVariableRatio(self, sampleToVariableRatio):
+         if(sampleToVariableRatio < 5):
+            if(len(self.NumericMetrics.index) < 100):
+                QMessageBox.warning(self, "Warning:",
+                                  "Consider consulting PCA literature to ascertain whether the ratio of sample size to number of variables is sufficient to perform PCA in this dataset.")
+
 
     def enable_legend(metric):
         IndividualMetrics.MyIndMetricsCanvas.ShowLegend(metric)
