@@ -139,9 +139,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         global metrics
         if inputFile:
             filepath = FileInput.BrowseWindow.FileCheck(inputFile)
-            self.metrics = FileInput.BrowseWindow.filetypeCheck(inputFile)
+            Ui_MainWindow.metrics = FileInput.BrowseWindow.filetypeCheck(inputFile)
             Ui_MainWindow.checkColumnLength(self)
-            self.metrics.set_index(self.metrics.iloc[:,0])
+            Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
             DataPreparation.DataPrep.ExtractNumericColumns(self.metrics)
             DataPreparation.DataPrep.RemoveLowVarianceColumns(Ui_MainWindow)
         Ui_MainWindow.EnableButtons(self)
@@ -185,8 +185,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                                                       PCA.plotdata)
 
         Ui_MainWindow.outlierlistLabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        self.OutlierSamples = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        self.OutlierSamples.setAlignment(QtCore.Qt.AlignLeft)
+        Ui_MainWindow.OutlierSamples = QtWidgets.QLabel(Ui_MainWindow.PCA)
+        Ui_MainWindow.OutlierSamples.setAlignment(QtCore.Qt.AlignLeft)
 
         oIndex = self.addTab(Ui_MainWindow.PCA, "Outlier detection results")
         Ui_MainWindow.PCA.layout = QtWidgets.QVBoxLayout()
@@ -368,7 +368,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         PCAGraph.annot.xyann = (PCA.plotdata[closestx[0], 0],
                                 PCA.plotdata[closestx[0], 1])
         samplenames = DataPreparation.DataPrep.FindRealSampleNames(
-            Ui_MainWindow, self.metrics.iloc[:, 0])
+            Ui_MainWindow, Ui_MainWindow.metrics.iloc[:, 0])
         if(len(samplenames) != len(set(samplenames))):
             # if there are duplicates in the filenames column like RTsegments
             # or per swath metrics
