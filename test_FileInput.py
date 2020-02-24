@@ -24,11 +24,24 @@ import unittest
 
 class Test_test_FileInput(unittest.TestCase):
     def setUp(self):
-        self.inputFile = pd.read_csv("HeunisMetrics.tsv", sep="\t")
+        UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.filetypeCheck("HeunisMetrics.tsv")
+        UI_MainWindow.Ui_MainWindow.tab = QtWidgets.QWidget()
+        UI_MainWindow.Ui_MainWindow.tab.browse = QtWidgets.QPushButton(UI_MainWindow.Ui_MainWindow.tab)
+        UI_MainWindow.Ui_MainWindow.tab.Outliers = QtWidgets.QPushButton(UI_MainWindow.Ui_MainWindow.tab)
+        UI_MainWindow.Ui_MainWindow.tab.Longitudinal = QtWidgets.QPushButton(UI_MainWindow.Ui_MainWindow.tab)
+        UI_MainWindow.Ui_MainWindow.tab.IndMetrics = QtWidgets.QPushButton(UI_MainWindow.Ui_MainWindow.tab)
+        UI_MainWindow.Ui_MainWindow.filename = QtWidgets.QLabel(UI_MainWindow.Ui_MainWindow.tab)
+        column1 = list(range(1,40))
+        self.spectralCounts = pd.DataFrame()
+        self.spectralCounts = pd.DataFrame(columns=['A','B','C','D','E'], index=range(1, 6))
     
     def test_FileTypeCheck(self):
-        metrics = FileInput.BrowseWindow.filetypeCheck("HeunisMetrics.tsv")
-        self.assertTrue(len(metrics.columns)==51)
+        self.assertTrue(len(UI_MainWindow.Ui_MainWindow.metrics.columns)==51)
+    
+    def test_spectralcountsWarning(self):
+        #UI_MainWindow.Ui_MainWindow.metrics = UI_MainWindow.Ui_MainWindow.metrics
+        self.assertWarns(UserWarning, FileInput.BrowseWindow.SpectralCountsFileMatchNames(UI_MainWindow.Ui_MainWindow, self.spectralCounts))
 
+ 
 if __name__ == '__main__':
     unittest.main()

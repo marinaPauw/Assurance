@@ -117,7 +117,7 @@ class MyIndMetricsCanvas(FigureCanvas):
               figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 4, borderaxespad=0.1 )
             else:
               figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 5, borderaxespad=0.1 )
-        if element == len(table.columns)-1:
+            if element == len(table.columns)-1:
                 MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
                 Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
         

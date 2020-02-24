@@ -345,7 +345,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.spectralCounts = QtWidgets.QWidget()
             Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.spectralCounts,
                                                "Spectral Counts:")
-            self.CreateRandomForestTab(Ui_MainWindow)
+            self.CreateRandomForestTab()
             self.setCurrentIndex(Ui_MainWindow.sIndex)
 
     def onhover(event):
