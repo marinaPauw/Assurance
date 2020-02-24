@@ -136,7 +136,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
         try:
             return(open(path,'rb'))
         except IOError:
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow, "Message from Assurance: ",
+            QMessageBox.warning(UI_MainWindow.Ui_MainWindow, "Message from Assurance: ",
                               "Error loading file...")
             return 0
 
@@ -165,8 +165,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
     def SpectralCountsFileMatchNames(self, spectralCounts):
         for i in range(0, len(spectralCounts.iloc[:, 0])):
-            if(UI_MainWindow.Ui_MainWindow.metrics.iloc[i, 0] !=
-               spectralCounts.iloc[i, 0]):
+            if(UI_MainWindow.Ui_MainWindow.metrics.iloc[i, 0] != spectralCounts.iloc[i, 0]):
                 QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
                                   "The first column of the spectral counts file does not match that of the quality metrics input file. Try again.")
                 UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
