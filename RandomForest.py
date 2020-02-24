@@ -40,21 +40,13 @@ class RandomForest(FigureCanvas):
                         if(i<area[2]):
                             if(goodOrBad == "good"):
                                  if(UI_MainWindow.Ui_MainWindow.badpredictionList.count(table.iloc[i,0])>0):#This item is already part of the badpredictionlist
-                                         QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"You have selected the same sample for both groups. Please start over.")
-                                         UI_MainWindow.Ui_MainWindow.goodpredictionList.clear()
-                                         UI_MainWindow.Ui_MainWindow.badpredictionList.clear()
-                                         UI_MainWindow.Ui_MainWindow.spectralCounts.badbtn.setEnabled(True)
-                                         UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn.setEnabled(True)
+                                         self.GoodAndBadAreSame()
                                          return
                                  else:
                                          UI_MainWindow.Ui_MainWindow.goodpredictionList.append(table.iloc[i,0])
                             else:
                                  if(UI_MainWindow.Ui_MainWindow.goodpredictionList.count(table.iloc[i,0])>0):#This item is already part of the badpredictionlist
-                                         QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"You have selected the same sample for both groups. Please start over.")
-                                         UI_MainWindow.Ui_MainWindow.goodpredictionList.clear()
-                                         UI_MainWindow.Ui_MainWindow.badpredictionList.clear()
-                                         UI_MainWindow.Ui_MainWindow.spectralCounts.badbtn.setEnabled(True)
-                                         UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn.setEnabled(True)
+                                         self.GoodAndBadAreSame()
                                          return
                                  else:
                                          UI_MainWindow.Ui_MainWindow.badpredictionList.append(table.iloc[i,0])
@@ -71,7 +63,13 @@ class RandomForest(FigureCanvas):
                 RandomForest.createguideAndTestSet(RandomForest)
                 RandomForest.RunRandomForest(RandomForest)
                 QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"Your guideset consisted of the following desired samples: "+ str(UI_MainWindow.Ui_MainWindow.goodpredictionList).strip('[]')+ "and the following suboptimal samples: "+ str(UI_MainWindow.Ui_MainWindow.badpredictionList).strip('[]'))
-        
+    
+    def GoodAndBadAreSame(self):
+        QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"You have selected the same sample for both groups. Please start over.")
+        UI_MainWindow.Ui_MainWindow.goodpredictionList.clear()
+        UI_MainWindow.Ui_MainWindow.badpredictionList.clear()
+        UI_MainWindow.Ui_MainWindow.spectralCounts.badbtn.setEnabled(True)
+        UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn.setEnabled(True)
 
     def FindIndexes(self):
         RandomForest.goodguidesetIndexes = []
@@ -81,11 +79,7 @@ class RandomForest(FigureCanvas):
             RandomForest.guideSetDf = RandomForest.guideSetDf.append(UI_MainWindow.Ui_MainWindow.NumericMetrics.iloc[result[0][0]])
             RandomForest.goodguidesetIndexes.append(len(RandomForest.guideSetDf)-1) # Add the goods and bads to lists, then at the end we can allocate them
             if(RandomForest.listToDrop.count(result[0][0])>0):#This item is already part of the badpredictionlist
-                QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"You have selected the same sample for both groups. Please start over.")
-                UI_MainWindow.Ui_MainWindow.goodpredictionList.clear()
-                UI_MainWindow.Ui_MainWindow.badpredictionList.clear()
-                UI_MainWindow.Ui_MainWindow.spectralCounts.badbtn.setEnabled(True)
-                UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn.setEnabled(True) 
+                self.GoodAndBadAreSame()
             else:
                 RandomForest.listToDrop.append(result[0][0])
 
@@ -94,11 +88,7 @@ class RandomForest(FigureCanvas):
             RandomForest.guideSetDf = RandomForest.guideSetDf.append(UI_MainWindow.Ui_MainWindow.NumericMetrics.iloc[result[0][0]])
             RandomForest.badguidesetIndexes.append(len(RandomForest.guideSetDf)-1) # Add the goods and bads to lists, then at the end we can allocate them
             if(RandomForest.listToDrop.count(result[0][0])>0):#This item is already part of the badpredictionlist
-                QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"You have selected the same sample for both groups. Please start over.")
-                UI_MainWindow.Ui_MainWindow.goodpredictionList.clear()
-                UI_MainWindow.Ui_MainWindow.badpredictionList.clear()
-                UI_MainWindow.Ui_MainWindow.spectralCounts.badbtn.setEnabled(True)
-                UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn.setEnabled(True)
+                self.GoodAndBadAreSame()
             else:
                 RandomForest.listToDrop.append(result[0][0])
                 
