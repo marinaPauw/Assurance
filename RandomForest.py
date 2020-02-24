@@ -110,24 +110,21 @@ class RandomForest(FigureCanvas):
         RandomForest.testSetDf = RandomForest.testSetDf.drop(RandomForest.listToDrop)
         RandomForest.AllocateGoodOrBad(self)
        
-
-        
-
     def RunRandomForest(self):
         model = RandomForestClassifier(n_estimators = 100, max_depth=2)
-        model.fit(RandomForest.guideSetDf.loc[:,RandomForest.guideSetDf.columns !="GoodOrBad"],RandomForest.guideSetDf.loc[:,"GoodOrBad"])
+        model.fit(RandomForest.guideSetDf.loc[:,RandomForest.guideSetDf.columns !="GoodOrBad"], RandomForest.guideSetDf.loc[:,"GoodOrBad"])
         results = model.predict(RandomForest.testSetDf)
         get_indexes = lambda x, xs: [i for (y, i) in zip(xs, range(len(xs))) if x == y]
-        problems = get_indexes(0,results)
+        problems = get_indexes(0, results)
         problemSamples = []
         for i in range(len(problems)):
-            NMIndex = np.where(UI_MainWindow.Ui_MainWindow.NumericMetrics.iloc[:,0] ==RandomForest.testSetDf.iloc[problems[i],0])
+            NMIndex = np.where(UI_MainWindow.Ui_MainWindow.NumericMetrics.iloc[:,0] == RandomForest.testSetDf.iloc[problems[i],0])
             problemSamples.append(UI_MainWindow.Ui_MainWindow.metrics.iloc[ NMIndex[0][0],0])
         print(problems)
         if(len(problems)>0):
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Samples identified as suboptimal:" ,"The following samples have been identified as suboptimal: "+ str(problemSamples).strip('[]'))
+            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Samples identified as suboptimal:", "The following samples have been identified as suboptimal: "+ str(problemSamples).strip('[]'))
         else:
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"No samples identified as suboptimal:" ,"For the criteria given, with the given test and guide sets, no samples have been identified as suboptimal. "+ str(problemSamples).strip('[]'))
+            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"No samples identified as suboptimal:", "For the criteria given, with the given test and guide sets, no samples have been identified as suboptimal. "+ str(problemSamples).strip('[]'))
         
 
     def compute_initial_figure(self):
