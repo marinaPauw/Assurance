@@ -37,10 +37,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                                options=
                                                                QFileDialog.\
                                                                    Options())
-        BrowseWindow.checkFilesMakeSense(UI_MainWindow.Ui_MainWindow, inputFiles)
-        
-        
-    def checkFilesMakeSense(self, inputFiles):
+        #BrowseWindow.checkFilesMakeSense(UI_MainWindow.Ui_MainWindow, inputFiles)
         if(inputFiles):
             if(len(inputFiles) > 1):
                 justJSONFiles = True
@@ -75,7 +72,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
                      BrowseWindow.datasetname = inputFile
                 UI_MainWindow.Ui_MainWindow.filename.setText("   " + inputFile + "  ")
                 return inputFile
-
+        
+   
     def GetSpectralCountsFile(Ui_MainWindow):
         inputFile, _ =QtWidgets. QFileDialog.getOpenFileName(
             Ui_MainWindow.tab,"Select a spectral counts file from which to create the training set:", "","All Files (*)", options=\
