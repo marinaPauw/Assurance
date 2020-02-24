@@ -44,6 +44,9 @@
     <Compile Include="PCAGraph.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="test_DataPreparation.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="test_RandomForest.py">
       <SubType>Code</SubType>
     </Compile>
