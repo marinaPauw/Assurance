@@ -57,10 +57,10 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
         self.assertEqual(self.form.tab.Outliers.styleSheet(), "background-color: rgb(240,240,240);")
 
     def test_indmetricsbuttonbackgroundcolor(self):
-        self.assertEqual(self.form.tab.IndMetrics.styleSheet(), 'background-color:             rgb(240,240,240);')
+        self.assertEqual(self.form.tab.IndMetrics.styleSheet(), 'background-color: rgb(240,240,240);')
 
     def test_longitudinalbuttonbackgroundcolor(self):
-        self.assertEqual(self.form.tab.Longitudinal.styleSheet(),'background-color:             rgb(240,240,240);')
+        self.assertEqual(self.form.tab.Longitudinal.styleSheet(),'background-color: rgb(240,240,240);')
 
     def test_filenameGeometry(self):
         self.assertEqual(self.form.filename.geometry(), QtCore.QRect(90, 120, 300, 20))
@@ -145,10 +145,11 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
         self.assertTrue((firstrow == dist.iloc[:,0]).all())
 
     def test_calculateOutLierDistances(self):
-        
         medianDistances = pd.DataFrame( list(range(1,120)), columns = ["MedianDistance"])
         mD = self.form.calculateOutLierDistances( medianDistances)
         self.assertEqual(mD,178)
+
+    
 
 if __name__ == '__main__':
     unittest.main()

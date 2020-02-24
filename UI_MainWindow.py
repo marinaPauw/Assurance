@@ -185,8 +185,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                                                       PCA.plotdata)
 
         Ui_MainWindow.outlierlistLabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        Ui_MainWindow.OutlierSamples = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        Ui_MainWindow.OutlierSamples.setAlignment(QtCore.Qt.AlignLeft)
+        self.OutlierSamples = QtWidgets.QLabel(Ui_MainWindow.PCA)
+        self.OutlierSamples.setAlignment(QtCore.Qt.AlignLeft)
 
         oIndex = self.addTab(Ui_MainWindow.PCA, "Outlier detection results")
         Ui_MainWindow.PCA.layout = QtWidgets.QVBoxLayout()
@@ -345,7 +345,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.spectralCounts = QtWidgets.QWidget()
             Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.spectralCounts,
                                                "Spectral Counts:")
-            Ui_MainWindow.CreateRandomForestTab(Ui_MainWindow)
+            self.CreateRandomForestTab(Ui_MainWindow)
             self.setCurrentIndex(Ui_MainWindow.sIndex)
 
     def onhover(event):
@@ -539,16 +539,16 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         return PCA.Distances
 
     def moveToPrediction(self):
-        items = Ui_MainWindow.RandomForest.items
+        items = self.RandomForest.items
         for element in range(0, len(items)):
             QtWidgets.QListWidgetItem(items[element].text(),
-                                      Ui_MainWindow.
+                                      self.
                                       RandomForest.predictionList)
-        Ui_MainWindow.RandomForest.backbtn.setEnabled(True)
-        Ui_MainWindow.RandomForest.sourceList.setEnabled(True)
+        self.RandomForest.backbtn.setEnabled(True)
+        self.RandomForest.sourceList.setEnabled(True)
         if(len(items) > 0):
-            Ui_MainWindow.RandomForest.goodbtn.setEnabled(True)
-            Ui_MainWindow.RandomForest.badbtn.setEnabled(True)
+            self.RandomForest.goodbtn.setEnabled(True)
+            self.RandomForest.badbtn.setEnabled(True)
         return
 
     def moveToSource(self):
