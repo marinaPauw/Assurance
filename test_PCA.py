@@ -74,9 +74,6 @@ class Test_test_PCA(unittest.TestCase):
                     -0.30589803027120405,-0.7732937988172596,-0.21468298863546303,
                     -0.002679181306057446,0.5871969898715845,-0.12983956918128578]
 
-        with open('C:\\Users\\pauwmarina\\Desktop\\myfiletemp.tsv', 'wt') as out_file:
-            tsv_writer = csv.writer(out_file)
-            tsv_writer.writerow(PCA.finalDf.iloc[:,0])
         self.assertTrue((PCA.finalDf.iloc[:,0] == firstrow).all() )
 
 if __name__ == '__main__':
