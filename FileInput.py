@@ -37,6 +37,10 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                                options=
                                                                QFileDialog.\
                                                                    Options())
+        BrowseWindow.checkFilesMakeSense(UI_MainWindow.Ui_MainWindow, inputFiles)
+        
+        
+    def checkFilesMakeSense(self, inputFiles):
         if(inputFiles):
             if(len(inputFiles) > 1):
                 justJSONFiles = True
