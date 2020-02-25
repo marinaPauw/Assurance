@@ -27,11 +27,11 @@ class RandomForest(FigureCanvas):
     def computeSelectedSamplesFromArea(self, goodOrBad):
         #The format is x1, y1, x2, y2: left, bottom, right, top
         if(goodOrBad == "good"):
-            UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn.setEnabled(False)
+            UI_MainWindow.Ui_MainWindow.TrainingSet.goodbtn.setEnabled(False)
         else:
-            UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn.setEnabled(False)
+            UI_MainWindow.Ui_MainWindow.TrainingSet.goodbtn.setEnabled(False)
 
-        table = UI_MainWindow.Ui_MainWindow.spectralCountTable
+        table = UI_MainWindow.Ui_MainWindow.TrainingSetTable
         area = UI_MainWindow.Ui_MainWindow.predictionArea
         for i in range(0,len(table.index)):
             if(table.iloc[i,1]>area[1]):
@@ -53,10 +53,10 @@ class RandomForest(FigureCanvas):
 
         if(len(UI_MainWindow.Ui_MainWindow.goodpredictionList)>0):
                   UI_MainWindow.Ui_MainWindow.goodPredicted=True
-                  UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn.setEnabled(False)
+                  UI_MainWindow.Ui_MainWindow.TrainingSet.goodbtn.setEnabled(False)
         if(len(UI_MainWindow.Ui_MainWindow.badpredictionList)>0):
                   UI_MainWindow.Ui_MainWindow.badPredicted=True
-                  UI_MainWindow.Ui_MainWindow.spectralCounts.badbtn.setEnabled(False)
+                  UI_MainWindow.Ui_MainWindow.TrainingSet.badbtn.setEnabled(False)
 
         if(UI_MainWindow.Ui_MainWindow.goodPredicted):
             if(UI_MainWindow.Ui_MainWindow.badPredicted):
@@ -68,8 +68,8 @@ class RandomForest(FigureCanvas):
         QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"You have selected the same sample for both groups. Please start over.")
         UI_MainWindow.Ui_MainWindow.goodpredictionList.clear()
         UI_MainWindow.Ui_MainWindow.badpredictionList.clear()
-        UI_MainWindow.Ui_MainWindow.spectralCounts.badbtn.setEnabled(True)
-        UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn.setEnabled(True)
+        UI_MainWindow.Ui_MainWindow.TrainingSet.badbtn.setEnabled(True)
+        UI_MainWindow.Ui_MainWindow.TrainingSet.goodbtn.setEnabled(True)
 
     def FindIndexes(self):
         RandomForest.goodguidesetIndexes = []

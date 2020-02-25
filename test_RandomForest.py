@@ -29,15 +29,15 @@ class Test_RandomForest(unittest.TestCase):
         UI_MainWindow.Ui_MainWindow.goodpredictionList = list(range(1,120))
         UI_MainWindow.Ui_MainWindow.badpredictionList = list(range(1,120))
         UI_MainWindow.Ui_MainWindow.tab = QtWidgets.QWidget()
-        UI_MainWindow.Ui_MainWindow.spectralCounts = QtWidgets.QWidget()
-        UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn = QtWidgets.QPushButton(
-            'This is my selection for desired spectral counts.',
-            UI_MainWindow.Ui_MainWindow.spectralCounts)
-        UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn.setEnabled(False)
-        UI_MainWindow.Ui_MainWindow.spectralCounts.badbtn = QtWidgets.QPushButton(
-            'This is my selection for suboptimal spectral counts.',
-            UI_MainWindow.Ui_MainWindow.spectralCounts)
-        UI_MainWindow.Ui_MainWindow.spectralCounts.badbtn.setEnabled(False)
+        UI_MainWindow.Ui_MainWindow.TrainingSet = QtWidgets.QWidget()
+        UI_MainWindow.Ui_MainWindow.TrainingSet.goodbtn = QtWidgets.QPushButton(
+            'This is my selection for desired quality.',
+            UI_MainWindow.Ui_MainWindow.TrainingSet)
+        UI_MainWindow.Ui_MainWindow.TrainingSet.goodbtn.setEnabled(False)
+        UI_MainWindow.Ui_MainWindow.TrainingSet.badbtn = QtWidgets.QPushButton(
+            'This is my selection for suboptimal quality.',
+            UI_MainWindow.Ui_MainWindow.TrainingSet)
+        UI_MainWindow.Ui_MainWindow.TrainingSet.badbtn.setEnabled(False)
     
     
     def test_GoodAndBadAreSame_goodCleared(self):

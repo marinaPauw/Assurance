@@ -32,15 +32,15 @@ class Test_test_FileInput(unittest.TestCase):
         UI_MainWindow.Ui_MainWindow.tab.IndMetrics = QtWidgets.QPushButton(UI_MainWindow.Ui_MainWindow.tab)
         UI_MainWindow.Ui_MainWindow.filename = QtWidgets.QLabel(UI_MainWindow.Ui_MainWindow.tab)
         column1 = list(range(1,40))
-        self.spectralCounts = pd.DataFrame()
-        self.spectralCounts = pd.DataFrame(columns=['A','B','C','D','E'], index=range(1, 6))
+        self.TrainingSet = pd.DataFrame()
+        self.TrainingSet = pd.DataFrame(columns=['A','B','C','D','E'], index=range(1, 6))
     
     def test_FileTypeCheck(self):
         self.assertTrue(len(UI_MainWindow.Ui_MainWindow.metrics.columns)==51)
     
-    def test_spectralcountsWarning(self):
+    def test_TrainingSetWarning(self):
         #UI_MainWindow.Ui_MainWindow.metrics = UI_MainWindow.Ui_MainWindow.metrics
-        self.assertWarns(UserWarning, FileInput.BrowseWindow.SpectralCountsFileMatchNames(UI_MainWindow.Ui_MainWindow, self.spectralCounts))
+        self.assertWarns(UserWarning, FileInput.BrowseWindow.TrainingSetFileMatchNames(UI_MainWindow.Ui_MainWindow, self.TrainingSet))
 
  
 if __name__ == '__main__':

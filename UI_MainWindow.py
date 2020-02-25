@@ -332,20 +332,19 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
         # InputtingFile:
         QMessageBox.about(Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
-                          "You will be asked to select a separated value file (.tsv or .csv) containing two columns. The first should contain the filename and the second the spectral counts. From the corresponding graph you will select which samples are to be used for the guide set.")
+                          "You will be asked to select a separated value file (.tsv or .csv) containing two columns. The first should contain the filename and the second the metric on which you would like to separate good quality data from bad, for example ID's. From the corresponding graph you will select which samples are to be used for the guide set.")
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, Ui_MainWindow)
-        spectralCountsFile = FileInput.BrowseWindow.GetSpectralCountsFile(
-            Ui_MainWindow)
-        if spectralCountsFile:
-            filepath = FileInput.BrowseWindow.SpectralCountsfiletypeCheck(
-                spectralCountsFile)
-            Ui_MainWindow.spectralCountTable = \
-                FileInput.BrowseWindow.metricsParsing(spectralCountsFile)
-            Ui_MainWindow.spectralCounts = QtWidgets.QWidget()
-            Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.spectralCounts,
-                                               "Spectral Counts:")
+        TrainingSetFile = FileInput.BrowseWindow.GetTrainingSetFile(Ui_MainWindow)
+        if TrainingSetFile:
+            filepath = FileInput.BrowseWindow.TrainingSetParse(
+                TrainingSetFile)
+            Ui_MainWindow.TrainingSetTable = \
+                FileInput.BrowseWindow.metricsParsing(TrainingSetFile)
+            Ui_MainWindow.TrainingSet = QtWidgets.QTabWidget()
+            Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingSet,"Setting up the guide set:")
             self.CreateRandomForestTab()
             self.setCurrentIndex(Ui_MainWindow.sIndex)
+        Ui_MainWindow.EnableButtons(self)
 
     def onhover(event):
         vis = PCAGraph.annot.get_visible()
@@ -385,45 +384,45 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def CreateRandomForestTab(self):
         # Create the tab which will contain the graph:
-        spectralCountsPlot = IndividualMetrics.MyIndMetricsCanvas(
-            Ui_MainWindow.spectralCountTable, Ui_MainWindow.spectralCountTable,
+        TrainingSetPlot = IndividualMetrics.MyIndMetricsCanvas(
+            Ui_MainWindow.TrainingSetTable, Ui_MainWindow.TrainingSetTable,
             1, True)  # element = column index used for the y-value
-        vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.spectralCounts)
-        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.spectralCounts)
+        vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingSet)
+        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingSet)
         hbox1.addStretch()
-        Ui_MainWindow.spectralCounts.PlotLabel = QtWidgets.QLabel(
-            Ui_MainWindow.spectralCounts)
-        Ui_MainWindow.spectralCounts.PlotLabel.setText(
-            "Spectral Counts Results - Please draw a rectangle over the samples you would like to select for the guide set:")
+        Ui_MainWindow.TrainingSet.PlotLabel = QtWidgets.QLabel(
+            Ui_MainWindow.TrainingSet)
+        Ui_MainWindow.TrainingSet.PlotLabel.setText(
+            "Graph of input data - Please draw a rectangle over the samples you would like to select for the guide set:")
         font = QtGui.QFont()
         font.setPointSize(18)
-        hbox1.addWidget(Ui_MainWindow.spectralCounts.PlotLabel)
+        hbox1.addWidget(Ui_MainWindow.TrainingSet.PlotLabel)
         hbox1.addStretch()
         vbox.addLayout(hbox1)
-        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.spectralCounts)
+        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingSet)
         hbox2.addStretch()
-        hbox2.addWidget(spectralCountsPlot)
+        hbox2.addWidget(TrainingSetPlot)
         hbox2.addStretch()
         vbox.addLayout(hbox2)
-        hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.spectralCounts)
+        hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingSet)
         hbox3.addStretch()
-        Ui_MainWindow.spectralCounts.goodbtn = QtWidgets.QPushButton(
-            'This is my selection for desired spectral counts.',
-            Ui_MainWindow.spectralCounts)
-        Ui_MainWindow.spectralCounts.goodbtn.setEnabled(False)
-        Ui_MainWindow.spectralCounts.badbtn = QtWidgets.QPushButton(
-            'This is my selection for suboptimal spectral counts.',
-            Ui_MainWindow.spectralCounts)
-        Ui_MainWindow.spectralCounts.badbtn.setEnabled(False)
-        hbox3.addWidget(Ui_MainWindow.spectralCounts.goodbtn)
-        hbox3.addWidget(Ui_MainWindow.spectralCounts.badbtn)
+        Ui_MainWindow.TrainingSet.goodbtn = QtWidgets.QPushButton(
+            'This is my selection for desired quality.',
+            Ui_MainWindow.TrainingSet)
+        Ui_MainWindow.TrainingSet.goodbtn.setEnabled(False)
+        Ui_MainWindow.TrainingSet.badbtn = QtWidgets.QPushButton(
+            'This is my selection for suboptimal quality.',
+            Ui_MainWindow.TrainingSet)
+        Ui_MainWindow.TrainingSet.badbtn.setEnabled(False)
+        hbox3.addWidget(Ui_MainWindow.TrainingSet.goodbtn)
+        hbox3.addWidget(Ui_MainWindow.TrainingSet.badbtn)
         hbox3.addStretch()
         vbox.addLayout(hbox3)
         vbox.addStretch()
 
         # Start prediction
-        Ui_MainWindow.spectralCounts.goodbtn.clicked.connect(lambda: RandomForest.RandomForest.computeSelectedSamplesFromArea(RandomForest.RandomForest, "good"))
-        Ui_MainWindow.spectralCounts.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeSelectedSamplesFromArea(RandomForest.RandomForest, "bad"))
+        Ui_MainWindow.TrainingSet.goodbtn.clicked.connect(lambda: RandomForest.RandomForest.computeSelectedSamplesFromArea(RandomForest.RandomForest, "good"))
+        Ui_MainWindow.TrainingSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeSelectedSamplesFromArea(RandomForest.RandomForest, "bad"))
 
     def CalculateOutliers(self):
         sampleSize = range(len(Ui_MainWindow.NumericMetrics.index))
@@ -463,73 +462,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         outlierDistance = Q3 + 1.5*IQR
         return outlierDistance
 
-    @pyqtSlot()
-    def onRandomForestClicked(self):
-        Ui_MainWindow.DisableButtons(self)
-        Ui_MainWindow.RandomForest = QtWidgets.QWidget()
-        Ui_MainWindow.RandomForest.heading = QtWidgets.QLabel(
-            Ui_MainWindow.RandomForest)
-        rFIndex = self.addTab(Ui_MainWindow.RandomForest, "Random Forest")
-
-        # Creating the layout:
-        vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.RandomForest)
-
-        hboxLabel = QtWidgets.QHBoxLayout(Ui_MainWindow.RandomForest)
-        hboxLabel.addStretch()
-        decisionLabel = QtWidgets.QLabel("Please choose which samples to use for the guide set:")
-        decisionLabel.setFont(Ui_MainWindow.boldfont)
-        hboxLabel.addWidget(decisionLabel)
-        hboxLabel.addStretch()
-        vbox.addLayout(hboxLabel)
-
-        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.RandomForest)
-        hbox1.addWidget(QtWidgets.QLabel("Test set:"))
-        hbox1.addStretch()
-        hbox1.addWidget(QtWidgets.QLabel("guide set:"))
-        vbox.addLayout(hbox1)
-
-        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.RandomForest)
-        Ui_MainWindow.RandomForest.sourceList = QtWidgets.QListWidget()
-        Ui_MainWindow.RandomForest.sourceList.setSelectionMode(
-            QtWidgets.QAbstractItemView.ExtendedSelection)
-        Ui_MainWindow.RandomForest.predictionList = QtWidgets.QListWidget()
-        Ui_MainWindow.RandomForest.predictionList.setSelectionMode(
-            QtWidgets.QAbstractItemView.ExtendedSelection)
-        Ui_MainWindow.RandomForest.predictionbtn = QtWidgets.QPushButton(
-            '->', self)
-        Ui_MainWindow.RandomForest.predictionbtn.setEnabled(False)
-        Ui_MainWindow.RandomForest.backbtn = QtWidgets.QPushButton('<-', self)
-        Ui_MainWindow.RandomForest.backbtn.setEnabled(False)
-        for element in self.metrics.iloc[:, 0]:
-            QtWidgets.QListWidgetItem(element,
-                                      Ui_MainWindow.RandomForest.sourceList)
-        hbox2.addWidget(Ui_MainWindow.RandomForest.sourceList)
-        hbox2.addWidget(Ui_MainWindow.RandomForest.backbtn)
-        hbox2.addWidget(Ui_MainWindow.RandomForest.predictionbtn)
-        hbox2.addWidget(Ui_MainWindow.RandomForest.predictionList)
-        vbox.addLayout(hbox2)
-        vbox.addStretch()
-
-        hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.RandomForest)
-        hbox3.addStretch()
-        Ui_MainWindow.RandomForest.happybtn = QtWidgets.QPushButton(
-            'I am happy with my selection', self)
-        hbox3.addWidget(Ui_MainWindow.RandomForest.happybtn)
-        hbox3.addStretch()
-        vbox.addLayout(hbox3)
-        vbox.addStretch()
-
-        self.setCurrentIndex(rFIndex)
-
-        global items
-        Ui_MainWindow.RandomForest.items = \
-            self.RandomForest.sourceList.selectedItems()
-        Ui_MainWindow.RandomForest.sourceList.itemSelectionChanged.connect(
-            self.sourceSelectionChanged)
-        Ui_MainWindow.RandomForest.predictionbtn.clicked.connect(
-            self.moveToPrediction)
-        Ui_MainWindow.RandomForest.backbtn.clicked.connect(self.moveToSource)
-        Ui_MainWindow.EnableButtons()
+    
 
     def calculateDistanceMatrix(self, df):
         PCA.Distances = pd.DataFrame(distance_matrix(
