@@ -76,11 +76,13 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     return inputFile
         
    
-    def GetSpectralCountsFile(Ui_MainWindow):
-        inputFile, _ =QtWidgets. QFileDialog.getOpenFileName(
-            Ui_MainWindow.tab,"Select a spectral counts file from which to create the training set:", "","All Files (*)", options=\
-            QFileDialog.Options())
-        return inputFile
+    def GetTrainingSetFile(Ui_MainWindow):
+        possibleInputFile, _ =QtWidgets. QFileDialog.getOpenFileName(
+            Ui_MainWindow.tab,"Select a file from which to create the training set:", "","All Files (*)", options = QFileDialog.Options())
+        if(possibleInputFile):
+            TrainingSetFile = BrowseWindow.TrainingSetFileTypeCheck(possibleInputFile)
+            if(TrainingSetFile):
+                return TrainingSetFile
     
     def fileTypeCheck(inputFile):
         if inputFile.endswith('.json') or inputFile.endswith('.csv') or inputFile.endswith('.tsv'):
@@ -146,34 +148,35 @@ class BrowseWindow(QtWidgets.QMainWindow):
                               "Error loading file...")
             return 0
 
-    def SpectralCountsFileMatchNames(self, spectralCounts):
-        if(UI_MainWindow.Ui_MainWindow.metrics.iloc[:, 0] != spectralCounts.\
-            iloc[:, 0]):
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:", "Thefirst column of the spectral counts file does not match that of the quality metrics input file. Try again.")
-            UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+    
+    def TrainingSetFileTypeCheck(inputFile):
+          if inputFile.endswith('.csv') or inputFile.endswith('.tsv'):
+            return inputFile
 
-    def SpectralCountsfiletypeCheck(inputFile):
-        if inputFile.endswith('.csv'):
-            spectralCounts = pd.DataFrame(pd.read_csv(inputFile, sep=","))
-            BrowseWindow.SpectralCountsFileMatchNames(BrowseWindow,
-                                                      spectralCounts)
-            return spectralCounts
-
-        elif inputFile.endswith('.tsv'):
-            spectralCounts = pd.DataFrame(pd.read_csv(inputFile, sep="\t"))
-            BrowseWindow.SpectralCountsFileMatchNames(BrowseWindow,
-                                                      spectralCounts)
-            return spectralCounts
-
-        else:
+          else:
             QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message from Assurance: ", "Error: File type incorrect. Please load a .json, .tsv or .csv file. Also please ensure that the decimals are separated by '.'.")
             UI_MainWindow.Ui_MainWindow.onLongitudinalClicked(UI_MainWindow.Ui_MainWindow)
 
-    def SpectralCountsFileMatchNames(self, spectralCounts):
-        for i in range(0, len(spectralCounts.iloc[:, 0])):
-            if(UI_MainWindow.Ui_MainWindow.metrics.iloc[i, 0] != spectralCounts.iloc[i, 0]):
+            
+    def TrainingSetParse(inputFile):
+        if inputFile.endswith('.csv'):
+            TrainingSet = pd.DataFrame(pd.read_csv(inputFile, sep=","))
+            BrowseWindow.TrainingSetFileMatchNames(BrowseWindow,
+                                                      TrainingSet)
+            return TrainingSet
+
+        elif inputFile.endswith('.tsv'):
+            TrainingSet = pd.DataFrame(pd.read_csv(inputFile, sep="\t"))
+            BrowseWindow.TrainingSetFileMatchNames(BrowseWindow,
+                                                      TrainingSet)
+            return TrainingSet
+
+
+    def TrainingSetFileMatchNames(self, TrainingSet):
+        for i in range(0, len(TrainingSet.iloc[:, 0])):
+            if(UI_MainWindow.Ui_MainWindow.metrics.iloc[i, 0] != TrainingSet.iloc[i, 0]):
                 QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                                  "The first column of the spectral counts file does not match that of the quality metrics input file. Try again.")
+                                  "The first column of the  file does not match that of the quality metrics input file. Try again.")
                 UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
     def CombineJSONs(self, inputFiles):

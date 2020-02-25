@@ -33,8 +33,8 @@ class MyIndMetricsCanvas(FigureCanvas):
         x2, y2 = erelease.xdata, erelease.ydata
         print("(%3.2f, %3.2f) --> (%3.2f, %3.2f)" % (x1, y1, x2, y2))
         UI_MainWindow.Ui_MainWindow.predictionArea = [x1, y1, x2, y2]
-        UI_MainWindow.Ui_MainWindow.spectralCounts.goodbtn.setEnabled(True)
-        UI_MainWindow.Ui_MainWindow.spectralCounts.badbtn.setEnabled(True)
+        UI_MainWindow.Ui_MainWindow.TrainingSet.goodbtn.setEnabled(True)
+        UI_MainWindow.Ui_MainWindow.TrainingSet.badbtn.setEnabled(True)
 
     def toggle_selector(event):
         print(' Key pressed.')
