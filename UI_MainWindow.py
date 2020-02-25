@@ -139,19 +139,18 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         global metrics
         if inputFile:
             filepath = FileInput.BrowseWindow.FileCheck(inputFile)
-            Ui_MainWindow.metrics = FileInput.BrowseWindow.filetypeCheck(inputFile)
+            Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(inputFile)
             Ui_MainWindow.checkColumnLength(self)
             Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
             DataPreparation.DataPrep.ExtractNumericColumns(self.metrics)
-            DataPreparation.DataPrep.RemoveLowVarianceColumns(Ui_MainWindow)
+            DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
         Ui_MainWindow.EnableButtons(self)
         
     def checkColumnLength(self):
        if(len(self.metrics.columns)<1):
                 QMessageBox.warning(self.tab,"Error:" ,"After removing low variance columns, there were no columns left from which to conduct any sort of analysis.")
                 self.onBrowseClicked()
-       else:
-          return
+      
 
     @pyqtSlot()
     def onOutliersClicked(self):
@@ -341,7 +340,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             filepath = FileInput.BrowseWindow.SpectralCountsfiletypeCheck(
                 spectralCountsFile)
             Ui_MainWindow.spectralCountTable = \
-                FileInput.BrowseWindow.filetypeCheck(spectralCountsFile)
+                FileInput.BrowseWindow.metricsParsing(spectralCountsFile)
             Ui_MainWindow.spectralCounts = QtWidgets.QWidget()
             Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.spectralCounts,
                                                "Spectral Counts:")
