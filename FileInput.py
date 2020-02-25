@@ -31,18 +31,17 @@ class BrowseWindow(QtWidgets.QMainWindow):
     def GetInputFile(Ui_MainWindow):
         files = QtWidgets. QFileDialog()
         files.setFileMode(QFileDialog.ExistingFiles)
-        inputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(Ui_MainWindow.tab, 
+        possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(Ui_MainWindow.tab, 
                                                                "Browse", "",
                                                                "All Files (*)", 
                                                                options=
                                                                QFileDialog.\
                                                                    Options())
-        #BrowseWindow.checkFilesMakeSense(UI_MainWindow.Ui_MainWindow, inputFiles)
-        if(inputFiles):
-            if(len(inputFiles) > 1):
+        if(possibleinputFiles):
+            if(len(possibleinputFiles) > 1):
                 justJSONFiles = True
-                for file in inputFiles:
-                   if(".json" not in file):
+                for possiblefile in possibleinputFiles:
+                   if(".json" not in possiblefile):
                        justJSONFiles = False
                 if not justJSONFiles :
                     QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,
@@ -50,6 +49,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
                 if(justJSONFiles==True):
+                   inputFiles = possibleInputFiles
                    UI_MainWindow.Ui_MainWindow.metrics =  \
                        FileInput.BrowseWindow.CombineJSONs(
                            UI_MainWindow.Ui_MainWindow, inputFiles)
@@ -60,18 +60,20 @@ class BrowseWindow(QtWidgets.QMainWindow):
                    DataPreparation.DataPrep.RemoveLowVarianceColumns(
                        UI_MainWindow.Ui_MainWindow)
             else:
-                inputFile = inputFiles[0]
-                counter = inputFile.count('.') 
-                if(counter==1):# .mzML
-                     BrowseWindow.datasetname,throw = inputFile.split('.')
-                elif(counter==2):#If the program lists .wiff.scan
-                     BrowseWindow.datasetname,throw,throw = inputFile.split('.')
-                elif(counter==3):
-                     BrowseWindow.datasetname,throw,throw,throw = inputFile.split('.')
-                else:
-                     BrowseWindow.datasetname = inputFile
-                UI_MainWindow.Ui_MainWindow.filename.setText("   " + inputFile + "  ")
-                return inputFile
+                possibleinputFile = possibleinputFiles[0]
+                inputFile = BrowseWindow.fileTypeCheck(possibleinputFile)
+                if(inputFile):
+                    counter = inputFile.count('.') 
+                    if(counter==1):# .mzML
+                         BrowseWindow.datasetname,throw = inputFile.split('.')
+                    elif(counter==2):#If the program lists .wiff.scan
+                         BrowseWindow.datasetname,throw,throw = inputFile.split('.')
+                    elif(counter==3):
+                         BrowseWindow.datasetname,throw,throw,throw = inputFile.split('.')
+                    else:
+                         BrowseWindow.datasetname = inputFile
+                    UI_MainWindow.Ui_MainWindow.filename.setText("   " + inputFile + "  ")
+                    return inputFile
         
    
     def GetSpectralCountsFile(Ui_MainWindow):
@@ -80,7 +82,15 @@ class BrowseWindow(QtWidgets.QMainWindow):
             QFileDialog.Options())
         return inputFile
     
-    def filetypeCheck(inputFile):
+    def fileTypeCheck(inputFile):
+        if inputFile.endswith('.json') or inputFile.endswith('.csv') or inputFile.endswith('.tsv'):
+            return inputFile
+        else:
+            QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
+                              "Message from Assurance: ", "Error: File type incorrect. Please load a.json, .tsv or .csv file. Also please ensure that the decimals are separated by '.'.")
+            UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+
+    def metricsParsing(inputFile):
        try:
         if inputFile.endswith('.json'):
             with open(inputFile) as f:
@@ -122,11 +132,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
             return metrics
 
-        else:
-            QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
-                              "Message from Assurance: ", "Error: File type incorrect. Please load a.json, .tsv or .csv file. Also please ensure that the decimals are separated by '.'.")
-            UI_MainWindow.Ui_MainWindow.onBrowseClicked(
-                UI_MainWindow.Ui_MainWindow)
+
        except json.decoder.JSONDecodeError:
             QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Message from Assurance: ", "This file does not contain data in the correct format. Please load a different file.")
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(
