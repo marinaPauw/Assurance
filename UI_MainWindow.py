@@ -147,7 +147,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.EnableButtons(self)
         
     def checkColumnLength(self):
-       if(len(self.metrics.columns)<1):
+       if(len(Ui_MainWindow.metrics.columns)<1):
                 QMessageBox.warning(self.tab,"Error:" ,"After removing low variance columns, there were no columns left from which to conduct any sort of analysis.")
                 self.onBrowseClicked()
       
