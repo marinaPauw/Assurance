@@ -344,7 +344,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingSet,"Setting up the guide set:")
             self.CreateRandomForestTab()
             self.setCurrentIndex(Ui_MainWindow.sIndex)
-        Ui_MainWindow.EnableButtons(self)
 
     def onhover(event):
         vis = PCAGraph.annot.get_visible()
