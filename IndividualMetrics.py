@@ -58,9 +58,10 @@ class MyIndMetricsCanvas(FigureCanvas):
 
         return unique_list
 
-    def __init__(self, tableContainingRownames, table,element, rectangleSelection,parent=None, width=25, height=5, dpi=100):
+    def __init__(self, tableContainingRownames, table,element, rectangleSelection,parent=None, width=25, height=8, dpi=100):
         MyIndMetricsCanvas.fig = Figure(figsize=(width, height), dpi=dpi)
         #self.axes = MyIndMetricsCanvas.fig.add_subplot(111)
+        MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
         sampleSize = range(len(table))
         MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
         plt.grid(color ="ghostwhite")
