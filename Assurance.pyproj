@@ -32,6 +32,9 @@
     <Compile Include="PCA.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="QuaMeter.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="RandomForest.py">
       <SubType>Code</SubType>
     </Compile>
@@ -42,6 +45,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PCAGraph.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SwaMe.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="test_DataPreparation.py">
