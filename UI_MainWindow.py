@@ -332,6 +332,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         # InputtingFile:
         QMessageBox.about(Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
                           "You will be asked to select a separated value file (.tsv or .csv) containing two columns. The first should contain the filename and the second the metric on which you would like to separate good quality data from bad, for example ID's. From the corresponding graph you will select which samples are to be used for the guide set.")
+        
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, Ui_MainWindow)
         TrainingSetFile = FileInput.BrowseWindow.GetTrainingSetFile(Ui_MainWindow)
         if TrainingSetFile:
