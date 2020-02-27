@@ -19,6 +19,7 @@ import datetime
 import matplotlib.pyplot as plt
 import re
 import FileInput
+import QuaMeter
 import IndividualMetrics
 import PCA
 import PCAGraph
@@ -26,6 +27,7 @@ import DataPreparation
 import RandomForest
 import numpy as np
 import pandas as pd
+import SwaMe
 from scipy.spatial import distance_matrix
 
 
@@ -59,6 +61,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.tab.IndMetrics.setStyleSheet("background-color: rgb(240,240,240);")
         self.tab.Longitudinal = QtWidgets.QPushButton(self.tab)
         self.tab.Longitudinal.setStyleSheet("background-color: rgb(240,240,240);")
+        self.tab.QuaMeterbutton.clicked.connect(self.onQuaMeterClicked)
+        self.tab.SwaMebutton.clicked.connect(self.onSwaMeClicked)
         self.tab.browse.clicked.connect(self.onBrowseClicked)
         self.tab.Outliers.clicked.connect(self.onOutliersClicked)
         self.tab.IndMetrics.clicked.connect(self.onIndMetricsClicked)
@@ -129,6 +133,17 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def disable_slot():
         PCAGraph.PCAGraph.loadingsToggledOff()
+
+    @pyqtSlot()
+    def onQuaMeterClicked(self):
+        Ui_MainWindow.DisableButtons(self)
+        QuaMeter.QuaMeter.setupUI(self)
+
+
+    @pyqtSlot()
+    def onSwaMeClicked(self):
+        Ui_MainWindow.DisableButtons(self)
+        SwaMe.SwaMe.setupUI(self)
 
     @pyqtSlot()
     def onBrowseClicked(self):
@@ -520,7 +535,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                                              "Individual metrics"))
         Ui_MainWindow.tab.Longitudinal.setText(_translate("MainWindow",
                                                "Longitudinal analysis"))
-        Ui_MainWindow.tab.browse.setText(_translate("MainWindow", "Browse for a quality metrics on this computer:"))
+        Ui_MainWindow.tab.browse.setText(_translate("MainWindow", "Browse: "))
         Ui_MainWindow.tab.QuaMeterbutton.setText(_translate("MainWindow", "Generate quality metrics with QuaMeter ID-Free"))
         Ui_MainWindow.tab.SwaMebutton.setText(_translate("MainWindow", "Generate quality metrics with SwaMe"))
         Ui_MainWindow.filename.setText(_translate("MainWindow", "   File...                  "))

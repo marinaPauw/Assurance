@@ -74,7 +74,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
                          BrowseWindow.datasetname = inputFile
                     UI_MainWindow.Ui_MainWindow.filename.setText("   " + inputFile + "  ")
                     return inputFile
-        
    
     def GetTrainingSetFile(Ui_MainWindow):
         possibleInputFile, _ =QtWidgets. QFileDialog.getOpenFileName(
@@ -147,7 +146,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
             QMessageBox.warning(UI_MainWindow.Ui_MainWindow, "Message from Assurance: ",
                               "Error loading file...")
             return 0
-
     
     def TrainingSetFileTypeCheck(inputFile):
           if inputFile.endswith('.csv') or inputFile.endswith('.tsv'):
@@ -156,7 +154,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
           else:
             QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message from Assurance: ", "Error: File type incorrect. Please load a .json, .tsv or .csv file. Also please ensure that the decimals are separated by '.'.")
             UI_MainWindow.Ui_MainWindow.onLongitudinalClicked(UI_MainWindow.Ui_MainWindow)
-
             
     def TrainingSetParse(inputFile):
         if inputFile.endswith('.csv'):
@@ -170,7 +167,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
             BrowseWindow.TrainingSetFileMatchNames(BrowseWindow,
                                                       TrainingSet)
             return TrainingSet
-
 
     def TrainingSetFileMatchNames(self, TrainingSet):
         for i in range(0, len(TrainingSet.iloc[:, 0])):
@@ -215,3 +211,70 @@ class BrowseWindow(QtWidgets.QMainWindow):
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(
                     UI_MainWindow.Ui_MainWindow)
         return Allmetrics
+
+    def QuaMeterFileTypeCheck(self, inputFile):
+        if inputFile.endswith('.wiff') or inputFile.endswith('.raw') or inputFile.endswith('.mzML'):
+            return inputFile
+        else:
+             QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
+                              "Message from Assurance: ", "Error: File type incorrect. Please load a .mzML, .wiff or .raw file.")
+             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+     
+        
+
+    def GetQuaMeterInputFiles(self):
+        possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(None, " Files for QuaMeter input", "", "mzML files (*.mzML)", 
+                                                               options=
+                                                               QFileDialog.\
+                                                                   Options())
+        if(possibleinputFiles):
+           inputFiles = [] 
+           if(len(possibleinputFiles) > 1):
+                for possiblefile in possibleinputFiles:
+                  inputFiles.append(BrowseWindow.QuaMeterFileTypeCheck(self, possiblefile))
+               
+           else:
+                possiblefile = possibleinputFiles[0]
+                inputFiles.append(BrowseWindow.QuaMeterFileTypeCheck(self, possiblefile))
+
+        if(inputFiles):
+            return inputFiles
+
+    def GetQuaMeterPath(self):
+        QuaMeterPath,_ = QtWidgets. QFileDialog.getOpenFileNames(None, "Please locate the QuaMeter exe on your system:", "", "exe files (*.exe)", 
+                                                               options=
+                                                               QFileDialog.\
+                                                                   Options())
+        if(QuaMeterPath):
+            return QuaMeterPath
+
+    def SwaMeFileTypeCheck(self, inputFile):
+        if inputFile.endswith('.mzML'):
+            return inputFile
+        else:
+             QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
+                              "Message from Assurance: ", "Error: File type incorrect. Please load a .mzML file.")
+             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+     
+    def GetSwaMeInputFile(self):
+        possibleinputFile,_ = QtWidgets. QFileDialog.getOpenFileName(None, " Input File for SwaMe:", "", "mzML files (*.mzML)", 
+                                                               options=
+                                                               QFileDialog.\
+                                                                   Options())
+        if(possibleinputFile):
+                inputFile= BrowseWindow.SwaMeFileTypeCheck(self, possibleinputFile)
+
+        if(inputFile):
+            return inputFile
+
+    def GetSwaMePath(self):
+        SwaMePath,_ = QtWidgets. QFileDialog.getOpenFileNames(None, "Please locate the SwaMe exe on your system:", "", "exe files (*.exe)", 
+                                                               options=
+                                                               QFileDialog.\
+                                                                   Options())
+        if(SwaMePath):
+            return SwaMePath
+   
+        
+
+
