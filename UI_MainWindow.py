@@ -35,7 +35,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def setupUi(self):
 
         self.setWindowTitle("Assurance")
-        self.showMaximized()
+        self.setFixedSize(1000, 800)
 
         # fonts and style:
         Ui_MainWindow.boldfont = QtGui.QFont()
@@ -47,81 +47,252 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.tab.main_layout = QtWidgets.QVBoxLayout()
         self.addTab(self.tab, "Home")
         self.tab.setStyleSheet("background-color: gainsboro;")
+
+         #--------------------------------------------------------------Frames:-------------------------------------------------------
+        Ui_MainWindow.tab.UploadFrame = QFrame(self)
+        Ui_MainWindow.tab.UploadFrame.setFrameShape(QFrame.StyledPanel)
+        Ui_MainWindow.tab.UploadFrame.setFrameShadow(QFrame.Raised)
+        Ui_MainWindow.tab.UploadFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
+         
+         
+        Ui_MainWindow.tab.UploadFrame.leftFrame = QFrame(Ui_MainWindow.tab.UploadFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.setFrameShape(QFrame.StyledPanel)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.setFrameShadow(QFrame.Raised)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.setStyleSheet("background-color: rgb(192,192,192); margin:5px;")
         
-        #All the buttons:
-        self.tab.QuaMeterbutton = QtWidgets.QPushButton(self.tab)
-        self.tab.QuaMeterbutton.setStyleSheet("background-color: rgb(240,240,240);")
-        self.tab.SwaMebutton = QtWidgets.QPushButton(self.tab)
-        self.tab.SwaMebutton.setStyleSheet("background-color: rgb(240,240,240);")
-        self.tab.browse = QtWidgets.QPushButton(self.tab)
-        self.tab.browse.setStyleSheet("background-color: rgb(240,240,240);")
-        self.tab.Outliers = QtWidgets.QPushButton(self.tab)
-        self.tab.Outliers.setStyleSheet("background-color: rgb(240,240,240);")
-        self.tab.IndMetrics = QtWidgets.QPushButton(self.tab)
-        self.tab.IndMetrics.setStyleSheet("background-color: rgb(240,240,240);")
-        self.tab.Longitudinal = QtWidgets.QPushButton(self.tab)
-        self.tab.Longitudinal.setStyleSheet("background-color: rgb(240,240,240);")
-        self.tab.QuaMeterbutton.clicked.connect(self.onQuaMeterClicked)
-        self.tab.SwaMebutton.clicked.connect(self.onSwaMeClicked)
-        self.tab.browse.clicked.connect(self.onBrowseClicked)
-        self.tab.Outliers.clicked.connect(self.onOutliersClicked)
-        self.tab.IndMetrics.clicked.connect(self.onIndMetricsClicked)
-        self.tab.Longitudinal.clicked.connect(self.onLongitudinalClicked)
+
+        Ui_MainWindow.tab.UploadFrame.rightFrame = QFrame(Ui_MainWindow.tab.UploadFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.setFrameShape(QFrame.StyledPanel)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.setFrameShadow(QFrame.Raised)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.setStyleSheet("background-color: rgb(192,192,192); margin:5px;")
+
+        
+        Ui_MainWindow.tab.AnalysisFrame = QFrame(self)
+        Ui_MainWindow.tab.AnalysisFrame.setFrameShape(QFrame.StyledPanel)
+        Ui_MainWindow.tab.AnalysisFrame.setFrameShadow(QFrame.Raised)
+        Ui_MainWindow.tab.AnalysisFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
+
+
+        #-------------------------------------------------QuaMeterLayout--------------------------------------------------------
+        
+        #Widget declaring:
+        Ui_MainWindow.tab.UploadFrame.leftFrame.QuaMeterbutton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.QuaMeterbutton.setStyleSheet("background-color: rgb(240,240,240);")
+        Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.files = QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.fileList = QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.cpusLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CLOLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame) 
+        Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.Dir = QtWidgets.QRadioButton("Whole Directory")
+        
+
+        #Widget stylesheets:
+        Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.setStyleSheet("background-color: rgb(240,240,240);")
+
+        #Widget texts:
+        Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.setText("Browse ")
+        Ui_MainWindow.tab.UploadFrame.leftFrame.files.setText("File:")
+        Ui_MainWindow.tab.UploadFrame.leftFrame.cpusLabel.setText("Number of CPU's: ")
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CLOLabel.setText("Chromatogram Lower Offset:")
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel.setText("Chromatogram Upper Offset:")
+        Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton.setText("RUN")
+
+
+        #QuaMetervbox:
+        #Layout:
+        QuaMetervbox = QtWidgets.QVBoxLayout(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        hbox0 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        hbox0.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.QuaMeterbutton)
+        QuaMetervbox.addLayout(hbox0)
+        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Qvbox2 = QtWidgets.QVBoxLayout(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Qvbox2.addWidget( Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton)
+        QhboxFiles = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        QhboxFiles.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.files)     
+        QhboxFiles.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.fileList)
+        Qvbox2.addLayout(QhboxFiles)
+        hbox1.addLayout(Qvbox2)
+        hbox1.addStretch()
+        QuaMetervbox.addLayout(hbox1)
+
+        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        hbox2.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.cpusLabel)
+        hbox2.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox)
+        QuaMetervbox.addLayout(hbox2)
+        hbox3 = QtWidgets.QHBoxLayout()
+        hbox3.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.CLOLabel)
+        hbox3.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox)
+        hbox3.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel)
+        hbox3.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox)
+        QuaMetervbox.addLayout(hbox3)
+        hboxdir = QtWidgets.QHBoxLayout()
+        hboxdir.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.Dir)
+        QuaMetervbox.addLayout(hboxdir)
+        hbox4 = QtWidgets.QHBoxLayout()
+        hbox4.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton)
+        QuaMetervbox.addLayout(hbox4)
+
+        #-------------------------------------------------SwaMeLayout--------------------------------------------------------
+
+        #Widget declaring:
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SwaMebutton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.Sfiles = QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SfileList = QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.divisionLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.divisionTextBox= QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.MTLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        
+
+        #Widget stylesheets:
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setStyleSheet("background-color: rgb(240,240,240);")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SwaMebutton.setStyleSheet("background-color: rgb(240,240,240);")
+
+        #Widget texts:
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setText("Browse ")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.Sfiles.setText("File: ")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.divisionLabel.setText("Number of segments to divide the RT into: ")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.MTLabel.setText("MassTolerance:")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel.setText("RTTolerance:")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton.setText("RUN")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.Dir = QtWidgets.QRadioButton("Whole Directory")
+
+        
+        #Layout:
+        SwaMevbox = QtWidgets.QVBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMehbox0 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMehbox0.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.SwaMebutton)
+        SwaMevbox.addLayout(SwaMehbox0)
+        SwaMehbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMevbox2 = QtWidgets.QVBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMevbox2.addWidget( Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton)
+        SwaMehboxFiles = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMehboxFiles.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.Sfiles)     
+        SwaMehboxFiles.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.SfileList)
+        SwaMevbox2.addLayout(SwaMehboxFiles)
+        SwaMehbox1.addLayout(SwaMevbox2)
+        SwaMehbox1.addStretch()
+        SwaMevbox.addLayout(SwaMehbox1)
+        SwaMehbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMehbox2.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.divisionLabel)
+        SwaMehbox2.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.divisionTextBox)
+        SwaMevbox.addLayout(SwaMehbox2)
+        SwaMehbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMehbox3.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.MTLabel)
+        SwaMehbox3.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox)
+        SwaMehbox3.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel)
+        SwaMehbox3.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox)
+        SwaMevbox.addLayout(SwaMehbox3)
+        SwaMehbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMehbox4.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.Dir)
+        SwaMevbox.addLayout(SwaMehbox4)
+        SwaMehbox6 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMehbox6.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton)
+        SwaMevbox.addLayout(SwaMehbox6)
+
+        #-------------------------------------------------MainLayout--------------------------------------------------------
+          #All the buttons MainWindow:
+        Ui_MainWindow.tab.UploadFrame.browse = QtWidgets.QPushButton(self.tab)
+        Ui_MainWindow.tab.UploadFrame.browse.setStyleSheet("background-color: rgb(240,240,240);")
+        Ui_MainWindow.tab.AnalysisFrame.Outliers = QtWidgets.QPushButton(self.tab)
+        Ui_MainWindow.tab.AnalysisFrame.Outliers.setStyleSheet("background-color: rgb(240,240,240);")
+        Ui_MainWindow.tab.AnalysisFrame.IndMetrics = QtWidgets.QPushButton(self.tab)
+        Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setStyleSheet("background-color: rgb(240,240,240);")
+        Ui_MainWindow.tab.AnalysisFrame.Longitudinal = QtWidgets.QPushButton(self.tab)
+        Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setStyleSheet("background-color: rgb(240,240,240);")
+
+        #clicked.connect
+        Ui_MainWindow.tab.UploadFrame.leftFrame.QuaMeterbutton.clicked.connect(self.onQuaMeterClicked)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SwaMebutton.clicked.connect(self.onSwaMeClicked)
+        Ui_MainWindow.tab.UploadFrame.browse.clicked.connect(self.onBrowseClicked)
+        Ui_MainWindow.tab.AnalysisFrame.Outliers.clicked.connect(self.onOutliersClicked)
+        Ui_MainWindow.tab.AnalysisFrame.IndMetrics.clicked.connect(self.onIndMetricsClicked)
+        Ui_MainWindow.tab.AnalysisFrame.Longitudinal.clicked.connect(self.onLongitudinalClicked)
 
         # Labels and progressbars
-        Ui_MainWindow.filename = QtWidgets.QLabel(self.tab)
-        Ui_MainWindow.filename.setGeometry(QtCore.QRect(90, 120, 300, 20))
-        self.tab.uploadLabel = QtWidgets.QLabel()
-        self.tab.progress1 = QtWidgets.QProgressBar()
-        self.tab.progress1.setGeometry(200, 80, 250, 20)
-        self.tab.chooseLabel = QtWidgets.QLabel()
-        self.tab.progress2 = QtWidgets.QProgressBar()
-        self.tab.progress2.setGeometry(200, 80, 250, 20)
+        self.tab.UploadFrame.InstructionLabel = QtWidgets.QLabel()
+        self.tab.UploadFrame.InstructionLabel.setGeometry(QtCore.QRect(90, 120, 300, 10))
+        Ui_MainWindow.tab.UploadFrame.filename = QtWidgets.QLabel(self.tab)
+        Ui_MainWindow.tab.UploadFrame.filename.setGeometry(QtCore.QRect(90, 120, 300, 10))
+        Ui_MainWindow.tab.UploadFrame.InputLabel = QtWidgets.QLabel()
+        Ui_MainWindow.tab.UploadFrame.uploadLabel = QtWidgets.QLabel()
+        self.tab.AnalysisFrame.progress1 = QtWidgets.QProgressBar()
+        self.tab.AnalysisFrame.progress1.setGeometry(200, 80, 250, 20)
+        self.tab.AnalysisFrame.chooseLabel = QtWidgets.QLabel()
+        self.tab.AnalysisFrame.analysisLabel = QtWidgets.QLabel()
+        self.tab.AnalysisFrame.progress2 = QtWidgets.QProgressBar()
+        self.tab.AnalysisFrame.progress2.setGeometry(200, 80, 250, 20)
+        
+        #UploadFrame:
+        uploadvbox = QtWidgets.QVBoxLayout(Ui_MainWindow.tab.UploadFrame)
+        uploadvbox.addWidget(Ui_MainWindow.tab.UploadFrame.InputLabel)
+        Instructionshbox = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame)
+        Instructionshbox.addWidget(self.tab.UploadFrame.InstructionLabel)
+        Instructionshbox.setAlignment(QtCore.Qt.AlignLeft)
+        uploadvbox.addLayout(Instructionshbox)
+        QuaMehbox = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame)
+        QuaMehbox.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame,0)
+        QuaMehbox.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame,2)
+        uploadvbox.addLayout(QuaMehbox)
+        hbox7 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame)
+        hbox7.addWidget(Ui_MainWindow.tab.UploadFrame.uploadLabel)
+        hbox7.addWidget(Ui_MainWindow.tab.UploadFrame.filename)
+        hbox7.addWidget(Ui_MainWindow.tab.UploadFrame.browse)
+        Ui_MainWindow.tab.UploadFrame.browse.setFixedHeight(30)
+        uploadvbox.addLayout(hbox7)
 
-        vbox = QtWidgets.QVBoxLayout(self.tab)
-        vbox.addStretch()
-        hbox = QtWidgets.QHBoxLayout()
-        hbox.addWidget(Ui_MainWindow.tab.QuaMeterbutton)
-        hbox.addWidget(Ui_MainWindow.tab.SwaMebutton)
-        hbox.setAlignment(QtCore.Qt.AlignLeft)
-        vbox.addLayout(hbox)
+
+        #AnalysisFrame
+        avbox = QtWidgets.QVBoxLayout(Ui_MainWindow.tab.AnalysisFrame)
         hbox6 = QtWidgets.QHBoxLayout()
-        hbox6.addWidget(self.tab.uploadLabel)
+        hbox6.addWidget(self.tab.AnalysisFrame.analysisLabel)
         hbox6.setAlignment(QtCore.Qt.AlignLeft)
-        vbox.addLayout(hbox6)
-
-        hbox2 = QtWidgets.QHBoxLayout()
-        hbox2.addWidget(Ui_MainWindow.filename)
-        hbox2.addWidget(Ui_MainWindow.tab.browse)
-        Ui_MainWindow.tab.browse.setFixedHeight(30)
-        vbox.addLayout(hbox2)
-        hbox2.setAlignment(QtCore.Qt.AlignLeft)
-        hbox7 = QtWidgets.QHBoxLayout()
-        hbox7.addWidget(self.tab.chooseLabel)
-        hbox7.setAlignment(QtCore.Qt.AlignLeft)
-        vbox.addLayout(hbox7)
-        hbox3 = QtWidgets.QHBoxLayout()
-        vbox.setSpacing(80)
-        hbox3.addWidget(self.tab.Outliers)
-        hbox3.addWidget(self.tab.progress1)
-        hbox3.setAlignment(QtCore.Qt.AlignLeft)
-        self.tab.Outliers.setFixedHeight(50)
-        self.tab.Outliers.setFixedWidth(150)
-        vbox.addLayout(hbox3)
-        hbox3.setAlignment(QtCore.Qt.AlignCenter)
+        avbox.addLayout(hbox6)
+        hbox8 = QtWidgets.QHBoxLayout()
+        hbox8.addWidget(self.tab.AnalysisFrame.chooseLabel)
+        hbox8.setAlignment(QtCore.Qt.AlignLeft)
+        avbox.addLayout(hbox8)
         hbox9 = QtWidgets.QHBoxLayout()
-        hbox9.addWidget(self.tab.IndMetrics)
-        hbox9.addWidget(self.tab.progress2)
+        hbox9.addWidget(Ui_MainWindow.tab.AnalysisFrame.Outliers)
+        hbox9.addWidget(self.tab.AnalysisFrame.progress1)
         hbox9.setAlignment(QtCore.Qt.AlignLeft)
-        self.tab.IndMetrics.setFixedHeight(50)
-        self.tab.IndMetrics.setFixedWidth(150)
-        vbox.addLayout(hbox9)
-        hbox4 = QtWidgets.QHBoxLayout()
-        hbox4.addWidget(self.tab.Longitudinal)
-        self.tab.Longitudinal.setFixedHeight(50)
-        self.tab.Longitudinal.setFixedWidth(150)
-        vbox.addLayout(hbox4)
-        hbox4.setAlignment(QtCore.Qt.AlignLeft)
+        Ui_MainWindow.tab.AnalysisFrame.Outliers.setFixedHeight(20)
+        Ui_MainWindow.tab.AnalysisFrame.Outliers.setFixedWidth(110)
+        avbox.addLayout(hbox9)
+        hbox9.setAlignment(QtCore.Qt.AlignCenter)
+        hbox10 = QtWidgets.QHBoxLayout()
+        hbox10.addWidget(Ui_MainWindow.tab.AnalysisFrame.IndMetrics)
+        hbox10.addWidget(self.tab.AnalysisFrame.progress2)
+        hbox10.setAlignment(QtCore.Qt.AlignLeft)
+        Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setFixedHeight(20)
+        Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setFixedWidth(110)
+        avbox.addLayout(hbox10)
+        hbox11 = QtWidgets.QHBoxLayout()
+        hbox11.addWidget(Ui_MainWindow.tab.AnalysisFrame.Longitudinal)
+        Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setFixedHeight(20)
+        Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setFixedWidth(110)
+        avbox.addLayout(hbox11)
+        hbox11.setAlignment(QtCore.Qt.AlignLeft)
+
+
+        #MainLayout
+        vbox = QtWidgets.QVBoxLayout(self.tab)
+        hbox0 = QtWidgets.QHBoxLayout()
+        hbox0.addWidget(Ui_MainWindow.tab.UploadFrame)
+        vbox.addLayout(hbox0)
+        hbox1 = QtWidgets.QHBoxLayout()
+        hbox1.addWidget(Ui_MainWindow.tab.AnalysisFrame)
+        vbox.addLayout(hbox1)
+        
         vbox.setAlignment(QtCore.Qt.AlignLeft)
         self.retranslateUi()
 
@@ -136,18 +307,18 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onQuaMeterClicked(self):
-        Ui_MainWindow.DisableButtons(self)
+        Ui_MainWindow.DisableAnalysisButtons(self)
         QuaMeter.QuaMeter.setupUI(self)
 
 
     @pyqtSlot()
     def onSwaMeClicked(self):
-        Ui_MainWindow.DisableButtons(self)
+        Ui_MainWindow.DisableAnalysisButtons(self)
         SwaMe.SwaMe.setupUI(self)
 
     @pyqtSlot()
     def onBrowseClicked(self):
-        Ui_MainWindow.DisableButtons(self)
+        Ui_MainWindow.DisableAnalysisButtons(self)
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, Ui_MainWindow)
         inputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
         global metrics
@@ -158,7 +329,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
             DataPreparation.DataPrep.ExtractNumericColumns(self.metrics)
             DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
-        Ui_MainWindow.EnableButtons(self)
+        Ui_MainWindow.EnableAnalysisButtons(self)
         
     def checkColumnLength(self):
        if(len(Ui_MainWindow.metrics.columns)<1):
@@ -168,7 +339,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onOutliersClicked(self):
-        self.DisableButtons()
+        self.DisableAnalysisButtons()
 
         Ui_MainWindow.tab.progress1.show()
         Ui_MainWindow.tab.progress1.setValue(10)
@@ -176,7 +347,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         # Check if you have the correct number of variables/samples
         self.checkColumnNumberForPCA()
         self.checkSampleNumberForPCA()
-        self.EnableButtons()
+        self.EnableAnalysisButtons()
         
         sampleToVariableRatio = PCA.PCA.\
             calculateSampleToVariableRatio(self, Ui_MainWindow.NumericMetrics)
@@ -248,35 +419,90 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         hbox2.setAlignment(QtCore.Qt.AlignCenter)
         vbox2.addLayout(hbox2)
         Ui_MainWindow.retranslateUi2(Ui_MainWindow.PCA)
-        Ui_MainWindow.EnableButtons(self)
+        Ui_MainWindow.EnableAnalysisButtons(self)
         Ui_MainWindow.tab.progress1.setValue(100)
         PCAGraph.fig.canvas.mpl_connect("motion_notify_event",
                                         Ui_MainWindow.onhover)
         self.setCurrentIndex(oIndex)
 
-    def EnableButtons(self):
-        Ui_MainWindow.tab.browse.setEnabled(True)
-        Ui_MainWindow.tab.Outliers.setEnabled(True)
-        Ui_MainWindow.tab.IndMetrics.setEnabled(True)
-        Ui_MainWindow.tab.Longitudinal.setEnabled(True)
+        
 
-    def DisableButtons(self):
-        Ui_MainWindow.tab.browse.setEnabled(False)
-        Ui_MainWindow.tab.Outliers.setEnabled(False)
-        Ui_MainWindow.tab.IndMetrics.setEnabled(False)
-        Ui_MainWindow.tab.Longitudinal.setEnabled(False)
+    def EnableQuaMeterArguments(self):
+        
+        Ui_MainWindow.tab.UploadFrame.leftFrame.files.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.fileList.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.cpusLabel.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CLOLabel.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.setEnabled(True) 
+        Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.Dir.setEnabled(True)
+
+    def DisableQuaMeterArguments(self):
+        Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.files.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.fileList.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.cpusLabel.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CLOLabel.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.setEnabled(False) 
+        Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.Dir.setEnabled(False)
+
+    def EnableSwaMeArguments(self):
+        
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.Sfiles.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SfileList.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.divisionLabel.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.divisionTextBox.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.MTLabel.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton.setEnabled(True)
+
+    def DisableSwaMeArguments(self):
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.Sfiles.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SfileList.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.divisionLabel.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.divisionTextBox.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.MTLabel.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton.setEnabled(False)
+
+    def EnableAnalysisButtons(self):
+        Ui_MainWindow.tab.UploadFrame.browse.setEnabled(True)
+        Ui_MainWindow.tab.AnalysisFrame.Outliers.setEnabled(True)
+        Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setEnabled(True)
+        Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setEnabled(True)
+
+    def DisableAnalysisButtons(self):
+        Ui_MainWindow.tab.UploadFrame.browse.setEnabled(False)
+        Ui_MainWindow.tab.AnalysisFrame.Outliers.setEnabled(False)
+        Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setEnabled(False)
+        Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setEnabled(False)
 
     @pyqtSlot()
     def onIndMetricsClicked(self):
         # First open a pop-up window informing the user
         # that this takes a moment:
-        Ui_MainWindow.DisableButtons(self)
-        Ui_MainWindow.tab.progress2.show()
-        Ui_MainWindow.tab.progress2.setValue(10)
+        Ui_MainWindow.DisableAnalysisButtons(self)
+        Ui_MainWindow.tab.AnalysisFrame.progress2.show()
+        Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(10)
         NumericMetrics = Ui_MainWindow.NumericMetrics
         global element
         lw = 2
-        Ui_MainWindow.tab.progress2.setValue(33)
+        Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(33)
         global iIndex
         last=False
         for element in range(len(NumericMetrics.columns)):
@@ -307,7 +533,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             vbox.addLayout(hbox2)
 
         #Ui_MainWindow.legend.show()
-        Ui_MainWindow.EnableButtons(self)
+        Ui_MainWindow.EnableAnalysisButtons(self)
         Ui_MainWindow.tab.progress2.setValue(100)
         self.setCurrentIndex(iIndex)
 
@@ -336,7 +562,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onLongitudinalClicked(self):
-        Ui_MainWindow.DisableButtons(self)
+        Ui_MainWindow.DisableAnalysisButtons(self)
         Ui_MainWindow.predictionArea = [0, 0, 0, 0]
         # Bools to keep track:
         Ui_MainWindow.goodPredicted = False
@@ -529,19 +755,27 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def retranslateUi(self):
         _translate = QtCore.QCoreApplication.translate
-        Ui_MainWindow.tab.Outliers.setText(_translate("MainWindow",
+        Ui_MainWindow.tab.AnalysisFrame.Outliers.setText(_translate("MainWindow",
                                            "Detect Outliers"))
-        Ui_MainWindow.tab.IndMetrics.setText(_translate("MainWindow",
+        Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setText(_translate("MainWindow",
                                              "Individual metrics"))
-        Ui_MainWindow.tab.Longitudinal.setText(_translate("MainWindow",
+        Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setText(_translate("MainWindow",
                                                "Longitudinal analysis"))
-        Ui_MainWindow.tab.browse.setText(_translate("MainWindow", "Browse: "))
-        Ui_MainWindow.tab.QuaMeterbutton.setText(_translate("MainWindow", "Generate quality metrics with QuaMeter ID-Free"))
-        Ui_MainWindow.tab.SwaMebutton.setText(_translate("MainWindow", "Generate quality metrics with SwaMe"))
-        Ui_MainWindow.filename.setText(_translate("MainWindow", "   File...                  "))
-        Ui_MainWindow.filename.setStyleSheet("background-color: white;")
-        Ui_MainWindow.tab.uploadLabel.setText(_translate("MainWindow", "Upload a file (Either json, csv or tsv format):"))
-        Ui_MainWindow.tab.uploadLabel.setFont(Ui_MainWindow.boldfont)
-        Ui_MainWindow.tab.chooseLabel.setText(_translate("MainWindow", "Choose the analysis you would like to conduct:"))
-        Ui_MainWindow.DisableButtons(self)
-        Ui_MainWindow.tab.browse.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.browse.setText(_translate("MainWindow", "Browse: "))
+        Ui_MainWindow.tab.UploadFrame.leftFrame.QuaMeterbutton.setText(_translate("MainWindow", "Generate quality metrics with QuaMeter ID-Free"))
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SwaMebutton.setText(_translate("MainWindow", "Generate quality metrics with SwaMe"))
+        Ui_MainWindow.tab.UploadFrame.filename.setText(_translate("MainWindow", "   File...                  "))
+        Ui_MainWindow.tab.UploadFrame.filename.setStyleSheet("background-color: white;")
+        Ui_MainWindow.tab.UploadFrame.InstructionLabel.setText(_translate("MainWindow", "Choose between running QuaMeter and SwaMe directly or upload previous results:"))
+        Ui_MainWindow.tab.UploadFrame.InstructionLabel.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.tab.UploadFrame.InputLabel.setText(_translate("MainWindow", "File Input"))
+        Ui_MainWindow.tab.UploadFrame.InputLabel.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.tab.UploadFrame.uploadLabel.setText(_translate("MainWindow", "Upload a file (Either json, csv or tsv format):"))
+        Ui_MainWindow.tab.UploadFrame.uploadLabel.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.tab.AnalysisFrame.analysisLabel.setText(_translate("MainWindow", "File Analysis"))
+        Ui_MainWindow.tab.AnalysisFrame.analysisLabel.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.tab.AnalysisFrame.chooseLabel.setText(_translate("MainWindow", "Choose the analysis you would like to conduct:"))
+        Ui_MainWindow.DisableAnalysisButtons(self)
+        Ui_MainWindow.DisableQuaMeterArguments(self)
+        Ui_MainWindow.DisableSwaMeArguments(self)
+        Ui_MainWindow.tab.UploadFrame.browse.setEnabled(True)
