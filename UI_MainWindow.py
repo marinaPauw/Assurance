@@ -151,7 +151,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        
+        Ui_MainWindow.tab.UploadFrame.rightFrame.textedit =QtWidgets.QTextEdit(readOnly=True)
 
         #Widget stylesheets:
         Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setStyleSheet("background-color: rgb(240,240,240);")
@@ -197,6 +197,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMevbox.addLayout(SwaMehbox4)
         SwaMehbox6 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
         SwaMehbox6.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton)
+        SwaMehbox6.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.textedit)
         SwaMevbox.addLayout(SwaMehbox6)
 
         #-------------------------------------------------MainLayout--------------------------------------------------------
@@ -437,6 +438,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.setEnabled(True) 
+        Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.leftFrame.Dir.setEnabled(True)
 
@@ -450,6 +452,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.setEnabled(False) 
+        Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.leftFrame.Dir.setEnabled(False)
 
