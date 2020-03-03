@@ -20,12 +20,16 @@ import FileInput
 import pandas as pd
 import json
 import numpy as np
+import os
+import collections
+
+
 
 
 class BrowseWindow(QtWidgets.QMainWindow):
     def __init__(self, Ui_MainWindow):
         self.title = "Load file"
-        UI_MainWindow.Ui_MainWindow.EnableButtons(self)
+        UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
         global inputFile 
 
     def GetInputFile(Ui_MainWindow):
@@ -49,7 +53,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
                 if(justJSONFiles==True):
-                   inputFiles = possibleInputFiles
+                   inputFiles = possibleinputFiles
                    UI_MainWindow.Ui_MainWindow.metrics =  \
                        FileInput.BrowseWindow.CombineJSONs(
                            UI_MainWindow.Ui_MainWindow, inputFiles)
@@ -178,39 +182,77 @@ class BrowseWindow(QtWidgets.QMainWindow):
     def CombineJSONs(self, inputFiles):
         global Allmetrics
         Allmetrics = pd.DataFrame()
+        metrics = {}
         for file in inputFiles:
+            try:
+                file1 = open(file, 'r')
+                string1 = file1.read()
+                metrics = json.loads(string1)
+                filename = os.path.splitext(os.path.basename(file))[0]
                 #Input reading of jsonfiles here:
-            with open(file) as f:
-                try:
-                    metrics = json.loads(f.read())
-                except:
+            except:
                     QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"Error:", 
                                             "Upload failed. Please check the content of the files and try again.")
-                    
                     UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
             metricsDf = pd.DataFrame(metrics)
-            columnNames = []
-            for ii in metricsDf["mzQC"]["runQuality"]:
-                for iii in ii["qualityParameters"]:
-                    columnNames.append(iii["name"])
-            PCAInput = pd.DataFrame(columns=columnNames)
-            myPIArray = PCAInput.values
-            tempVec = []
-            for ii in metricsDf["mzQC"]["runQuality"]:
-                for iii in ii["qualityParameters"]:
-                    tempVec.append(iii["value"])
+            # Create dataframes - for SwaMe we need one for comprehensive, one for swath, one for rt, one for quartiles, one for quantiles
+            uniqueSizes = []
+            comprehensiveMetricsDf  = pd.DataFrame()
+            AllMetricSizesDf = list()
 
-            myPIArray = np.vstack((myPIArray, tempVec))
-            PCAInput = pd.DataFrame(myPIArray, columns=columnNames)
-            Allmetrics = Allmetrics.append(PCAInput)
-        if(Allmetrics.iloc[:, 0].count() < 2):
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                              "There are not enough samples in your file \
-                              to conduct analysis. Please choose \
-                              another file.")
-            UI_MainWindow.Ui_MainWindow.onBrowseClicked(
-                    UI_MainWindow.Ui_MainWindow)
-        return Allmetrics
+
+            comprehensiveColumnNames = []
+            AllColumnNamesDf = list()
+
+            for ii in metricsDf["mzQC"]["runQuality"]:
+                for iii in ii["qualityParameters"]:
+                    metricname = iii["name"]
+                    if(": " in metricname):
+                        metricname = metricname.split(": ",1)[1] 
+                    if "value" in iii:# This means that an empty value is never added to the dataframe
+                        # Now we need to figure out in which dataframe it belongs:
+                        #Something other than comprehensive:
+                        if isinstance(iii["value"], collections.Sequence) and not isinstance(iii["value"],str):
+                            # DO we already have a DF for it:
+                            if len(iii["value"]) in uniqueSizes: 
+                                index = uniqueSizes.index(len(iii["value"]))
+                                #Check if columnname already exists:
+                                if(metricname in AllMetricSizesDf[index]):
+                                    cIndex = AllMetricSizesDf[index].index(iii["name"])
+                                    # Check if its the first instance for this file, else we need to make new NA rows: The idea is that there should be index * iii["value"]
+                                    if len(AllMetricSizesDf.index) != index * len(iii["value"]): # first instance of this file
+                                        #create some NA's 
+                                        for i in len(AllMetricSizesDf[index].columns):
+                                            for ii in range((index -1) * len(iii["value"]),index*len(iii["value"])):
+                                                AllMetricSizesDf[index][ii][i] = "NA" * len(iii["value"])
+                                    # Now change the NA's to values:
+                                    AllMetricsSizesDf[index][metricname] = iii["name"]
+                                 
+
+                                else:# We first need to create the column:
+
+                                   # Check if the length of the other columns is still just one file else we need to fill with NAs:
+                                   if len(AllMetricSizesDf[index].index) == len(iii["value"]): # Just one file
+                                       AllMetricSizesDf[index][metricname] = iii["value"]
+                                   else:
+                                       AllMetricSizesDf[index][metricname] = np.concatenate( "NA" * len(iii["value"]), iii["value"])
+
+
+
+
+                            else: # We create one:
+                                uniqueSizes.append(len(iii["value"]))
+                                index = uniqueSizes.index(len(iii["value"]))
+                                AllMetricSizesDf.append(pd.DataFrame())
+                                temp = []
+                                for i in range(1,len(iii["value"])+1):
+                                    stringstojoin = {filename, metricname, str(i)}
+                                    separator = "_"
+                                    temp.append(separator.join(stringstojoin))
+                                AllMetricSizesDf[index]['Name'] = temp
+                                AllMetricSizesDf[index][metricname] = iii["value"]
+        return AllMetricSizesDf
+
 
     def QuaMeterFileTypeCheck(self, inputFile):
         if inputFile.endswith('.wiff') or inputFile.endswith('.raw') or inputFile.endswith('.mzML'):

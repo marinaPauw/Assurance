@@ -7,6 +7,8 @@ import FileInput
 import UI_MainWindow
 from PyQt5.QtWidgets import QMessageBox
 import os
+import glob
+import DataPreparation
 
 
 class SwaMe():
@@ -60,15 +62,31 @@ class SwaMe():
 
         elif  SwaMePath and SwaMe.File:
             arguments = SwaMePath[0] + " -i " + SwaMe.File+ " --dir "+ str(SwaMe.Dir)
-            
+        
+        SwaMe.process.finished.connect(SwaMe.on_Finished)
         SwaMe.process.start(arguments)
 
     @QtCore.pyqtSlot()
     def on_readyReadStandardOutput(self):
         text = SwaMe.process.readAllStandardOutput().data().decode()
-        UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.textedit.append(text) 
-
-
+        UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.textedit.append(text)
+        
+    @QtCore.pyqtSlot()
+    def on_Finished(self):
+        dirpath = os.path.dirname(os.path.realpath(SwaMe.File))
+        dirpath = os.path.join(dirpath, "QC_Results", )
+        os.chdir(dirpath)
+        files = []
+        for file in glob.glob("*.json"):
+            files.append(file)
+        UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.CombineJSONs(UI_MainWindow.Ui_MainWindow, files)
+        #Now read in metrics:
+        
+        
+        UI_MainWindow.Ui_MainWindow.metrics.set_index(UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
+        DataPreparation.DataPrep.ExtractNumericColumns(UI_MainWindow.Ui_MainWindow.metrics)
+        DataPreparation.DataPrep.RemoveLowVarianceColumns(UI_MainWindow.Ui_MainWindow)
+        UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
 
             
         
