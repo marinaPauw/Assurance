@@ -349,6 +349,19 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                                    Options())
         if(SwaMePath):
             return SwaMePath
+
+    def GetIRTInputFile(Ui_MainWindow):
+        file = QtWidgets. QFileDialog()
+        file.setFileMode(QFileDialog.ExistingFile)
+        possibleinputFile,_ = QtWidgets. QFileDialog.getOpenFileName(Ui_MainWindow.tab, 
+                                                               "Browse", "",
+                                                               "TraML Files (*.TraML)", 
+                                                               options=
+                                                               QFileDialog.\
+                                                                   Options())
+        if possibleinputFile:
+            if possibleinputFile.endswith('.TraML') or possibleinputFile.endswith('.tsv') or possibleinputFile.endswith('.csv'):
+                return possibleinputFile
    
         
 
