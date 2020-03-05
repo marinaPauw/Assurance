@@ -151,7 +151,16 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRT = QtWidgets.QRadioButton("iRT")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceLabel =QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityLabel =QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesLabel =QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.textedit =QtWidgets.QTextEdit(readOnly=True)
+        Ui_MainWindow.IRTinputFile = None
+
 
         #Widget stylesheets:
         Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setStyleSheet("background-color: rgb(240,240,240);")
@@ -164,7 +173,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.MTLabel.setText("MassTolerance:")
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel.setText("RTTolerance:")
         Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton.setText("RUN")
-        Ui_MainWindow.tab.UploadFrame.rightFrame.Dir = QtWidgets.QRadioButton("Whole Directory")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceLabel.setText("iRTtolerance")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityLabel.setText("MinIRTIntensity")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesLabel.setText("MinIRTpeptides")
 
         
         #Layout:
@@ -194,11 +205,22 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMevbox.addLayout(SwaMehbox3)
         SwaMehbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
         SwaMehbox4.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.Dir)
+        SwaMehbox4.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.iRT)
         SwaMevbox.addLayout(SwaMehbox4)
+        SwaMehbox5 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMehbox5.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceLabel)
+        SwaMehbox5.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceTB)
+        SwaMevbox.addLayout(SwaMehbox5)
         SwaMehbox6 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        SwaMehbox6.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton)
-        SwaMehbox6.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.textedit)
+        SwaMehbox6.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityLabel)
+        SwaMehbox6.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityTB)
+        SwaMehbox6.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesLabel)
+        SwaMehbox6.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesTB)
         SwaMevbox.addLayout(SwaMehbox6)
+        SwaMehbox7 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMehbox7.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton)
+        SwaMehbox7.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.textedit)
+        SwaMevbox.addLayout(SwaMehbox7)
 
         #-------------------------------------------------MainLayout--------------------------------------------------------
           #All the buttons MainWindow:
@@ -218,6 +240,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.AnalysisFrame.Outliers.clicked.connect(self.onOutliersClicked)
         Ui_MainWindow.tab.AnalysisFrame.IndMetrics.clicked.connect(self.onIndMetricsClicked)
         Ui_MainWindow.tab.AnalysisFrame.Longitudinal.clicked.connect(self.onLongitudinalClicked)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRT.toggled.connect(self.onIRTClicked)
 
         # Labels and progressbars
         self.tab.UploadFrame.InstructionLabel = QtWidgets.QLabel()
@@ -336,7 +359,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
        if(len(Ui_MainWindow.metrics.columns)<1):
                 QMessageBox.warning(self.tab,"Error:" ,"After removing low variance columns, there were no columns left from which to conduct any sort of analysis.")
                 self.onBrowseClicked()
-      
 
     @pyqtSlot()
     def onOutliersClicked(self):
@@ -425,9 +447,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         PCAGraph.fig.canvas.mpl_connect("motion_notify_event",
                                         Ui_MainWindow.onhover)
         self.setCurrentIndex(oIndex)
-
         
-
     def EnableQuaMeterArguments(self):
         
         Ui_MainWindow.tab.UploadFrame.leftFrame.files.setEnabled(True)
@@ -482,6 +502,24 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRT.setEnabled(False)
+        Ui_MainWindow.DisableSwaMeIRTArguments(self)
+
+    def EnableSwaMeIRTArguments(self):
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceLabel.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityLabel.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesLabel.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceTB.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityTB.setEnabled(True)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesTB.setEnabled(True)
+
+    def DisableSwaMeIRTArguments(self):
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceLabel.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityLabel.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesLabel.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceTB.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityTB.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesTB.setEnabled(False)
 
     def EnableAnalysisButtons(self):
         Ui_MainWindow.tab.UploadFrame.browse.setEnabled(True)
@@ -494,6 +532,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.AnalysisFrame.Outliers.setEnabled(False)
         Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setEnabled(False)
         Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setEnabled(False)
+
+    @pyqtSlot()
+    def onIRTClicked(self):
+         Ui_MainWindow.EnableSwaMeIRTArguments(self)
+         Ui_MainWindow.IRTinputFile = FileInput.BrowseWindow.GetIRTInputFile(Ui_MainWindow)
 
     @pyqtSlot()
     def onIndMetricsClicked(self):

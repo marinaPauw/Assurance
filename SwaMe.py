@@ -15,13 +15,12 @@ class SwaMe():
     """description of class"""
     def setupUI(self, parent=None): 
         UI_MainWindow.Ui_MainWindow.EnableSwaMeArguments(self)
-
-        #Arguments:
-        SwaMe.MassTolerance = 5000 #Arbitrary value that I hope no one would ever choose
-        SwaMe.RTTolerance = 5000
-        SwaMe.Division = 5000
-        SwaMe.Dir=False
-        #SwaMe.IRT==False
+        #SwaMe.Dir = ""
+        SwaMe.Division = ''
+        SwaMe.MassTolerance = ""
+        SwaMe.RTTolerance = ""
+        SwaMe.IRT = ''
+        
 
         #Actions for when buttons are clicked:
         UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.clicked.connect(SwaMe.onSwaMeBrowseClicked)
@@ -46,23 +45,19 @@ class SwaMe():
         arguments = ""
         
         if(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.text()):
-            SwaMe.MassTolerance = UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.text()
+            SwaMe.MassTolerance = arguments.join([" -m ", str(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.text())])
         if(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.text()):
-            SwaMe.RTTolerance = UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.text()
+            SwaMe.RTTolerance = arguments.join([" -rttolerance " , str(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.text())])
         if(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.divisionTextBox.text()):
-            SwaMe.Division = UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.divisionTextBox.text()
-        if(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.isChecked):
-            SwaMe.Dir = True
+            SwaMe.Division = arguments.join([" -d " , str(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.divisionTextBox.text())])
+        #if(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.isChecked):
+        #    SwaMe.Dir = str.join(" -dir " , "true")
+        if(UI_MainWindow.Ui_MainWindow.IRTinputFile):
+            SwaMe.IRT = arguments.join([" -r " , str(UI_MainWindow.Ui_MainWindow.IRTinputFile)])
 
-        if  SwaMePath and SwaMe.File and SwaMe.Division!=5000 and SwaMe.MassTolerance!=5000:
-            arguments = SwaMePath[0] + " -i " + SwaMe.File+ " --dir "+ str(SwaMe.Dir)+ " -d " +SwaMe.Division+ " -m " + SwaMe.MassTolerance
+        if  SwaMePath and SwaMe.File:
+            arguments = SwaMePath[0] + " -i " + SwaMe.File + SwaMe.Division + SwaMe.MassTolerance + SwaMe.RTTolerance + SwaMe.IRT  # + SwaMe.Dir 
 
-        elif  SwaMePath and SwaMe.File and SwaMe.Division!=5000:
-            arguments = SwaMePath[0] + " -i " + SwaMe.File+ " --dir "+ str(SwaMe.Dir)+ " -d "+SwaMe.Division
-
-        elif  SwaMePath and SwaMe.File:
-            arguments = SwaMePath[0] + " -i " + SwaMe.File+ " --dir "+ str(SwaMe.Dir)
-        
         SwaMe.process.finished.connect(SwaMe.on_Finished)
         SwaMe.process.start(arguments)
 
@@ -82,11 +77,10 @@ class SwaMe():
         UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.CombineJSONs(UI_MainWindow.Ui_MainWindow, files)
         #Now read in metrics:
         
-        
-        UI_MainWindow.Ui_MainWindow.metrics.set_index(UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-        DataPreparation.DataPrep.ExtractNumericColumns(UI_MainWindow.Ui_MainWindow.metrics)
-        DataPreparation.DataPrep.RemoveLowVarianceColumns(UI_MainWindow.Ui_MainWindow)
-        UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
+        for dataTable in UI_MainWindow.Ui_MainWindow.metrics:
+            DataPreparation.DataPrep.ExtractNumericColumns(dataTable)
+            DataPreparation.DataPrep.RemoveLowVarianceColumns(UI_MainWindow.Ui_MainWindow)
+            UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
 
             
         
