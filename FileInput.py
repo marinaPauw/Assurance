@@ -226,7 +226,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                             for ii in range((index -1) * len(iii["value"]),index*len(iii["value"])):
                                                 AllMetricSizesDf[index][ii][i] = "NA" * len(iii["value"])
                                     # Now change the NA's to values:
-                                    AllMetricsSizesDf[index][metricname] = iii["name"]
+                                    AllMetricsSizesDf[index][metricname] = iii["value"]
                                  
 
                                 else:# We first need to create the column:
