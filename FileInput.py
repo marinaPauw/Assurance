@@ -251,6 +251,39 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                     temp.append(separator.join(stringstojoin))
                                 AllMetricSizesDf[index]['Name'] = temp
                                 AllMetricSizesDf[index][metricname] = iii["value"]
+
+
+                        elif 1 in uniqueSizes: 
+                                index = uniqueSizes.index(1)
+                                #Check if columnname already exists:
+                                if(metricname in AllMetricSizesDf[index]):
+                                    cIndex = AllMetricSizesDf[index].index(iii["name"])
+                                    # Check if its the first instance for this file, else we need to make new NA rows: The idea is that there should be index * iii["value"]
+                                    if len(AllMetricSizesDf.index) != index * len(iii["value"]): # first instance of this file
+                                        #create some NA's 
+                                        for i in len(AllMetricSizesDf[index].columns):
+                                                AllMetricSizesDf[index][ii][i] = "NA" * len(iii["value"])
+                                    # Now change the NA's to values:
+                                    AllMetricsSizesDf[index][metricname] = iii["value"]
+                                 
+
+                                else:# We first need to create the column:
+
+                                   # Check if the length of the other columns is still just one file else we need to fill with NAs:
+                                   if len(AllMetricSizesDf[index].index) == len(iii["value"]): # Just one file
+                                       AllMetricSizesDf[index][metricname] = iii["value"]
+                                   else:
+                                       AllMetricSizesDf[index][metricname] = np.concatenate( "NA" * len(iii["value"]), iii["value"])
+
+                        else: # We create need to create the comprehensive table:
+                                uniqueSizes.append(1)
+                                index = uniqueSizes.index(1)
+                                AllMetricSizesDf.append(pd.DataFrame())
+                                stringstojoin = {filename, metricname, str(i)}
+                                separator = "_"
+                                AllMetricSizesDf[index]['Name'] = separator.join(stringstojoin)
+                                AllMetricSizesDf[index][metricname] = iii["value"]
+
         return AllMetricSizesDf
 
 
