@@ -88,7 +88,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame) 
         Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.leftFrame)
-        Ui_MainWindow.tab.UploadFrame.leftFrame.Dir = QtWidgets.QRadioButton("Whole Directory")
+        #Ui_MainWindow.tab.UploadFrame.leftFrame.Dir = QtWidgets.QRadioButton("Whole Directory")
         
 
         #Widget stylesheets:
@@ -130,9 +130,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         hbox3.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel)
         hbox3.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox)
         QuaMetervbox.addLayout(hbox3)
-        hboxdir = QtWidgets.QHBoxLayout()
-        hboxdir.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.Dir)
-        QuaMetervbox.addLayout(hboxdir)
+        #hboxdir = QtWidgets.QHBoxLayout()
+        #hboxdir.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.Dir)
+        #QuaMetervbox.addLayout(hboxdir)
         hbox4 = QtWidgets.QHBoxLayout()
         hbox4.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton)
         QuaMetervbox.addLayout(hbox4)
@@ -158,6 +158,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        #Ui_MainWindow.tab.UploadFrame.rightFrame.Dir = QtWidgets.QRadioButton("Whole Directory")
         Ui_MainWindow.tab.UploadFrame.rightFrame.textedit =QtWidgets.QTextEdit(readOnly=True)
         Ui_MainWindow.IRTinputFile = None
 
@@ -204,7 +205,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMehbox3.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox)
         SwaMevbox.addLayout(SwaMehbox3)
         SwaMehbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        SwaMehbox4.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.Dir)
+        #SwaMehbox4.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.Dir)
         SwaMehbox4.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.iRT)
         SwaMevbox.addLayout(SwaMehbox4)
         SwaMehbox5 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
@@ -460,7 +461,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.setEnabled(True) 
         Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton.setEnabled(True)
-        Ui_MainWindow.tab.UploadFrame.leftFrame.Dir.setEnabled(True)
+        #Ui_MainWindow.tab.UploadFrame.leftFrame.Dir.setEnabled(True)
 
     def DisableQuaMeterArguments(self):
         Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.setEnabled(False)
@@ -474,7 +475,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.setEnabled(False) 
         Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton.setEnabled(False)
-        Ui_MainWindow.tab.UploadFrame.leftFrame.Dir.setEnabled(False)
+        #Ui_MainWindow.tab.UploadFrame.leftFrame.Dir.setEnabled(False)
 
     def EnableSwaMeArguments(self):
         
@@ -487,9 +488,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.setEnabled(True)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.setEnabled(True)
+        #Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton.setEnabled(True)
-
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRT.setEnabled(True)
+        
     def DisableSwaMeArguments(self):
         Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.Sfiles.setEnabled(False)
@@ -500,7 +502,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.setEnabled(False)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.setEnabled(False)
+        #Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRT.setEnabled(False)
         Ui_MainWindow.DisableSwaMeIRTArguments(self)
