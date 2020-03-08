@@ -9,6 +9,8 @@ from PyQt5.QtWidgets import QMessageBox
 import os
 import glob
 import DataPreparation
+import time
+import shutil
 
 
 class SwaMe():
@@ -39,9 +41,17 @@ class SwaMe():
                 
     def onSwaMeRUNClicked(self):
         SwaMePath = FileInput.BrowseWindow.GetSwaMePath(SwaMe)
+        directory = os.path.dirname(os.path.realpath(SwaMe.File))
+        dirpath = os.path.join(directory, "QC_Results")
+        if os.path.exists(dirpath):
+                timestr = time.strftime("%Y%m%d-%H%M%S")
+                ostr = timestr +"Older_QC_Results"
+                os.rename(dirpath,dirpath+timestr )
+           
         SwaMe.process = QtCore.QProcess()
         SwaMe.process.setProcessChannelMode(QProcess.MergedChannels)
         SwaMe.process.readyReadStandardOutput.connect(lambda: SwaMe.on_readyReadStandardOutput(self))
+        SwaMe.process.finished.connect(SwaMe.on_Finished)
         arguments = ""
         
         if(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.text()):
@@ -56,10 +66,13 @@ class SwaMe():
             SwaMe.IRT = arguments.join([" -r " , str(UI_MainWindow.Ui_MainWindow.IRTinputFile)])
 
         if  SwaMePath and SwaMe.File:
-            arguments = SwaMePath[0] + " -i " + SwaMe.File + SwaMe.Division + SwaMe.MassTolerance + SwaMe.RTTolerance + SwaMe.IRT  # + SwaMe.Dir 
+            arguments = SwaMePath[0] + " -i " + SwaMe.File + SwaMe.Division + SwaMe.MassTolerance + SwaMe.RTTolerance + SwaMe.IRT  + " --dir true "
 
-        SwaMe.process.finished.connect(SwaMe.on_Finished)
+        
         SwaMe.process.start(arguments)
+        #SwaMe.process.waitForFinished();
+        #SwaMe.process.close();
+        #UI_MainWindow.Ui_MainWindow.tab.UploadFrame.rightFrame.textedit.append("closed.....")
 
     @QtCore.pyqtSlot()
     def on_readyReadStandardOutput(self):
@@ -72,15 +85,26 @@ class SwaMe():
         dirpath = os.path.join(dirpath, "QC_Results", )
         os.chdir(dirpath)
         files = []
-        for file in glob.glob("*.json"):
-            files.append(file)
+        for root, dirs, allfiles in os.walk(dirpath):  
+            for file in allfiles:
+                if file.endswith(".json"):
+                    files.append(os.path.join(root,file))
         UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.CombineJSONs(UI_MainWindow.Ui_MainWindow, files)
-        #Now read in metrics:
+        #UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(inputFile)
+        #UI_MainWindow.Ui_MainWindow.checkColumnLength(self)
+        UI_MainWindow.Ui_MainWindow.NumericMetrics = []
+        for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
+                       #UI_MainWindow.Ui_MainWindow.metrics.set_index(
+                        #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
+             FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[i]
+             DataPreparation.DataPrep.ExtractNumericColumns(
+                           FileInput.BrowseWindow.currentDataset)
+             DataPreparation.DataPrep.RemoveLowVarianceColumns(
+                           UI_MainWindow.Ui_MainWindow)
+             UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
+             UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
+        UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(UI_MainWindow.Ui_MainWindow)
         
-        for dataTable in UI_MainWindow.Ui_MainWindow.metrics:
-            DataPreparation.DataPrep.ExtractNumericColumns(dataTable)
-            DataPreparation.DataPrep.RemoveLowVarianceColumns(UI_MainWindow.Ui_MainWindow)
-            UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
 
             
         

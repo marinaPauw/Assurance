@@ -35,6 +35,8 @@ class DataPrep(object):
         for col in metrics.columns:
             if "StartTimeStamp" in col:
                 dateColumn = True
+            if "Name" in col:
+                namecolumn = True
         if dateColumn:
             metrics["dates"] = "Default"
             dateVector = []
@@ -45,11 +47,10 @@ class DataPrep(object):
                   len(metrics.columns))
         else:
             print("No StartTimeStamp column.")
-
-        NumericMetrics = NumericMetrics.select_dtypes(include=['int',
-                                                      'float', 'double',
-                                                      'int64', 'int32',
-                                                      'float64'])
+        if namecolumn:
+            del NumericMetrics[NumericMetrics.columns[0]]
+        
+        NumericMetrics = NumericMetrics.select_dtypes(['number'])
         print("Non-numeric columns removed. There are now %d columns",
               len(NumericMetrics.columns))
         print(NumericMetrics.columns.values)
@@ -57,18 +58,19 @@ class DataPrep(object):
         # including date and starttimestamp
         NumericMetrics = NumericMetrics.replace([np.inf, -np.inf], np.nan)
         # NumericMetrics = np.nan_to_num(NumericMetrics)
-        UI_MainWindow.Ui_MainWindow.NumericMetrics = NumericMetrics
+        FileInput.BrowseWindow.currentDataset = NumericMetrics
 
     def RemoveLowVarianceColumns(self):
-        Nm = UI_MainWindow.Ui_MainWindow.NumericMetrics
+        Nm = FileInput.BrowseWindow.currentDataset
         droppedColumns = []
         dpIndex = []
         threshold = 0.01
-        if (len(Nm.columns)) < 1:
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                              "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
-            UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
-                                                        Ui_MainWindow)
+        #if (len(Nm.columns)) < 1:
+
+        #    QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
+         #                     "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
+         #   UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
+         #                                               Ui_MainWindow)
 
         for i in range(len(Nm.columns)):
             variance = np.var(Nm.iloc[:, i])
@@ -77,16 +79,16 @@ class DataPrep(object):
                 dpIndex.append(i)
         Nm = Nm.drop(droppedColumns, axis=1)
         # Nm.drop(Nm.columns[dpIndex[i]],axis=1,inplace=True)
-        if (len(Nm.columns)) < 1:
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                              "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
-            UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
-                                                        Ui_MainWindow)
+        #if (len(Nm.columns)) < 1:
+        #    QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
+       #                       "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
+        #    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
+        #                                                Ui_MainWindow)
 
         print("Low variance columns removed. There are now %d columns",
               len(Nm.columns))
         print(Nm.columns.values)
-        UI_MainWindow.Ui_MainWindow.NumericMetrics = Nm
+        FileInput.BrowseWindow.currentDataset = Nm
 
     def FindRealSampleNames(self, rawSampleNames):
         realSampleNames = []
@@ -102,3 +104,6 @@ class DataPrep(object):
                 realSampleName = rawSampleName
             realSampleNames.append(realSampleName)
         return realSampleNames
+
+    def contains_string(l):
+        return any(isinstance(item, str) for item in l)

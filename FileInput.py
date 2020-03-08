@@ -57,12 +57,19 @@ class BrowseWindow(QtWidgets.QMainWindow):
                    UI_MainWindow.Ui_MainWindow.metrics =  \
                        FileInput.BrowseWindow.CombineJSONs(
                            UI_MainWindow.Ui_MainWindow, inputFiles)
-                   UI_MainWindow.Ui_MainWindow.metrics.set_index(
-                       UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-                   DataPreparation.DataPrep.ExtractNumericColumns(
-                       UI_MainWindow.Ui_MainWindow.metrics)
-                   DataPreparation.DataPrep.RemoveLowVarianceColumns(
-                       UI_MainWindow.Ui_MainWindow)
+                   UI_MainWindow.Ui_MainWindow.NumericMetrics = []
+                   for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
+                       #UI_MainWindow.Ui_MainWindow.metrics.set_index(
+                        #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
+                       BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[i]
+                       DataPreparation.DataPrep.ExtractNumericColumns(
+                           BrowseWindow.currentDataset)
+                       DataPreparation.DataPrep.RemoveLowVarianceColumns(
+                           UI_MainWindow.Ui_MainWindow)
+                       UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
+                   str1 = " " 
+                   UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText(str1.join(inputFiles))
+                   UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
             else:
                 possibleinputFile = possibleinputFiles[0]
                 inputFile = BrowseWindow.fileTypeCheck(possibleinputFile)
@@ -76,7 +83,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                          BrowseWindow.datasetname,throw,throw,throw = inputFile.split('.')
                     else:
                          BrowseWindow.datasetname = inputFile
-                    UI_MainWindow.Ui_MainWindow.filename.setText("   " + inputFile + "  ")
+                    UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText("   " + inputFile + "  ")
                     return inputFile
    
     def GetTrainingSetFile(Ui_MainWindow):
@@ -205,10 +212,36 @@ class BrowseWindow(QtWidgets.QMainWindow):
             AllColumnNamesDf = list()
 
             for ii in metricsDf["mzQC"]["runQuality"]:
+               # NumofTotalTransitions = []
+               # SumOfTotalTransition = 0
+              #  irtCounter=0
+              #  for iii in ii["qualityParameters"]:
+              #      if iii["name"]=='Prognosticator Metric: IrtPeptides':
+              #          for jjj in range(1 , len(metricsDf["mzQC"]["runQuality"][0]["qualityParameters"][iii]["value"])):
+              #              NumofTotalTransitions.append(len(metricsDf["mzQC"]["runQuality"][0]["qualityParameters"][iii]["value"][jjj]))
+              #              SumOfTotalTransitions= SumOfTotalTransitions+1
+
                 for iii in ii["qualityParameters"]:
                     metricname = iii["name"]
                     if(": " in metricname):
                         metricname = metricname.split(": ",1)[1] 
+                    # Before we do anything else, check if its an irt metric:
+               #     irtMetricNames = ["MeanIrtMassError","MaxIrtMassError","IrtPeptideFoundProportion","IrtPeptides","IrtPeptidesFound", "IrtSpread","IrtOrderedness"]
+               #     if metricname in irtMetricNames:
+               #        if not irtMetricsDF:
+               #             irtMetricsDF = pd.DataFrame(index = range(1, NumofTotalTransitions),columns = ["PeptideSequence", "PrecursorTargetMz", "RetentionTime", "ProductTargetMzs", "Intensities", "ActualMzs", "AverageMassError", "TotalMassError", "TotalMassErrorPpm", "AverageMassErrorPpm", "MeanIrtMassError","MaxIrtMassError","IrtPeptideFoundProportion","IrtPeptidesFound", "IrtSpread","IrtOrderedness"])
+               #             index = 0
+               #        if metricname != "IrtPeptides":
+               #             for j in range(1,NumOfTransFound):
+               #                 irtMetricsDF[metricname][j] = iii["value"]
+               ##        else: 
+                #            irtMetricsDF.loc[metricname] = iii["value"]* len(irtMetricsDF)
+
+
+
+
+
+
                     if "value" in iii:# This means that an empty value is never added to the dataframe
                         # Now we need to figure out in which dataframe it belongs:
                         #Something other than comprehensive:
@@ -235,9 +268,11 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                    if len(AllMetricSizesDf[index].index) == len(iii["value"]): # Just one file
                                        AllMetricSizesDf[index][metricname] = iii["value"]
                                    else:
-                                       AllMetricSizesDf[index][metricname] = np.concatenate( "NA" * len(iii["value"]), iii["value"])
-
-
+                                       if len(AllMetricSizesDf[index].index)>0:#There are other files, but they didn't have a value for this metric
+                                            AllMetricSizesDf[index][metricname] = np.array([np.repeat("NA" , len(AllMetricSizesDf[index].index) -len(iii["value"])),iii["value"]])
+                                            
+                                       else:#This is the first metric
+                                            AllMetricSizesDf[index][metricname] = iii["value"]
 
 
                             else: # We create one:
@@ -270,16 +305,18 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                 else:# We first need to create the column:
 
                                    # Check if the length of the other columns is still just one file else we need to fill with NAs:
-                                   if len(AllMetricSizesDf[index].index) == len(iii["value"]): # Just one file
+                                   if len(AllMetricSizesDf[index].index) == 0 or len(AllMetricSizesDf[index].index) == 1: # FIrst value of the whole dataset or second value of the dataset
                                        AllMetricSizesDf[index][metricname] = iii["value"]
                                    else:
-                                       AllMetricSizesDf[index][metricname] = np.concatenate( "NA" * len(iii["value"]), iii["value"])
+                                       if len(AllMetricSizesDf[index].index) >1:
+                                        AllMetricSizesDf[index][metricname] = np.array([np.repeat("NA" , len(AllMetricSizesDf[index].index)),iii["value"]])
+
 
                         else: # We create need to create the comprehensive table:
                                 uniqueSizes.append(1)
                                 index = uniqueSizes.index(1)
                                 AllMetricSizesDf.append(pd.DataFrame())
-                                stringstojoin = {filename, metricname, str(i)}
+                                stringstojoin = {filename, metricname, "1"}
                                 separator = "_"
                                 AllMetricSizesDf[index]['Name'] = separator.join(stringstojoin)
                                 AllMetricSizesDf[index][metricname] = iii["value"]
@@ -295,8 +332,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
                               "Message from Assurance: ", "Error: File type incorrect. Please load a .mzML, .wiff or .raw file.")
              UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
      
-        
-
     def GetQuaMeterInputFiles(self):
         possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(None, " Files for QuaMeter input", "", "mzML files (*.mzML)", 
                                                                options=
@@ -362,6 +397,9 @@ class BrowseWindow(QtWidgets.QMainWindow):
         if possibleinputFile:
             if possibleinputFile.endswith('.TraML') or possibleinputFile.endswith('.tsv') or possibleinputFile.endswith('.csv'):
                 return possibleinputFile
+
+    def find_indices(lst, condition):
+            return [i for i, elem in enumerate(lst) if condition(elem)]
    
         
 

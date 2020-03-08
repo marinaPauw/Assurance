@@ -66,7 +66,7 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
         self.assertEqual(self.form.filename.geometry(), QtCore.QRect(90, 120, 300, 20))
 
     def test_progressbar1Geometry(self):
-        self.assertEqual(self.form.tab.progress1.geometry(), QtCore.QRect(200, 80, 250, 20))
+        self.assertEqual(self.form.tab.AnalysisFrame.progress1.geometry(), QtCore.QRect(200, 80, 250, 20))
 
     def test_progressbar2Geometry(self):
         self.assertEqual(self.form.tab.progress2.geometry(), QtCore.QRect(200, 80, 250, 20))
@@ -125,15 +125,15 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
 
     # OnOutliersClicked
     def test_columnNumberWarningPCA(self):
-        self.form.NumericMetrics =  pd.DataFrame()
+        FileInput.BrowseWindow.currentDataset =  pd.DataFrame()
         self.assertWarns(UserWarning,self.form.checkColumnNumberForPCA())
 
     def test_sampleNumberWarningPCA(self):
-        self.form.NumericMetrics =  pd.DataFrame()
+        FileInput.BrowseWindow.currentDataset =  pd.DataFrame()
         self.assertWarns(UserWarning,self.form.checkSampleNumberForPCA())
 
     def test_sampleToVariableRatio(self):
-        self.form.NumericMetrics =  pd.DataFrame()
+        FileInput.BrowseWindow.currentDataset =  pd.DataFrame()
         self.assertWarns(UserWarning,self.form.checkSampleToVariableRatio(2))
 
     def test_checkDistanceMatrix(self):

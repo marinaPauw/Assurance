@@ -26,13 +26,12 @@ class Test_test_PCA(unittest.TestCase):
     def setUp(self):
         df = pd.read_csv("HeunisMetrics.tsv", sep="\t")
         UI_MainWindow.Ui_MainWindow.tab = QtWidgets.QWidget()
-        UI_MainWindow.Ui_MainWindow.tab.progress1 = QtWidgets.QProgressBar()
-        UI_MainWindow.Ui_MainWindow.NumericMetrics = pd.DataFrame()
+        UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.progress1 = QtWidgets.QProgressBar()
         DataPreparation.DataPrep.ExtractNumericColumns(df)
         DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
     
     def test_PCA(self):
-        PCA.PCA.CreatePCAGraph(UI_MainWindow.Ui_MainWindow.NumericMetrics)
+        PCA.PCA.CreatePCAGraph(data)
         firstrow = [-1.578231801283509,1.9040015062664672,-1.8175064198266075,
                     0.16169670606889447,-0.3363638058408478,1.8872621821584656,
                     0.059061651781777434,0.7457507623774591,1.3228186066630903,
