@@ -35,7 +35,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def setupUi(self):
 
         self.setWindowTitle("Assurance")
-        self.setFixedSize(1000, 800)
+        self.resize(800,650)
 
         # fonts and style:
         Ui_MainWindow.boldfont = QtGui.QFont()
@@ -166,6 +166,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         #Widget stylesheets:
         Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setStyleSheet("background-color: rgb(240,240,240);")
         Ui_MainWindow.tab.UploadFrame.rightFrame.SwaMebutton.setStyleSheet("background-color: rgb(240,240,240);")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setFixedHeight(30)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setFixedHeight(30)
+
 
         #Widget texts:
         Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setText("Browse ")
@@ -186,8 +189,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMevbox.addLayout(SwaMehbox0)
         SwaMehbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
         SwaMevbox2 = QtWidgets.QVBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        SwaMevbox2.addWidget( Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton)
         SwaMehboxFiles = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        SwaMehboxFiles.addWidget( Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton)
         SwaMehboxFiles.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.Sfiles)     
         SwaMehboxFiles.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.SfileList)
         SwaMevbox2.addLayout(SwaMehboxFiles)
@@ -288,23 +291,23 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         avbox.addLayout(hbox8)
         hbox9 = QtWidgets.QHBoxLayout()
         hbox9.addWidget(Ui_MainWindow.tab.AnalysisFrame.Outliers)
-        hbox9.addWidget(self.tab.AnalysisFrame.progress1)
+        hbox9.addWidget(Ui_MainWindow.tab.AnalysisFrame.IndMetrics)
+        hbox9.addWidget(Ui_MainWindow.tab.AnalysisFrame.Longitudinal)
         hbox9.setAlignment(QtCore.Qt.AlignLeft)
-        Ui_MainWindow.tab.AnalysisFrame.Outliers.setFixedHeight(20)
-        Ui_MainWindow.tab.AnalysisFrame.Outliers.setFixedWidth(110)
+        Ui_MainWindow.tab.AnalysisFrame.Outliers.setFixedHeight(40)
+        Ui_MainWindow.tab.AnalysisFrame.Outliers.setFixedWidth(130)
+        Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setFixedHeight(40)
+        Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setFixedWidth(130)
+        Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setFixedHeight(40)
+        Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setFixedWidth(130)
         avbox.addLayout(hbox9)
         hbox9.setAlignment(QtCore.Qt.AlignCenter)
         hbox10 = QtWidgets.QHBoxLayout()
-        hbox10.addWidget(Ui_MainWindow.tab.AnalysisFrame.IndMetrics)
+        hbox10.addWidget(self.tab.AnalysisFrame.progress1)
         hbox10.addWidget(self.tab.AnalysisFrame.progress2)
         hbox10.setAlignment(QtCore.Qt.AlignLeft)
-        Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setFixedHeight(20)
-        Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setFixedWidth(110)
         avbox.addLayout(hbox10)
         hbox11 = QtWidgets.QHBoxLayout()
-        hbox11.addWidget(Ui_MainWindow.tab.AnalysisFrame.Longitudinal)
-        Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setFixedHeight(20)
-        Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setFixedWidth(110)
         avbox.addLayout(hbox11)
         hbox11.setAlignment(QtCore.Qt.AlignLeft)
 
@@ -356,99 +359,107 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
         Ui_MainWindow.EnableAnalysisButtons(self)
         
-    def checkColumnLength(self):
-       if(len(Ui_MainWindow.metrics.columns)<1):
-                QMessageBox.warning(self.tab,"Error:" ,"After removing low variance columns, there were no columns left from which to conduct any sort of analysis.")
-                self.onBrowseClicked()
+    #def checkColumnLength(self):
+    #   if(len(Ui_MainWindow.metrics.columns)<1):
+    #            QMessageBox.warning(self.tab,"Error:" ,"After removing low variance columns, there were no columns left from which to conduct any sort of analysis.")
+    #            self.onBrowseClicked()
 
     @pyqtSlot()
     def onOutliersClicked(self):
         self.DisableAnalysisButtons()
 
-        Ui_MainWindow.tab.progress1.show()
-        Ui_MainWindow.tab.progress1.setValue(10)
+        Ui_MainWindow.tab.AnalysisFrame.progress1.show()
+        Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(10)
 
-        # Check if you have the correct number of variables/samples
-        self.checkColumnNumberForPCA()
-        self.checkSampleNumberForPCA()
+       
         self.EnableAnalysisButtons()
         
-        sampleToVariableRatio = PCA.PCA.\
-            calculateSampleToVariableRatio(self, Ui_MainWindow.NumericMetrics)
+        for dataset in range(1,len(Ui_MainWindow.NumericMetrics)):
+            FileInput.BrowseWindow.currentDataset = Ui_MainWindow.metrics[dataset]
+             # Check if you have the correct number of variables/samples
+            if self.checkColumnNumberForPCA() == 1:
+
+                if self.checkSampleNumberForPCA() == 1:
+                    if len(FileInput.BrowseWindow.currentDataset.columns)>1:
+
+                        sampleToVariableRatio = PCA.PCA.\
+                            calculateSampleToVariableRatio(self, FileInput.BrowseWindow.currentDataset)
         
-        self.checkSampleToVariableRatio(sampleToVariableRatio);
        
-        # Create PCA
+                        PCA.PCA.CreatePCAGraph(FileInput.BrowseWindow.currentDataset)
+                        Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(51)
+                        # Need to correctly calculate euc distance in N dimension
+                        outliers = Ui_MainWindow.CalculateOutliers(self)
+                        Ui_MainWindow.outlierlist = outliers["Filename"]
 
-        PCA.PCA.CreatePCAGraph(Ui_MainWindow.NumericMetrics)
-        Ui_MainWindow.tab.progress1.setValue(51)
-        # Need to correctly calculate euc distance in N dimension
-        outliers = Ui_MainWindow.CalculateOutliers(self)
-        Ui_MainWindow.outlierlist = outliers["Filename"]
+                        Ui_MainWindow.PCA = QtWidgets.QTabWidget()
+                        Ui_MainWindow.PCA.plotlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
+                        Ui_MainWindow.PCA.plotlabel.setGeometry(10, 500, 1000, 300)
+                        Ui_MainWindow.PCA.PCAplot = PCAGraph.PCAGraph(self.metrics,
+                                                                      PCA.plotdata)
 
-        Ui_MainWindow.PCA = QtWidgets.QTabWidget()
-        Ui_MainWindow.PCA.plotlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        Ui_MainWindow.PCA.plotlabel.setGeometry(10, 500, 1000, 300)
-        Ui_MainWindow.PCA.PCAplot = PCAGraph.PCAGraph(self.metrics,
-                                                      PCA.plotdata)
+                        Ui_MainWindow.outlierlistLabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
+                        Ui_MainWindow.OutlierSamples = QtWidgets.QLabel(Ui_MainWindow.PCA)
+                        Ui_MainWindow.OutlierSamples.setAlignment(QtCore.Qt.AlignLeft)
 
-        Ui_MainWindow.outlierlistLabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        Ui_MainWindow.OutlierSamples = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        Ui_MainWindow.OutlierSamples.setAlignment(QtCore.Qt.AlignLeft)
+                        oIndex = self.addTab(Ui_MainWindow.PCA, "Outlier detection results")
+                        Ui_MainWindow.PCA.layout = QtWidgets.QVBoxLayout()
+                        Ui_MainWindow.PCA.Checkboxlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
+                        Ui_MainWindow.PCA.Checkboxlabel.setText("Toggle loadings on/off:")
+                        Ui_MainWindow.PCA.Checkbox = QtWidgets.QCheckBox("Loadings",
+                                                                         Ui_MainWindow.PCA)
+                        Ui_MainWindow.PCA.Checkbox.setChecked(False)
+                        Ui_MainWindow.PCA.Checkbox.stateChanged.connect(
+                            lambda x: Ui_MainWindow.enable_slot()
+                            if x else Ui_MainWindow.disable_slot())
+                        Ui_MainWindow.PCA.LoadingsProgressBar = QtWidgets.QProgressBar()
+                        Ui_MainWindow.PCA.LoadingsProgressBar.setGeometry(200, 80, 250, 20)
 
-        oIndex = self.addTab(Ui_MainWindow.PCA, "Outlier detection results")
-        Ui_MainWindow.PCA.layout = QtWidgets.QVBoxLayout()
-        Ui_MainWindow.PCA.Checkboxlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        Ui_MainWindow.PCA.Checkboxlabel.setText("Toggle loadings on/off:")
-        Ui_MainWindow.PCA.Checkbox = QtWidgets.QCheckBox("Loadings",
-                                                         Ui_MainWindow.PCA)
-        Ui_MainWindow.PCA.Checkbox.setChecked(False)
-        Ui_MainWindow.PCA.Checkbox.stateChanged.connect(
-            lambda x: Ui_MainWindow.enable_slot()
-            if x else Ui_MainWindow.disable_slot())
-        Ui_MainWindow.PCA.LoadingsProgressBar = QtWidgets.QProgressBar()
-        Ui_MainWindow.PCA.LoadingsProgressBar.setGeometry(200, 80, 250, 20)
+                        vbox2 = QtWidgets.QVBoxLayout(Ui_MainWindow.PCA)
+                        hbox = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
+                        vbox3 = QtWidgets.QVBoxLayout(Ui_MainWindow.PCA)
+                        vbox3.addStretch()
+                        vbox3.addWidget(Ui_MainWindow.outlierlistLabel)
+                        vbox3.addWidget(Ui_MainWindow.OutlierSamples)
+                        vbox3.addWidget(Ui_MainWindow.PCA.Checkboxlabel)
+                        vbox3.addWidget(Ui_MainWindow.PCA.Checkbox)
+                        vbox3.addWidget(Ui_MainWindow.PCA.LoadingsProgressBar)
+                        vbox3.addStretch()
+                        vbox3.setAlignment(QtCore.Qt.AlignLeft)
 
-        vbox2 = QtWidgets.QVBoxLayout(Ui_MainWindow.PCA)
-        hbox = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
-        vbox3 = QtWidgets.QVBoxLayout(Ui_MainWindow.PCA)
-        vbox3.addStretch()
-        vbox3.addWidget(Ui_MainWindow.outlierlistLabel)
-        vbox3.addWidget(Ui_MainWindow.OutlierSamples)
-        vbox3.addWidget(Ui_MainWindow.PCA.Checkboxlabel)
-        vbox3.addWidget(Ui_MainWindow.PCA.Checkbox)
-        vbox3.addWidget(Ui_MainWindow.PCA.LoadingsProgressBar)
-        vbox3.addStretch()
-        vbox3.setAlignment(QtCore.Qt.AlignLeft)
+                        hbox.addLayout(vbox3)
+                        vbox4 = QtWidgets.QVBoxLayout(Ui_MainWindow.PCA)
+                        Ui_MainWindow.PCA.Emptyspace = QtWidgets.QLabel(Ui_MainWindow.PCA)
+                        Ui_MainWindow.PCA.Emptyspace.setText(" ")
+                        vbox4.addWidget(Ui_MainWindow.PCA.Emptyspace)
+                        hbox.addLayout(vbox4)
+                        hboxPlot = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
+                        hboxPlot.addStretch()
 
-        hbox.addLayout(vbox3)
-        vbox4 = QtWidgets.QVBoxLayout(Ui_MainWindow.PCA)
-        Ui_MainWindow.PCA.Emptyspace = QtWidgets.QLabel(Ui_MainWindow.PCA)
-        Ui_MainWindow.PCA.Emptyspace.setText(" ")
-        vbox4.addWidget(Ui_MainWindow.PCA.Emptyspace)
-        hbox.addLayout(vbox4)
-        hboxPlot = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
-        hboxPlot.addStretch()
+                        hboxPlot.addWidget(Ui_MainWindow.PCA.plotlabel)
+                        hboxPlot.addStretch()
+                        vbox2.addLayout(hboxPlot)
+                        vbox2.setAlignment(QtCore.Qt.AlignCenter)
+                        hbox.setAlignment(QtCore.Qt.AlignCenter)
+                        vbox2.addLayout(hbox)
+                        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
 
-        hboxPlot.addWidget(Ui_MainWindow.PCA.plotlabel)
-        hboxPlot.addStretch()
-        vbox2.addLayout(hboxPlot)
-        vbox2.setAlignment(QtCore.Qt.AlignCenter)
-        hbox.setAlignment(QtCore.Qt.AlignCenter)
-        vbox2.addLayout(hbox)
-        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
+                        hbox.addWidget(Ui_MainWindow.PCA.PCAplot)
+                        Ui_MainWindow.PCA.PCAplot.setGeometry(400, 200, 500, 100)
+                        hbox2.setAlignment(QtCore.Qt.AlignCenter)
+                        vbox2.addLayout(hbox2)
+                        Ui_MainWindow.retranslateUi2(Ui_MainWindow.PCA)
+                        Ui_MainWindow.EnableAnalysisButtons(self)
+                        Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(100)
+                        PCAGraph.fig.canvas.mpl_connect("motion_notify_event",
+                                                        Ui_MainWindow.onhover)
+                        self.setCurrentIndex(oIndex)
 
-        hbox.addWidget(Ui_MainWindow.PCA.PCAplot)
-        Ui_MainWindow.PCA.PCAplot.setGeometry(400, 200, 500, 100)
-        hbox2.setAlignment(QtCore.Qt.AlignCenter)
-        vbox2.addLayout(hbox2)
-        Ui_MainWindow.retranslateUi2(Ui_MainWindow.PCA)
-        Ui_MainWindow.EnableAnalysisButtons(self)
-        Ui_MainWindow.tab.progress1.setValue(100)
-        PCAGraph.fig.canvas.mpl_connect("motion_notify_event",
-                                        Ui_MainWindow.onhover)
-        self.setCurrentIndex(oIndex)
-        
+    def DisableBrowseButtons(self):
+        Ui_MainWindow.tab.UploadFrame.browse.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.SwaMebutton.setEnabled(False)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.QuaMeterbutton.setEnabled(False)
+
     def EnableQuaMeterArguments(self):
         
         Ui_MainWindow.tab.UploadFrame.leftFrame.files.setEnabled(True)
@@ -547,7 +558,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.DisableAnalysisButtons(self)
         Ui_MainWindow.tab.AnalysisFrame.progress2.show()
         Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(10)
-        NumericMetrics = Ui_MainWindow.NumericMetrics
+        NumericMetrics = FileInput.BrowseWindow.currentDataset
         global element
         lw = 2
         Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(33)
@@ -575,7 +586,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             hbox2.addStretch()
             indMetPlot = IndividualMetrics.MyIndMetricsCanvas(
                     self.metrics,
-                    Ui_MainWindow.NumericMetrics, element, False, False)
+                    FileInput.BrowseWindow.currentDataset, element, False, False)
             hbox2.addWidget(indMetPlot)
             hbox2.addStretch()
             vbox.addLayout(hbox2)
@@ -586,20 +597,20 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.setCurrentIndex(iIndex)
 
     def checkColumnNumberForPCA(self):
-        if(len(self.NumericMetrics.columns) < 3):
+        if(len(FileInput.BrowseWindow.currentDataset.columns) < 3):
             QMessageBox.warning(self, "Warning:", "There are less than three \
                               numeric columns in the dataset. PCA will not \
                               be performed.")
+            return 0
+        else: 
+            return 1
 
     def checkSampleNumberForPCA(self):
-        if(len(self.NumericMetrics.index) < 4):
+        if(len(FileInput.BrowseWindow.currentDataset.index) < 4):
             QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
-            
-    def checkSampleToVariableRatio(self, sampleToVariableRatio):
-         if(sampleToVariableRatio < 5):
-            if(len(self.NumericMetrics.index) < 100):
-                QMessageBox.warning(self, "Warning:",
-                                  "Consider consulting PCA literature to ascertain whether the ratio of sample size to number of variables is sufficient to perform PCA in this dataset.")
+            return 0
+        else:
+            return 1
 
 
     def enable_legend(metric):
@@ -715,13 +726,13 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.TrainingSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeSelectedSamplesFromArea(RandomForest.RandomForest, "bad"))
 
     def CalculateOutliers(self):
-        sampleSize = range(len(Ui_MainWindow.NumericMetrics.index))
+        sampleSize = range(len(FileInput.BrowseWindow.currentDataset.index))
         PCA.Distances = self.calculateDistanceMatrix(PCA.finalDf)
-        Ui_MainWindow.tab.progress1.setValue(60)
-        self.metrics.index = self.metrics.iloc[:,0]
+        Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(60)
+        #self.metrics.index = self.metrics.iloc[:,0]
         medianDistances = Ui_MainWindow.createMedianDistances(self, sampleSize)
         outlierDistance = Ui_MainWindow.calculateOutLierDistances(self, medianDistances)
-        Ui_MainWindow.tab.progress1.setValue(65)
+        Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(65)
 
         # Zscores:
         from scipy.stats import zscore
@@ -732,13 +743,13 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         print("The following runs were identified as outliers \
         based on their z-scores:")
 
-        Ui_MainWindow.tab.progress1.setValue(75)
+        Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(75)
         Outliers = medianDistances[medianDistances["outlier"]]
         return Outliers
 
     def createMedianDistances(self, sampleSize):
         medianDistances = pd.DataFrame()
-        medianDistances["Filename"] = self.metrics.index
+        medianDistances["Filename"] = FileInput.BrowseWindow.currentDataset.index
         medianDistances["MedianDistance"] = 'default value'
         for iterator in sampleSize:
             medianDistances["MedianDistance"][iterator] = np.percentile(

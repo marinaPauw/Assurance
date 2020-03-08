@@ -76,7 +76,7 @@ class RandomForest(FigureCanvas):
         RandomForest.badguidesetIndexes = []
         for i in UI_MainWindow.Ui_MainWindow.goodpredictionList:
             result = np.where(UI_MainWindow.Ui_MainWindow.metrics == i)
-            RandomForest.guideSetDf = RandomForest.guideSetDf.append(UI_MainWindow.Ui_MainWindow.NumericMetrics.iloc[result[0][0]])
+            RandomForest.guideSetDf = RandomForest.guideSetDf.append(DataPreparation.DataPrep.NumericMetrics.iloc[result[0][0]])
             RandomForest.goodguidesetIndexes.append(len(RandomForest.guideSetDf)-1) # Add the goods and bads to lists, then at the end we can allocate them
             if(RandomForest.listToDrop.count(result[0][0])>0):#This item is already part of the badpredictionlist
                 self.GoodAndBadAreSame()
@@ -85,7 +85,7 @@ class RandomForest(FigureCanvas):
 
         for i in UI_MainWindow.Ui_MainWindow.badpredictionList:
             result = np.where(UI_MainWindow.Ui_MainWindow.metrics == i)
-            RandomForest.guideSetDf = RandomForest.guideSetDf.append(UI_MainWindow.Ui_MainWindow.NumericMetrics.iloc[result[0][0]])
+            RandomForest.guideSetDf = RandomForest.guideSetDf.append(DataPreparation.DataPrep.NumericMetrics.iloc[result[0][0]])
             RandomForest.badguidesetIndexes.append(len(RandomForest.guideSetDf)-1) # Add the goods and bads to lists, then at the end we can allocate them
             if(RandomForest.listToDrop.count(result[0][0])>0):#This item is already part of the badpredictionlist
                 self.GoodAndBadAreSame()
@@ -104,7 +104,7 @@ class RandomForest(FigureCanvas):
 
     def createguideAndTestSet(self):
         RandomForest.guideSetDf = pd.DataFrame()
-        RandomForest.testSetDf = UI_MainWindow.Ui_MainWindow.NumericMetrics
+        RandomForest.testSetDf = DataPreparation.DataPrep.NumericMetrics
         RandomForest.listToDrop = []
         RandomForest.FindIndexes(self)
         RandomForest.testSetDf = RandomForest.testSetDf.drop(RandomForest.listToDrop)
@@ -118,7 +118,7 @@ class RandomForest(FigureCanvas):
         problems = get_indexes(0, results)
         problemSamples = []
         for i in range(len(problems)):
-            NMIndex = np.where(UI_MainWindow.Ui_MainWindow.NumericMetrics.iloc[:,0] == RandomForest.testSetDf.iloc[problems[i],0])
+            NMIndex = np.where(DataPreparation.DataPrep.NumericMetrics.iloc[:,0] == RandomForest.testSetDf.iloc[problems[i],0])
             problemSamples.append(UI_MainWindow.Ui_MainWindow.metrics.iloc[ NMIndex[0][0],0])
         print(problems)
         if(len(problems)>0):

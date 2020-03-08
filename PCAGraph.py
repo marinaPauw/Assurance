@@ -49,14 +49,13 @@ class PCAGraph(FigureCanvas):
                                    QtWidgets.QSizePolicy.Expanding,
                                    QtWidgets.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
-        if FileInput.BrowseWindow.datasetname.find("\\") > 0:
-            throw,FileInput.BrowseWindow.datasetname = FileInput.BrowseWindow.datasetname.rsplit('\\',1)
-        if FileInput.BrowseWindow.datasetname.find("/") > 0:
-            throw,FileInput.BrowseWindow.datasetname = FileInput.BrowseWindow.datasetname.rsplit('/',1)
-        str1= "PCA of the QC metrics of %s" % (FileInput.BrowseWindow.datasetname)
+        #if FileInput.BrowseWindow.datasetname.find("\\") > 0:
+        #    throw,FileInput.BrowseWindow.datasetname = FileInput.BrowseWindow.datasetname.rsplit('\\',1)
+        #if FileInput.BrowseWindow.datasetname.find("/") > 0:
+        #    throw,FileInput.BrowseWindow.datasetname = FileInput.BrowseWindow.datasetname.rsplit('/',1)
+        str1= "PCA of the QC metrics of %s" % (UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename)
         fig.suptitle(str1, fontsize=16)
-        figname = "%s PCA" % (FileInput.BrowseWindow.datasetname)
-        fig.savefig("%s.pdf" %(figname))
+        
         self.compute_initial_figure()
         annot = ax.annotate("", xy=(0,0),color='green')
 
@@ -65,7 +64,7 @@ class PCAGraph(FigureCanvas):
     def compute_initial_figure(self):
         pass
 
-    def loadingsToggledOn():
+    def loadingsToggledOn(self, dataset):
         UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.show()
         UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.setValue(10)
         minx = min(a for (a,c) in PCA.plotdata)
@@ -112,7 +111,7 @@ class PCAGraph(FigureCanvas):
          
              
          UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.setValue(60)
-         loadingsTextAnnot.append(ax.text(xvalue,yvalue , UI_MainWindow.Ui_MainWindow.NumericMetrics.columns[i], color = 'b', ha = 'center', va = 'center'))
+         loadingsTextAnnot.append(ax.text(xvalue,yvalue , dataset.columns[i], color = 'b', ha = 'center', va = 'center'))
         for ii in loadingsTextAnnot:
          ii.set_visible(True)
 

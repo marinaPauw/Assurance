@@ -27,15 +27,14 @@ import unittest
 class Test_test_DataPreparation(unittest.TestCase):
     def setUp(self):
         df = pd.read_csv("HeunisMetrics.tsv", sep="\t")
-        UI_MainWindow.Ui_MainWindow.NumericMetrics = pd.DataFrame()
         DataPreparation.DataPrep.ExtractNumericColumns(df)
     
     def test_ExtractNumericColumns(self):
-        self.assertTrue(len(UI_MainWindow.Ui_MainWindow.NumericMetrics.columns)==44)
+        self.assertTrue(len(FileInput.BrowseWindow.currentDataset.columns)==44)
 
     def test_removeLowVarianceColumns(self):
          DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
-         self.assertTrue(len(UI_MainWindow.Ui_MainWindow.NumericMetrics.columns)==25)
+         self.assertTrue(len(FileInput.BrowseWindow.currentDataset.columns)==25)
 
     def test_FindRealSampleNames(self):
         rawSampleNames = ["abc.mzML","def.wiff.scan","ghi.wiff.scan.mzML"]
