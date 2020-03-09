@@ -246,81 +246,126 @@ class BrowseWindow(QtWidgets.QMainWindow):
                         # Now we need to figure out in which dataframe it belongs:
                         #Something other than comprehensive:
                         if isinstance(iii["value"], collections.Sequence) and not isinstance(iii["value"],str):
-                            # DO we already have a DF for it:
-                            if len(iii["value"]) in uniqueSizes: 
-                                index = uniqueSizes.index(len(iii["value"]))
-                                #Check if columnname already exists:
-                                if(metricname in AllMetricSizesDf[index]):
-                                    cIndex = AllMetricSizesDf[index].index(iii["name"])
-                                    # Check if its the first instance for this file, else we need to make new NA rows: The idea is that there should be index * iii["value"]
-                                    if len(AllMetricSizesDf.index) != index * len(iii["value"]): # first instance of this file
-                                        #create some NA's 
-                                        for i in len(AllMetricSizesDf[index].columns):
-                                            for ii in range((index -1) * len(iii["value"]),index*len(iii["value"])):
-                                                AllMetricSizesDf[index][ii][i] = "NA" * len(iii["value"])
-                                    # Now change the NA's to values:
-                                    AllMetricsSizesDf[index][metricname] = iii["value"]
-                                 
+                            ##########################Tuple:
+                            
+                            if isinstance(iii["value"][0], collections.Sequence) and not isinstance(iii["value"][0],str):# If prognosticator tuple:
+                                if metricname== "MS1TIC":
+                                    if 34333 not in uniqueSizes: # I chose a random number just to keep track
+                                        uniqueSizes.append(34333)
+                                        index = uniqueSizes.index(34333) 
+                                        AllMetricSizesDf.append(pd.DataFrame(columns = [str("RT"+ filename),str("TIC"+ filename)]))
+                                        AllMetricSizesDf[index][str("RT"+ filename)] = iii["value"][0]
+                                        AllMetricSizesDf[index][ "TIC"+ filename] = iii["value"][1]
+                                        #for thisTuple in iii["value"]:
+                                        #    AllMetricSizesDf[index.tail(1).index.item(), str(filename + "RT")] = thisTuple[0]
+                                        #    AllMetricSizesDf[index.tail(1).index.item(), filename + "TIC"] = thisTuple[1]
+                                        
 
-                                else:# We first need to create the column:
+                                    else:
+                                        index = uniqueSizes.index(34333) 
+                                        AllMetricSizesDf[index][str("RT"+ filename)] = thisTuple[0]
+                                        AllMetricSizesDf[index][ "TIC"+ filename] = thisTuple[1]
 
-                                   # Check if the length of the other columns is still just one file else we need to fill with NAs:
-                                   if len(AllMetricSizesDf[index].index) == len(iii["value"]): # Just one file
-                                       AllMetricSizesDf[index][metricname] = iii["value"]
-                                   else:
-                                       if len(AllMetricSizesDf[index].index)>0:#There are other files, but they didn't have a value for this metric
-                                            AllMetricSizesDf[index][metricname] = np.array([np.repeat("NA" , len(AllMetricSizesDf[index].index) -len(iii["value"])),iii["value"]])
-                                            
-                                       else:#This is the first metric
-                                            AllMetricSizesDf[index][metricname] = iii["value"]
+                                if metricname== "MS2TIC":
+                                    if 34444 not in uniqueSizes: # I chose a random number just to keep track
+                                        uniqueSizes.append(34444)
+                                        index = uniqueSizes.index(34444) 
+                                        AllMetricSizesDf.append(pd.DataFrame(columns = [str("RT"+ filename),str("TIC"+ filename)]))
+                                        AllMetricSizesDf[index][str("RT"+ filename)] = iii["value"][0]
+                                        AllMetricSizesDf[index]["TIC"+ filename] = iii["value"][1]
+                                        #for thisTuple in iii["value"]:
+                                        #    AllMetricSizesDf[index.tail(1).index.item(), str(filename + "RT")] = thisTuple[0]
+                                        #    AllMetricSizesDf[index.tail(1).index.item(), filename + "TIC"] = thisTuple[1]
+                                        
 
-
-                            else: # We create one:
-                                uniqueSizes.append(len(iii["value"]))
-                                index = uniqueSizes.index(len(iii["value"]))
-                                AllMetricSizesDf.append(pd.DataFrame())
+                                    else:
+                                        index = uniqueSizes.index(34444) 
+                                        AllMetricSizesDf[index][str("RT"+ filename)] = thisTuple[0]
+                                        AllMetricSizesDf[index]["TIC"+ filename] = thisTuple[1]
+                            
+                            
+                            
+                               ################Tuple end        
+                                       
+                            else:
                                 temp = []
                                 for i in range(1,len(iii["value"])+1):
-                                    stringstojoin = {filename, metricname, str(i)}
-                                    separator = "_"
-                                    temp.append(separator.join(stringstojoin))
-                                AllMetricSizesDf[index]['Name'] = temp
-                                AllMetricSizesDf[index][metricname] = iii["value"]
+                                                stringstojoin = {filename,  str(i)}
+                                                separator = "_"
+                                                temp.append(separator.join(stringstojoin))
+                                # DO we already have a DF for it:
+                                if len(iii["value"]) in uniqueSizes: 
+                                    index = uniqueSizes.index(len(iii["value"]))
+                                    #Check if columnname already exists:
+                                    if(metricname in AllMetricSizesDf[index]):
+                                        # Check if its the first instance for this file, else we need to make new NA rows: The idea is that there should be index * iii["value"]
+                                        if temp[0] not in AllMetricSizesDf[index]['Name']:# first instance of this file
+                                            #create some NA's 
+                                            for iiii in range(1,len(temp)):
+                                                AllMetricSizesDf[index].append(pd.Series([np.repeat("NA",len(AllMetricSizesDf[index].columns))]), ignore_index=True)
+                                                AllMetricSizesDf[index][AllMetricSizesDf[index].tail(1).index.item(),"Name"] = temp[iiii]
+                                                AllMetricSizesDf[index][AllMetricSizesDf[index].tail(1).index.item(),metricname] = iii['value'][iiii]
+                                        
+                                        else:
+                                            fileIndex = AllMetricSizesDf[index]['Name'].index(temp[0])
+                                            for iiii in range(0,len(temp)-1):
+                                                 AllMetricSizesDf[index][fileIndex+iiii,metricname] = iii["value"][iiii]
+                                    
+
+                                    else:# We first need to create the column:
+
+                                       # Check if the length of the other columns is still just one file else we need to fill with NAs:
+                                       if temp[0] in AllMetricSizesDf[index]['Name']: #This file hs other values
+                                           fileIndex = AllMetricSizesDf[index]['Name'].index(temp[0])
+                                           for iiii in range(0,len(temp)-1):
+                                                 AllMetricSizesDf[index][fileIndex+iiii, metricname] = iii["value"][iiii]
+                                       
+                                       else:#This is the first occurence of this file 
+                                           for iiii in range(0,len(temp)-1):
+                                                AllMetricSizesDf[index].append(pd.Series([np.repeat("NA",len(AllMetricSizesDf[index].columns))]), ignore_index=True)
+                                                AllMetricSizesDf[index][AllMetricSizesDf[index].tail(1).index.item(), 'Name'] = temp[iiii]
+                                                AllMetricSizesDf[index][AllMetricSizesDf[index].tail(1).index.item(), metricname] = iii['value'][iiii]
+
+
+                                else: # We create the df:
+                                    uniqueSizes.append(len(iii["value"]))
+                                    index = uniqueSizes.index(len(iii["value"]))
+                                    AllMetricSizesDf.append(pd.DataFrame(columns = ['Name', metricname]))
+                                    for iiii in range(0,len(temp)-1):
+                                       row_df = pd.DataFrame([pd.Series([temp[iiii], iii['value'][iiii]])])
+                                       AllMetricSizesDf[index] = pd.concat([row_df, AllMetricSizesDf[index]], ignore_index=True)        
+                                   
 
 
                         elif 1 in uniqueSizes: 
                                 index = uniqueSizes.index(1)
                                 #Check if columnname already exists:
-                                if(metricname in AllMetricSizesDf[index]):
-                                    cIndex = AllMetricSizesDf[index].index(iii["name"])
+                                if(metricname in AllMetricSizesDf[index].columns):
                                     # Check if its the first instance for this file, else we need to make new NA rows: The idea is that there should be index * iii["value"]
-                                    if len(AllMetricSizesDf.index) != index * len(iii["value"]): # first instance of this file
+                                    if filename not in AllMetricSizesDf[index]['Name']: # first instance of this file
                                         #create some NA's 
-                                        for i in len(AllMetricSizesDf[index].columns):
-                                                AllMetricSizesDf[index][ii][i] = "NA" * len(iii["value"])
-                                    # Now change the NA's to values:
-                                    AllMetricsSizesDf[index][metricname] = iii["value"]
+                                      AllMetricSizesDf[index].append(  pd.Series([np.repeat("NA" , len(AllMetricSizesDf[index].columns))]), ignore_index=True)
+                                      AllMetricSizesDf[index][AllMetricSizesDf[index].tail(1).index.item(), "Name"] = filename
+                                      AllMetricSizesDf[index][AllMetricSizesDf[index].tail(1).index.item(), metricname] = iii['value']
                                  
 
                                 else:# We first need to create the column:
 
                                    # Check if the length of the other columns is still just one file else we need to fill with NAs:
-                                   if len(AllMetricSizesDf[index].index) == 0 or len(AllMetricSizesDf[index].index) == 1: # FIrst value of the whole dataset or second value of the dataset
+                                   if len(AllMetricSizesDf[index].index) == 1: # FIrst value of the whole dataset 
                                        AllMetricSizesDf[index][metricname] = iii["value"]
                                    else:
                                        if len(AllMetricSizesDf[index].index) >1:
-                                        AllMetricSizesDf[index][metricname] = np.array([np.repeat("NA" , len(AllMetricSizesDf[index].index)),iii["value"]])
-
+                                        AllMetricSizesDf[index][metricname] = pd.Series([np.repeat("NA" , len(AllMetricSizesDf[index].index)),iii["value"]], ignore_index=True)
+                            
 
                         else: # We create need to create the comprehensive table:
                                 uniqueSizes.append(1)
                                 index = uniqueSizes.index(1)
-                                AllMetricSizesDf.append(pd.DataFrame())
-                                stringstojoin = {filename, metricname, "1"}
-                                separator = "_"
-                                AllMetricSizesDf[index]['Name'] = separator.join(stringstojoin)
-                                AllMetricSizesDf[index][metricname] = iii["value"]
-
+                                AllMetricSizesDf.append(pd.DataFrame(columns = ['Name', metricname]))
+                                row_df = pd.DataFrame([pd.Series([filename, iii['value']])])
+                                AllMetricSizesDf[index] = pd.concat([row_df, AllMetricSizesDf[index]], ignore_index=True)
+                                
         return AllMetricSizesDf
 
 

@@ -353,7 +353,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         if inputFile:
             filepath = FileInput.BrowseWindow.FileCheck(inputFile)
             Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(inputFile)
-            Ui_MainWindow.checkColumnLength(self)
+            #Ui_MainWindow.checkColumnLength(self)
             Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
             DataPreparation.DataPrep.ExtractNumericColumns(self.metrics)
             DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
@@ -374,10 +374,16 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
        
         self.EnableAnalysisButtons()
         
-        for dataset in range(1,len(Ui_MainWindow.NumericMetrics)):
-            FileInput.BrowseWindow.currentDataset = Ui_MainWindow.metrics[dataset]
+        #Changing this so that only the dataset with 1 metric is used for outlier identification
+        minLength = 1000
+        #for dataset in range(1,len(Ui_MainWindow.NumericMetrics)):
+        #       if len(Ui_MainWindow.NumericMetrics[dataset].index)< minLength:#Comprehensive should be the shortest dataset and also the first
+        #           minLength = len(Ui_MainWindow.NumericMetrics[dataset].index)
+        #           comPrehensive = dataset
+
+        FileInput.BrowseWindow.currentDataset = Ui_MainWindow.NumericMetrics
              # Check if you have the correct number of variables/samples
-            if self.checkColumnNumberForPCA() == 1:
+        if self.checkColumnNumberForPCA() == 1:
 
                 if self.checkSampleNumberForPCA() == 1:
                     if len(FileInput.BrowseWindow.currentDataset.columns)>1:
@@ -597,19 +603,19 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.setCurrentIndex(iIndex)
 
     def checkColumnNumberForPCA(self):
-        if(len(FileInput.BrowseWindow.currentDataset.columns) < 3):
-            QMessageBox.warning(self, "Warning:", "There are less than three \
-                              numeric columns in the dataset. PCA will not \
-                              be performed.")
-            return 0
-        else: 
+        #if(len(FileInput.BrowseWindow.currentDataset.columns) < 3):
+         #   QMessageBox.warning(self, "Warning:", "There are less than three \
+          #                    numeric columns in the dataset. PCA will not \
+          #                    be performed.")
+          #  return 0
+        #else: 
             return 1
 
     def checkSampleNumberForPCA(self):
-        if(len(FileInput.BrowseWindow.currentDataset.index) < 4):
-            QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
-            return 0
-        else:
+       # if(len(FileInput.BrowseWindow.currentDataset.index) < 4):
+       #     QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
+       #     return 0
+       # else:
             return 1
 
 
@@ -665,12 +671,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         PCAGraph.annot.xyann = (PCA.plotdata[closestx[0], 0],
                                 PCA.plotdata[closestx[0], 1])
         samplenames = DataPreparation.DataPrep.FindRealSampleNames(
-            Ui_MainWindow, Ui_MainWindow.metrics.iloc[:, 0])
+            Ui_MainWindow, FileInput.BrowseWindow.currentDataset.loc['Name'])
         if(len(samplenames) != len(set(samplenames))):
             # if there are duplicates in the filenames column like RTsegments
             # or per swath metrics
             sampleNameColumn1Combination = samplenames[closestx[0]] + "-" \
-                + str(self.metrics.iloc[closestx[0], 1])
+                + str(FileInput.BrowseWindow.currentDataset.iloc[closestx[0], 1])
             text = sampleNameColumn1Combination.format(PCA.plotdata[
                                                        closestx[0], 0],
                                                        PCA.plotdata[
