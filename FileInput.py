@@ -61,7 +61,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                    for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
                        #UI_MainWindow.Ui_MainWindow.metrics.set_index(
                         #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-                       BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[i]
+                       BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
                        DataPreparation.DataPrep.ExtractNumericColumns(
                            BrowseWindow.currentDataset)
                        DataPreparation.DataPrep.RemoveLowVarianceColumns(
