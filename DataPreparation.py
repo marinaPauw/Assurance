@@ -32,11 +32,13 @@ class DataPrep(object):
 
         NumericMetrics = metrics
         dateColumn = False
+        namecolumn = False
         for col in metrics.columns:
-            if "StartTimeStamp" in col:
-                dateColumn = True
-            if "Name" in col:
-                namecolumn = True
+            if isinstance(col,str):
+                if "StartTimeStamp" in col:
+                    dateColumn = True
+                if "Name" in col:
+                    namecolumn = True
         if dateColumn:
             metrics["dates"] = "Default"
             dateVector = []
@@ -45,8 +47,7 @@ class DataPrep(object):
             metrics["dates"] = dateVector
             print("Date column added. There are now %d columns",
                   len(metrics.columns))
-        else:
-            print("No StartTimeStamp column.")
+        
         if namecolumn:
             del NumericMetrics[NumericMetrics.columns[0]]
         

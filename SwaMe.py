@@ -93,16 +93,13 @@ class SwaMe():
         #UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(inputFile)
         #UI_MainWindow.Ui_MainWindow.checkColumnLength(self)
         UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-        for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
-                       #UI_MainWindow.Ui_MainWindow.metrics.set_index(
-                        #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-             FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[i]
-             DataPreparation.DataPrep.ExtractNumericColumns(
+        FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
+        DataPreparation.DataPrep.ExtractNumericColumns(
                            FileInput.BrowseWindow.currentDataset)
-             DataPreparation.DataPrep.RemoveLowVarianceColumns(
+        DataPreparation.DataPrep.RemoveLowVarianceColumns(
                            UI_MainWindow.Ui_MainWindow)
-             UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
-             UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
+        UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
+        UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
         UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(UI_MainWindow.Ui_MainWindow)
         
 

@@ -53,7 +53,7 @@ class PCAGraph(FigureCanvas):
         #    throw,FileInput.BrowseWindow.datasetname = FileInput.BrowseWindow.datasetname.rsplit('\\',1)
         #if FileInput.BrowseWindow.datasetname.find("/") > 0:
         #    throw,FileInput.BrowseWindow.datasetname = FileInput.BrowseWindow.datasetname.rsplit('/',1)
-        str1= "PCA of the QC metrics of %s" % (UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename)
+        str1= "PCA of the comprehensive QC metrics"
         fig.suptitle(str1, fontsize=16)
         
         self.compute_initial_figure()
