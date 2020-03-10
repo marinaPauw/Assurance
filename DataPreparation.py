@@ -58,20 +58,22 @@ class DataPrep(object):
         # Now remove all columns that are not numeric, \
         # including date and starttimestamp
         NumericMetrics = NumericMetrics.replace([np.inf, -np.inf], np.nan)
-        # NumericMetrics = np.nan_to_num(NumericMetrics)
+        NumericMetrics = np.nan_to_num(NumericMetrics)
+
         FileInput.BrowseWindow.currentDataset = NumericMetrics
 
     def RemoveLowVarianceColumns(self):
         Nm = FileInput.BrowseWindow.currentDataset
+        print(FileInput.BrowseWindow.currentDataset)
         droppedColumns = []
         dpIndex = []
         threshold = 0.01
-        #if (len(Nm.columns)) < 1:
+        if (len(Nm.columns)) < 1:
 
-        #    QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-         #                     "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
-         #   UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
-         #                                               Ui_MainWindow)
+            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
+                              "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
+            UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
+                                                        Ui_MainWindow)
 
         for i in range(len(Nm.columns)):
             variance = np.var(Nm.iloc[:, i])
