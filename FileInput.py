@@ -187,9 +187,14 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
             metricsDf = pd.DataFrame(metrics)
             # Create dataframes - for SwaMe we need one for comprehensive, one for swath, one for rt, one for quartiles, one for quantiles
-            
-            comprehensiveColumnNames = []
-            AllColumnNamesDf = list()
+            fileIndexInFiles = 0
+            i=0
+            while i < len(inputFiles):
+                if file == inputFiles[i]:
+                    fileIndexInFiles = i
+                i=i+1
+
+            UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.UploadProgress.setValue(fileIndexInFiles/len(inputFiles)*100)
 
             for ii in metricsDf["mzQC"]["runQuality"]:
                # NumofTotalTransitions = []
