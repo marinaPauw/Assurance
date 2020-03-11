@@ -336,7 +336,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         if temp[0] not in AllMetricSizesDf[dfIndex]['Name']:# first instance of this file
                                             #create some NA's 
                                             for iiii in range(1,len(temp)):
-                                                series = pd.Series([np.repeat("NA" , len(AllMetricSizesDf[dfIndex].columns))])
+                                                series = pd.Series()
                                                 series.name = temp[iiii]
                                                 AllMetricSizesDf[dfIndex]= AllMetricSizesDf[dfIndex].append(series)
                                                 AllMetricSizesDf[dfIndex]["Name"].loc[str(temp[iiii])] = temp[iiii]
@@ -380,13 +380,15 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                     # Check if its the first instance for this file, else we need to make new NA rows: The idea is that there should be index * iii["value"]
                                     if filename not in AllMetricSizesDf[dfIndex]['Name']: # first instance of this file
                                         #create some NA's 
-                                      series = pd.Series([np.repeat("NA" , len(AllMetricSizesDf[dfIndex].columns))])
+                                      print(AllMetricSizesDf[dfIndex]) 
+                                      series = pd.Series()
                                       series.name = filename
                                       AllMetricSizesDf[dfIndex] = AllMetricSizesDf[dfIndex].append(series)
+                                      print(AllMetricSizesDf[dfIndex]) 
                                       if filename in AllMetricSizesDf[dfIndex].index:
                                           AllMetricSizesDf[dfIndex]["Name"].loc[filename] = filename
                                           AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii['value']
-                                          
+                                             
                                       else:
                                           print("Error creating filename row.")
                                     
