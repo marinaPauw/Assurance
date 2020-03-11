@@ -545,8 +545,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onIndMetricsClicked(self):
-        # First open a pop-up window informing the user
-        # that this takes a moment:
         Ui_MainWindow.DisableAnalysisButtons(self)
         Ui_MainWindow.tab.AnalysisFrame.progress2.show()
         Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(10)
@@ -622,7 +620,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.badpredictionList = []
 
         # InputtingFile:
-        QMessageBox.about(Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
+        QtWidgets.QMessageBox.about(Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
                           "You will be asked to select a separated value file (.tsv or .csv) containing two columns. The first should contain the filename and the second the metric on which you would like to separate good quality data from bad, for example ID's. From the corresponding graph you will select which samples are to be used for the guide set.")
         
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, Ui_MainWindow)
@@ -726,7 +724,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         outlierDistance = Ui_MainWindow.calculateOutLierDistances(self, medianDistances)
         Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(65)
         Q3 = np.percentile(medianDistances["MedianDistance"], 75)  # Q3
-        
+
         medianDistances["outlier"] = medianDistances["MedianDistance"].apply(
             lambda x: x >= Q3 + outlierDistance
         )

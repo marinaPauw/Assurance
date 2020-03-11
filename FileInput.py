@@ -329,25 +329,27 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                 AllMetricSizesDf[dfIndex]= AllMetricSizesDf[dfIndex].append(series)
                                                 AllMetricSizesDf[dfIndex]["Name"].loc[str(temp[iiii])] = temp[iiii]
                                                 AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii['value'][iiii]
-                                        
+                                                if metricname == "Target mz":
+                                                    print(AllMetricSizesDf[dfIndex]["Target mz"])
                                         else:
                                             for iiii in range(0,len(temp)):
                                                  AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii["value"][iiii]
-                                    
+                                   
 
                                     else:# We first need to create the column:
 
                                        # Check if the length of the other columns is still just one file else we need to fill with NAs:
                                        if temp[0] in AllMetricSizesDf[dfIndex]['Name']: #This file hs other values
                                            #Create some NA's
-                                           AllMetricSizesDf[dfIndex][metricname] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].index))])
-                                           for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
+                                            AllMetricSizesDf[dfIndex][metricname] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].index))])
+                                            for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
                                                if AllMetricSizesDf[dfIndex]['Name'].index[y] ==temp[0]:
                                                    fileIndex = y
-                                           for iiii in range(0,len(temp)):
+                                            for iiii in range(0,len(temp)):
                                                  AllMetricSizesDf[dfIndex].at[temp[iiii], metricname] = iii["value"][iiii]
+
                                        else:#This is the first occurence of this file 
-                                           for iiii in range(0,len(temp)-1):
+                                            for iiii in range(0,len(temp)-1):
                                                 AllMetricSizesDf[dfIndex].loc[temp[iiii]] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].index))])
                                                 AllMetricSizesDf[dfIndex][AllMetricSizesDf[dfIndex].tail(1).index.item(), 'Name'] = temp[iiii]
                                                 AllMetricSizesDf[dfIndex][AllMetricSizesDf[dfIndex].tail(1).index.item(), metricname] = iii['value'][iiii]
