@@ -489,7 +489,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
             if possibleinputFile.endswith('.TraML') or possibleinputFile.endswith('.tsv') or possibleinputFile.endswith('.csv'):
                 return possibleinputFile
 
-    def find_indices(lst, condition):
+    def find_indices(self, lst, condition):
             return [i for i, elem in enumerate(lst) if condition(elem)]
    
         
