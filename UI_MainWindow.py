@@ -82,11 +82,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.leftFrame.files = QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
         Ui_MainWindow.tab.UploadFrame.leftFrame.fileList = QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
         Ui_MainWindow.tab.UploadFrame.leftFrame.cpusLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
-        Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox = QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame)
         Ui_MainWindow.tab.UploadFrame.leftFrame.CLOLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
-        Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox = QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame)
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
-        Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame) 
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox = QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame) 
         Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.leftFrame)
         #Ui_MainWindow.tab.UploadFrame.leftFrame.Dir = QtWidgets.QRadioButton("Whole Directory")
         
@@ -130,9 +130,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         hbox3.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel)
         hbox3.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox)
         QuaMetervbox.addLayout(hbox3)
-        #hboxdir = QtWidgets.QHBoxLayout()
-        #hboxdir.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.Dir)
-        #QuaMetervbox.addLayout(hboxdir)
         hbox4 = QtWidgets.QHBoxLayout()
         hbox4.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton)
         QuaMetervbox.addLayout(hbox4)
@@ -158,7 +155,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        #Ui_MainWindow.tab.UploadFrame.rightFrame.Dir = QtWidgets.QRadioButton("Whole Directory")
         Ui_MainWindow.tab.UploadFrame.rightFrame.textedit =QtWidgets.QTextEdit(readOnly=True)
         Ui_MainWindow.IRTinputFile = None
 
@@ -208,7 +204,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMehbox3.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox)
         SwaMevbox.addLayout(SwaMehbox3)
         SwaMehbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        #SwaMehbox4.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.Dir)
         SwaMehbox4.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.iRT)
         SwaMevbox.addLayout(SwaMehbox4)
         SwaMehbox5 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
@@ -361,11 +356,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             DataPreparation.DataPrep.ExtractNumericColumns(self.metrics)
             DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
         Ui_MainWindow.EnableAnalysisButtons(self)
-        
-    #def checkColumnLength(self):
-    #   if(len(Ui_MainWindow.metrics.columns)<1):
-    #            QMessageBox.warning(self.tab,"Error:" ,"After removing low variance columns, there were no columns left from which to conduct any sort of analysis.")
-    #            self.onBrowseClicked()
 
     @pyqtSlot()
     def onOutliersClicked(self):
@@ -379,10 +369,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         #Changing this so that only the dataset with 1 metric is used for outlier identification
         minLength = 1000
-        #for dataset in range(1,len(Ui_MainWindow.NumericMetrics)):
-        #       if len(Ui_MainWindow.NumericMetrics[dataset].index)< minLength:#Comprehensive should be the shortest dataset and also the first
-        #           minLength = len(Ui_MainWindow.NumericMetrics[dataset].index)
-        #           comPrehensive = dataset
 
         FileInput.BrowseWindow.currentDataset = Ui_MainWindow.NumericMetrics
              # Check if you have the correct number of variables/samples
@@ -495,7 +481,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.setEnabled(False) 
         Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton.setEnabled(False)
-        #Ui_MainWindow.tab.UploadFrame.leftFrame.Dir.setEnabled(False)
 
     def EnableSwaMeArguments(self):
         
@@ -508,7 +493,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.setEnabled(True)
-        #Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRT.setEnabled(True)
         
@@ -522,7 +506,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.setEnabled(False)
-        #Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRT.setEnabled(False)
         Ui_MainWindow.DisableSwaMeIRTArguments(self)
@@ -606,19 +589,19 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.setCurrentIndex(iIndex)
 
     def checkColumnNumberForPCA(self):
-        #if(len(FileInput.BrowseWindow.currentDataset.columns) < 3):
-         #   QMessageBox.warning(self, "Warning:", "There are less than three \
-          #                    numeric columns in the dataset. PCA will not \
-          #                    be performed.")
-          #  return 0
-        #else: 
+        if(len(FileInput.BrowseWindow.currentDataset.columns) < 3):
+            QMessageBox.warning(self, "Warning:", "There are less than three \
+                              numeric columns in the dataset. PCA will not \
+                              be performed.")
+            return 0
+        else: 
             return 1
 
     def checkSampleNumberForPCA(self):
-       # if(len(FileInput.BrowseWindow.currentDataset.index) < 4):
-       #     QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
-       #     return 0
-       # else:
+        if(len(FileInput.BrowseWindow.currentDataset.index) < 4):
+            QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
+            return 0
+        else:
             return 1
 
 
@@ -742,12 +725,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         medianDistances = Ui_MainWindow.createMedianDistances(self, sampleSize)
         outlierDistance = Ui_MainWindow.calculateOutLierDistances(self, medianDistances)
         Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(65)
-
-        # Zscores:
-        from scipy.stats import zscore
-        medianDistances["zScore"] = zscore(medianDistances["MedianDistance"])
-        medianDistances["outlier"] = medianDistances["zScore"].apply(
-            lambda x: x <= -3.5 or x >= 3.5
+        Q3 = np.percentile(medianDistances["MedianDistance"], 75)  # Q3
+        
+        medianDistances["outlier"] = medianDistances["MedianDistance"].apply(
+            lambda x: x >= Q3 + outlierDistance
         )
         print("The following runs were identified as outliers \
         based on their z-scores:")
