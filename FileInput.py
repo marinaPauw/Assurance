@@ -230,7 +230,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     if "value" in iii:# This means that an empty value is never added to the dataframe
                         # Now we need to figure out in which dataframe it belongs:
                         #Something other than comprehensive:
-                        if isinstance(iii["value"], collections.Sequence) and not isinstance(iii["value"],str):
+                        if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) > 1 and not isinstance(iii["value"],str):
                             ##########################Tuple:
                             
                             if isinstance(iii["value"][0], collections.Sequence) and not isinstance(iii["value"][0],str):# If prognosticator tuple:
@@ -359,8 +359,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
                                     for iiii in range(0,len(temp)):
                                             AllMetricSizesDf[dfIndex].loc[temp[iiii]] = [temp[iiii] , iii['value'][iiii]]   
-
-
+                        
                         elif 1 in uniqueSizes: 
                                  dfIndex = uniqueSizes.index(1)
                                 #Check if columnname already exists:
@@ -368,37 +367,43 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                     # Check if its the first instance for this file, else we need to make new NA rows: The idea is that there should be index * iii["value"]
                                     if filename not in AllMetricSizesDf[dfIndex]['Name']: # first instance of this file
                                         #create some NA's 
-                                      print(AllMetricSizesDf[dfIndex]) 
                                       series = pd.Series()
                                       series.name = filename
                                       AllMetricSizesDf[dfIndex] = AllMetricSizesDf[dfIndex].append(series)
-                                      print(AllMetricSizesDf[dfIndex]) 
                                       if filename in AllMetricSizesDf[dfIndex].index:
-                                          AllMetricSizesDf[dfIndex]["Name"].loc[filename] = filename
-                                          AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii['value']
+                                            AllMetricSizesDf[dfIndex]["Name"].loc[filename] = filename
+                                            if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
+                                                AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii['value'][0]
+                                            else:
+                                                AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value']
                                              
                                       else:
                                           print("Error creating filename row.")
                                     
                                     else: #this file has other values, but not this metric
-                                        for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
-                                               if AllMetricSizesDf[dfIndex]['Name'].index[y] ==temp[0]:
-                                                   fileIndex = y
-                                        AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii["value"]
+                                        if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
+                                            AllMetricSizesDf[dfIndex].loc[[filename], [metricname]] = iii['value'][0]
 
                                  else:# We first need to create the column:
 
                                    # Check if the length of the other columns is still just one file else we need to fill with NAs:
-                                   if len(AllMetricSizesDf[dfIndex].index) == 1: # FIrst value of the whole dataset 
-                                       AllMetricSizesDf[dfIndex][metricname] = iii["value"]
-                                   else:
-                                       #if len(AllMetricSizesDf[dfIndex].index) >1:
-                                        #AllMetricSizesDf[dfIndex] = AllMetricSizesDf[dfIndex].assign(metricname = [np.repeat("NA" , len(AllMetricSizesDf[dfIndex].index))]) 
-                                       # for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
-                                       #        if AllMetricSizesDf[dfIndex]['Name'].index[y] ==temp[0]:
-                                        #           fileIndex = y
-                                       # AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii["value"]
-                                        print(metricname)
+                                   if filename not in AllMetricSizesDf[dfIndex].index: # FIrst value for this column and row
+                                        AllMetricSizesDf[dfIndex][metricname] = pd.Series() 
+                                        series = pd.Series()
+                                        series.name = filename
+                                        AllMetricSizesDf[dfIndex] = AllMetricSizesDf[dfIndex].append(series)
+                                        if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
+                                            AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value'][0]
+                                        else:
+                                            AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value']
+                                   else:# filename exists, column name is new
+                                     if len(AllMetricSizesDf[dfIndex].index) >1:
+                                        AllMetricSizesDf[dfIndex][metricname] = pd.Series() 
+                                        for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
+                                               if AllMetricSizesDf[dfIndex]['Name'].index[y] == filename:
+                                                   fileIndex = y
+                                        if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
+                                            AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value'][0]
                         else: # We create need to create the comprehensive table:
                                 uniqueSizes.append(1)
                                 dfIndex = uniqueSizes.index(1)
