@@ -49,9 +49,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.tab.setStyleSheet("background-color: gainsboro;")
 
          #--------------------------------------------------------------Frames:-------------------------------------------------------
-        Ui_MainWindow.tab.UploadFrame = QFrame(self)
-        Ui_MainWindow.tab.UploadFrame.setFrameShape(QFrame.StyledPanel)
-        Ui_MainWindow.tab.UploadFrame.setFrameShadow(QFrame.Raised)
+        Ui_MainWindow.tab.UploadFrame = QtWidgets.QFrame(self)
+        Ui_MainWindow.tab.UploadFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.tab.UploadFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         Ui_MainWindow.tab.UploadFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
          
          
@@ -350,7 +350,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     @pyqtSlot()
     def onBrowseClicked(self):
         Ui_MainWindow.DisableAnalysisButtons(self)
-        FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, Ui_MainWindow)
+        FileInput.BrowseWindow.__init__(Ui_MainWindow)
         inputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
         global metrics
         if inputFile:
