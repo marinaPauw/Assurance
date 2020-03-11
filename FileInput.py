@@ -13,14 +13,14 @@ import json
 
 
 class BrowseWindow(QtWidgets.QMainWindow):
-    def __init__(self, Ui_MainWindow):
+    def __init__(self):
         self.title = "Load file"
         UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
 
-    def GetInputFile(Ui_MainWindow):
+    def GetInputFile(self):
         files = QtWidgets. QFileDialog()
         files.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
-        possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(Ui_MainWindow.tab, 
+        possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(UI_MainWindow.Ui_MainWindow.tab, 
                                                                "Browse", "",
                                                                "All Files (*)", 
                                                                options=
@@ -57,11 +57,11 @@ class BrowseWindow(QtWidgets.QMainWindow):
                    UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
             else:
                 possibleinputFile = possibleinputFiles[0]
-                inputFile = BrowseWindow.fileTypeCheck(possibleinputFile)
+                inputFile = BrowseWindow.fileTypeCheck(self, possibleinputFile)
                 if(inputFile):
                     counter = inputFile.count('.') 
                     if(counter==1):# .mzML
-                         BrowseWindow.datasetname,throw = inputFile.split('.')
+                         BrowseWindow.datasetname, throw = inputFile.split('.')
                     elif(counter==2):#If the program lists .wiff.scan
                          BrowseWindow.datasetname,throw,throw = inputFile.split('.')
                     elif(counter==3):
@@ -71,23 +71,23 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText("   " + inputFile + "  ")
                     return inputFile
    
-    def GetTrainingSetFile(Ui_MainWindow):
+    def GetTrainingSetFile(self):
         possibleInputFile, _ =QtWidgets. QFileDialog.getOpenFileName(
-            Ui_MainWindow.tab,"Select a file from which to create the training set:", "","All Files (*)", options = QtWidgets.QFileDialog.Options())
+            UI_MainWindow.Ui_MainWindow.tab,"Select a file from which to create the training set:", "","All Files (*)", options = QtWidgets.QFileDialog.Options())
         if(possibleInputFile):
-            TrainingSetFile = BrowseWindow.TrainingSetFileTypeCheck(possibleInputFile)
+            TrainingSetFile = BrowseWindow.TrainingSetFileTypeCheck(self, possibleInputFile)
             if(TrainingSetFile):
                 return TrainingSetFile
     
-    def fileTypeCheck(inputFile):
+    def fileTypeCheck(self,inputFile):
         if inputFile.endswith('.json') or inputFile.endswith('.csv') or inputFile.endswith('.tsv'):
             return inputFile
         else:
-            QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
+            QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
                               "Message from Assurance: ", "Error: File type incorrect. Please load a.json, .tsv or .csv file. Also please ensure that the decimals are separated by '.'.")
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
-    def metricsParsing(inputFile):
+    def metricsParsing(self,inputFile):
        try:
         if inputFile.endswith('.json'):
             with open(inputFile) as f:
@@ -97,7 +97,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
             for ii in metricsDf["mzQC"]["runQuality"]:
                for iii in ii["qualityParameters"]:
                 columnNames.append (iii["name"])
-            PCAInput = pd.DataFrame(columns=columnNames)
+            PCAInput = pd.DataFrame(columns = columnNames)
             myPIArray = PCAInput.values
             tempVec = []
             for ii in metricsDf["mzQC"]["runQuality"]:
@@ -135,7 +135,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(
                 UI_MainWindow.Ui_MainWindow)
 
-    def FileCheck(path):       
+    def FileCheck(self, path):       
         try:
             return(open(path,'rb'))
         except IOError:
@@ -143,7 +143,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                               "Error loading file...")
             return 0
     
-    def TrainingSetFileTypeCheck(inputFile):
+    def TrainingSetFileTypeCheck(self, inputFile):
           if inputFile.endswith('.csv') or inputFile.endswith('.tsv'):
             return inputFile
 
@@ -151,7 +151,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message from Assurance: ", "Error: File type incorrect. Please load a .json, .tsv or .csv file. Also please ensure that the decimals are separated by '.'.")
             UI_MainWindow.Ui_MainWindow.onLongitudinalClicked(UI_MainWindow.Ui_MainWindow)
             
-    def TrainingSetParse(inputFile):
+    def TrainingSetParse(self,inputFile):
         if inputFile.endswith('.csv'):
             TrainingSet = pd.DataFrame(pd.read_csv(inputFile, sep=","))
             BrowseWindow.TrainingSetFileMatchNames(BrowseWindow,
@@ -336,17 +336,15 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         if temp[0] not in AllMetricSizesDf[dfIndex]['Name']:# first instance of this file
                                             #create some NA's 
                                             for iiii in range(1,len(temp)):
-                                                AllMetricSizesDf[dfIndex].loc[temp[iiii]] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].columns))])
-                                                AllMetricSizesDf[dfIndex][AllMetricSizesDf[dfIndex].tail(1).index.item(),"Name"] = temp[iiii]
-                                                AllMetricSizesDf[dfIndex][AllMetricSizesDf[dfIndex].tail(1).index.item(),metricname] = iii['value'][iiii]
+                                                series = pd.Series([np.repeat("NA" , len(AllMetricSizesDf[dfIndex].columns))])
+                                                series.name = temp[iiii]
+                                                AllMetricSizesDf[dfIndex]= AllMetricSizesDf[dfIndex].append(series)
+                                                AllMetricSizesDf[dfIndex]["Name"].loc[str(temp[iiii])] = temp[iiii]
+                                                AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii['value'][iiii]
                                         
                                         else:
-                                            for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
-                                               if AllMetricSizesDf[dfIndex]['Name'].index[y] ==temp[0]:
-                                                   fileIndex = y
                                             for iiii in range(0,len(temp)):
-                                                 AllMetricSizesDf[dfIndex].at[temp[iiii], metricname] = iii["value"][iiii]
-                                            print(AllMetricSizesDf[dfIndex])
+                                                 AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii["value"][iiii]
                                     
 
                                     else:# We first need to create the column:
@@ -355,19 +353,16 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                        if temp[0] in AllMetricSizesDf[dfIndex]['Name']: #This file hs other values
                                            #Create some NA's
                                            AllMetricSizesDf[dfIndex][metricname] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].index))])
-                                           print(AllMetricSizesDf[dfIndex])
                                            for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
                                                if AllMetricSizesDf[dfIndex]['Name'].index[y] ==temp[0]:
                                                    fileIndex = y
                                            for iiii in range(0,len(temp)):
                                                  AllMetricSizesDf[dfIndex].at[temp[iiii], metricname] = iii["value"][iiii]
-                                           print(AllMetricSizesDf[dfIndex])
                                        else:#This is the first occurence of this file 
                                            for iiii in range(0,len(temp)-1):
                                                 AllMetricSizesDf[dfIndex].loc[temp[iiii]] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].index))])
                                                 AllMetricSizesDf[dfIndex][AllMetricSizesDf[dfIndex].tail(1).index.item(), 'Name'] = temp[iiii]
                                                 AllMetricSizesDf[dfIndex][AllMetricSizesDf[dfIndex].tail(1).index.item(), metricname] = iii['value'][iiii]
-                                           print(AllMetricSizesDf[dfIndex])
 
                                 else: # We create the df:
                                     uniqueSizes.append(len(iii["value"]))
@@ -376,7 +371,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
                                     for iiii in range(0,len(temp)):
                                             AllMetricSizesDf[dfIndex].loc[temp[iiii]] = [temp[iiii] , iii['value'][iiii]]   
-                                    print(AllMetricSizesDf[dfIndex])
 
 
                         elif 1 in uniqueSizes: 
@@ -392,7 +386,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                       if filename in AllMetricSizesDf[dfIndex].index:
                                           AllMetricSizesDf[dfIndex]["Name"].loc[filename] = filename
                                           AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii['value']
-                                          print(AllMetricSizesDf[dfIndex])
+                                          
                                       else:
                                           print("Error creating filename row.")
                                     
@@ -400,7 +394,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
                                                if AllMetricSizesDf[dfIndex]['Name'].index[y] ==temp[0]:
                                                    fileIndex = y
-                                        AllMetricSizesDf[dfIndex][fileIndex, metricname] = iii["value"]
+                                        AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii["value"]
 
                                  else:# We first need to create the column:
 
@@ -408,18 +402,21 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                    if len(AllMetricSizesDf[dfIndex].index) == 1: # FIrst value of the whole dataset 
                                        AllMetricSizesDf[dfIndex][metricname] = iii["value"]
                                    else:
-                                       if len(AllMetricSizesDf[dfIndex].index) >1:
-                                        AllMetricSizesDf[dfIndex][metricname] = pd.Series([np.repeat("NA" , len(AllMetricSizesDf[dfIndex].index)),iii["value"]], ignore_index=True)
-                            
-
+                                       #if len(AllMetricSizesDf[dfIndex].index) >1:
+                                        #AllMetricSizesDf[dfIndex] = AllMetricSizesDf[dfIndex].assign(metricname = [np.repeat("NA" , len(AllMetricSizesDf[dfIndex].index))]) 
+                                       # for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
+                                       #        if AllMetricSizesDf[dfIndex]['Name'].index[y] ==temp[0]:
+                                        #           fileIndex = y
+                                       # AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii["value"]
+                                        print(metricname)
                         else: # We create need to create the comprehensive table:
                                 uniqueSizes.append(1)
                                 dfIndex = uniqueSizes.index(1)
                                 AllMetricSizesDf.append(pd.DataFrame(columns = ['Name', metricname]))
                                 AllMetricSizesDf[dfIndex]["Name"] = pd.Series([filename])
                                 AllMetricSizesDf[dfIndex][metricname] = iii['value']
-                                print(AllMetricSizesDf[dfIndex])
-                                
+        
+        print(AllMetricSizesDf[0])
         return AllMetricSizesDf
 
 
@@ -427,7 +424,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
         if inputFile.endswith('.wiff') or inputFile.endswith('.raw') or inputFile.endswith('.mzML'):
             return inputFile
         else:
-             QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
+             QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
                               "Message from Assurance: ", "Error: File type incorrect. Please load a .mzML, .wiff or .raw file.")
              UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
      
@@ -484,10 +481,10 @@ class BrowseWindow(QtWidgets.QMainWindow):
         if(SwaMePath):
             return SwaMePath
 
-    def GetIRTInputFile(Ui_MainWindow):
+    def GetIRTInputFile(self):
         file = QtWidgets. QFileDialog()
         file.setFileMode(QtWidgets.QFileDialog.ExistingFile)
-        possibleinputFile,_ = QtWidgets. QFileDialog.getOpenFileName(Ui_MainWindow.tab, 
+        possibleinputFile,_ = QtWidgets. QFileDialog.getOpenFileName(UI_MainWindow.Ui_MainWindow.tab, 
                                                                "Browse", "",
                                                                "TraML Files (*.TraML)", 
                                                                options=
