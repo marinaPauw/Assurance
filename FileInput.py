@@ -244,11 +244,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         dfIndex = uniqueSizes.index(34333) 
                                         AllMetricSizesDf.append(pd.DataFrame(columns = [str("RT"+ filename),str("TIC"+ filename)]))
                                         AllMetricSizesDf[dfIndex][str("RT"+ filename)] = iii["value"][0]
-                                        AllMetricSizesDf[dfIndex][ "TIC"+ filename] = iii["value"][1]
-                                        #for thisTuple in iii["value"]:
-                                        #    AllMetricSizesDf[dfIndex.tail(1).index.item(), str(filename + "RT")] = thisTuple[0]
-                                        #    AllMetricSizesDf[dfIndex.tail(1).index.item(), filename + "TIC"] = thisTuple[1]
-                                        
+                                        AllMetricSizesDf[dfIndex][ "TIC"+ filename] = iii["value"][1]                                        
 
                                     else:
                                         dfIndex = uniqueSizes.index(34333) 
@@ -261,11 +257,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         dfIndex = uniqueSizes.index(34444) 
                                         AllMetricSizesDf.append(pd.DataFrame(columns = [str("RT"+ filename),str("TIC"+ filename)]))
                                         AllMetricSizesDf[dfIndex][str("RT"+ filename)] = iii["value"][0]
-                                        AllMetricSizesDf[dfIndex]["TIC"+ filename] = iii["value"][1]
-                                        #for thisTuple in iii["value"]:
-                                        #    AllMetricSizesDf[dfIndex.tail(1).index.item(), str(filename + "RT")] = thisTuple[0]
-                                        #    AllMetricSizesDf[dfIndex.tail(1).index.item(), filename + "TIC"] = thisTuple[1]
-                                        
+                                        AllMetricSizesDf[dfIndex]["TIC"+ filename] = iii["value"][1]                                        
 
                                     else:
                                         dfIndex = uniqueSizes.index(34444) 
@@ -279,11 +271,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         AllMetricSizesDf.append(pd.DataFrame(columns = [str("RT"+ filename),str("MS1TIC"+ filename),str("MS2TIC"+ filename)]))
                                         AllMetricSizesDf[dfIndex][str("RT"+ filename)] = iii["value"][0]
                                         AllMetricSizesDf[dfIndex][ "MS1TIC"+ filename] = iii["value"][1]
-                                        AllMetricSizesDf[dfIndex][ "MS2TIC"+ filename] = iii["value"][2]
-                                        #for thisTuple in iii["value"]:
-                                        #    AllMetricSizesDf[dfIndex.tail(1).index.item(), str(filename + "RT")] = thisTuple[0]
-                                        #    AllMetricSizesDf[dfIndex.tail(1).index.item(), filename + "TIC"] = thisTuple[1]
-                                        
+                                        AllMetricSizesDf[dfIndex][ "MS2TIC"+ filename] = iii["value"][2]                                        
 
                                     else:
                                         dfIndex = uniqueSizes.index(54555) 
