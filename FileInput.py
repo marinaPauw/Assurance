@@ -342,11 +342,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                        if temp[0] in AllMetricSizesDf[dfIndex]['Name']: #This file hs other values
                                            #Create some NA's
                                             AllMetricSizesDf[dfIndex][metricname] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].index))])
-                                            for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
-                                               if AllMetricSizesDf[dfIndex]['Name'].index[y] ==temp[0]:
-                                                   fileIndex = y
                                             for iiii in range(0,len(temp)):
-                                                 AllMetricSizesDf[dfIndex].at[temp[iiii], metricname] = iii["value"][iiii]
+                                                 AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii["value"][iiii]
 
                                        else:#This is the first occurence of this file 
                                             for iiii in range(0,len(temp)-1):
@@ -366,7 +363,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                  dfIndex = uniqueSizes.index(1)
                                 #Check if columnname already exists:
                                  if(metricname in AllMetricSizesDf[dfIndex].columns):
-                                    # Check if its the first instance for this file, else we need to make new NA rows: The idea is that there should be index * iii["value"]
+                                    # Check if its the first instance for this file, in that case we need to make new NA rows: The idea is that there should be index * iii["value"]
                                     if filename not in AllMetricSizesDf[dfIndex]['Name']: # first instance of this file
                                         #create some NA's 
                                       series = pd.Series()
@@ -377,14 +374,14 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                             if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
                                                 AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii['value'][0]
                                             else:
-                                                AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value']
+                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value']
                                              
                                       else:
                                           print("Error creating filename row.")
                                     
                                     else: #this file has other values, but not this metric
                                         if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
-                                            AllMetricSizesDf[dfIndex].loc[[filename], [metricname]] = iii['value'][0]
+                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
 
                                  else:# We first need to create the column:
 
@@ -395,9 +392,9 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         series.name = filename
                                         AllMetricSizesDf[dfIndex] = AllMetricSizesDf[dfIndex].append(series)
                                         if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
-                                            AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value'][0]
+                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
                                         else:
-                                            AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value']
+                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
                                    else:# filename exists, column name is new
                                      if len(AllMetricSizesDf[dfIndex].index) >1:
                                         AllMetricSizesDf[dfIndex][metricname] = pd.Series() 
@@ -406,12 +403,20 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                    fileIndex = y
                                         if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
                                             AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value'][0]
+
+                                     else: #There is only one file at this stage:
+                                         AllMetricSizesDf[dfIndex][metricname] = iii['value']
+
+
                         else: # We create need to create the comprehensive table:
                                 uniqueSizes.append(1)
                                 dfIndex = uniqueSizes.index(1)
                                 AllMetricSizesDf.append(pd.DataFrame(columns = ['Name', metricname]))
-                                AllMetricSizesDf[dfIndex]["Name"] = pd.Series([filename])
-                                AllMetricSizesDf[dfIndex][metricname] = iii['value']
+                                series = pd.Series()
+                                series.name = filename
+                                AllMetricSizesDf[dfIndex]= AllMetricSizesDf[dfIndex].append(series)
+                                AllMetricSizesDf[dfIndex]["Name"].loc[filename] = iii["name"]
+                                AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii['value']
         
         print(AllMetricSizesDf[0])
         return AllMetricSizesDf
