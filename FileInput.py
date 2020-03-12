@@ -399,21 +399,26 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         else:
                                             AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value']
                                    else:# filename exists, column name is new
-                                     if len(AllMetricSizesDf[dfIndex].index) >1:
-                                        AllMetricSizesDf[dfIndex][metricname] = pd.Series() 
-                                        for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
-                                               if AllMetricSizesDf[dfIndex]['Name'].index[y] == filename:
-                                                   fileIndex = y
-                                        if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
-                                            AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value'][0]
+                                        #if len(AllMetricSizesDf[dfIndex].index) >1:
+                                            AllMetricSizesDf[dfIndex][metricname] = pd.Series() 
+                                            for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
+                                                if AllMetricSizesDf[dfIndex]['Name'].index[y] == filename:
+                                                    fileIndex = y
+                                            if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
+                                                AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value'][0]
+                                        
+
+                                    
                         else: # We create need to create the comprehensive table:
                                 uniqueSizes.append(1)
                                 dfIndex = uniqueSizes.index(1)
                                 AllMetricSizesDf.append(pd.DataFrame(columns = ['Name', metricname]))
-                                AllMetricSizesDf[dfIndex]["Name"] = pd.Series([filename])
-                                AllMetricSizesDf[dfIndex][metricname] = iii['value']
-        
-        print(AllMetricSizesDf[0])
+                                series = pd.Series()
+                                series.name = filename
+                                AllMetricSizesDf[dfIndex] = AllMetricSizesDf[dfIndex].append(series)
+                                AllMetricSizesDf[dfIndex].loc[[filename], ["Name"]] = iii['name']
+                                AllMetricSizesDf[dfIndex].loc[[filename], [metricname]] = iii['value']
+            
         return AllMetricSizesDf
 
 
