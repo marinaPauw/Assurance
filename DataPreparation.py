@@ -64,13 +64,13 @@ class DataPrep(object):
 
     def RemoveLowVarianceColumns(self):
         Nm = FileInput.BrowseWindow.currentDataset
-        print(FileInput.BrowseWindow.currentDataset)
+        print(type(FileInput.BrowseWindow.currentDataset))
         droppedColumns = []
         dpIndex = []
         threshold = 0.01
         if (len(Nm.columns)) < 1:
 
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
+            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
                               "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
                                                         Ui_MainWindow)

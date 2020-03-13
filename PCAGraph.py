@@ -25,12 +25,12 @@ class PCAGraph(FigureCanvas):
     global annot
     global plotdata
 
-    def __init__(self, metrics,plotdata,parent=None, width=25, height=10, dpi=80):
+    def __init__(self, plotdata,parent=None, width=25, height=10, dpi=80):
         loadings = UI_MainWindow.Ui_MainWindow.loadings 
         global fig
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
-        aaa = range(0,(len(metrics)))
+        aaa = range(0,(len(FileInput.BrowseWindow.currentDataset.index)))
         global ax
         global annot
         ax = fig.add_subplot(1,1,1)
@@ -38,7 +38,7 @@ class PCAGraph(FigureCanvas):
         for iii in aaa:
             ax.plot(plotdata[iii, 0],  plotdata[iii, 1], linestyle="-",linewidth=0, marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
         for element in UI_MainWindow.Ui_MainWindow.outlierlist:
-            outlierIndex = np.where([metrics.iloc[:,0]==element])
+            outlierIndex = np.where([FileInput.BrowseWindow.currentDataset.iloc[:,0]==element])
             ax.plot(plotdata[outlierIndex[1], 0],  plotdata[outlierIndex[1], 1], linestyle="none",linewidth=0, marker='o', markerfacecolor='r', markeredgecolor='k')
         ax.set_xlabel("PC1")
         ax.set_ylabel("PC2")

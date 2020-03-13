@@ -367,10 +367,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
        
         self.EnableAnalysisButtons()
         
-        #Changing this so that only the dataset with 1 metric is used for outlier identification
-        minLength = 1000
-
-        FileInput.BrowseWindow.currentDataset = Ui_MainWindow.NumericMetrics
+        FileInput.BrowseWindow.currentDataset = Ui_MainWindow.NumericMetrics[0]
              # Check if you have the correct number of variables/samples
         if self.checkColumnNumberForPCA() == 1:
 
@@ -588,7 +585,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def checkColumnNumberForPCA(self):
         if(len(FileInput.BrowseWindow.currentDataset.columns) < 3):
-            QMessageBox.warning(self, "Warning:", "There are less than three \
+            QtWidgets.QMessageBox.warning(self, "Warning:", "There are less than three \
                               numeric columns in the dataset. PCA will not \
                               be performed.")
             return 0
@@ -597,7 +594,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def checkSampleNumberForPCA(self):
         if(len(FileInput.BrowseWindow.currentDataset.index) < 4):
-            QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
+            QtWidgets.QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
             return 0
         else:
             return 1
