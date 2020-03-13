@@ -38,23 +38,21 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
                 if(justJSONFiles==True):
-                   inputFiles = possibleinputFiles
-                   UI_MainWindow.Ui_MainWindow.metrics =  \
-                       BrowseWindow.CombineJSONs(
-                           UI_MainWindow.Ui_MainWindow, inputFiles)
-                   UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-                   for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
-                       #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
-                        #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-                       BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
-                       DataPreparation.DataPrep.ExtractNumericColumns(
-                           BrowseWindow.currentDataset)
-                       DataPreparation.DataPrep.RemoveLowVarianceColumns(
-                           UI_MainWindow.Ui_MainWindow)
-                       UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
-                   str1 = " " 
-                   UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText(str1.join(inputFiles))
-                   UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
+                    inputFiles = possibleinputFiles
+                    UI_MainWindow.Ui_MainWindow.metrics =  \
+                        BrowseWindow.CombineJSONs(
+                            UI_MainWindow.Ui_MainWindow, inputFiles)
+                    UI_MainWindow.Ui_MainWindow.NumericMetrics = []
+                    #for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
+                        #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
+                            #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
+                    BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
+                    DataPreparation.DataPrep.ExtractNumericColumns(BrowseWindow.currentDataset)
+                    DataPreparation.DataPrep.RemoveLowVarianceColumns(UI_MainWindow.Ui_MainWindow)
+                    UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
+                    str1 = " " 
+                    UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText(str1.join(inputFiles))
+                    UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
             else:
                 possibleinputFile = possibleinputFiles[0]
                 inputFile = BrowseWindow.fileTypeCheck(self, possibleinputFile)
