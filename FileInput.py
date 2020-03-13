@@ -344,9 +344,11 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
                                        else:#This is the first occurence of this file 
                                             for iiii in range(0,len(temp)-1):
-                                                AllMetricSizesDf[dfIndex].loc[temp[iiii]] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].index))])
-                                                AllMetricSizesDf[dfIndex][AllMetricSizesDf[dfIndex].tail(1).index.item(), 'Name'] = temp[iiii]
-                                                AllMetricSizesDf[dfIndex][AllMetricSizesDf[dfIndex].tail(1).index.item(), metricname] = iii['value'][iiii]
+                                                series = pd.Series()
+                                                series.name = temp[iiii]
+                                                AllMetricSizesDf[dfIndex] = AllMetricSizesDf[dfIndex].append(series)
+                                                AllMetricSizesDf[dfIndex]['Name'].loc[temp[iiii]] = temp[iiii]
+                                                AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii['value'][iiii]
 
                                 else: # We create the df:
                                     uniqueSizes.append(len(iii["value"]))
