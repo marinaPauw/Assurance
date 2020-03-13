@@ -404,6 +404,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                     fileIndex = y
                                             if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
                                                 AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value'][0]
+                                            else:
+                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value']
                                         
 
                                     
