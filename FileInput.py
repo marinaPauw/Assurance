@@ -395,7 +395,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
                                                 AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
                                         else:
-                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
+                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value']
                                    else:# filename exists, column name is new
                                         #if len(AllMetricSizesDf[dfIndex].index) >1:
                                             AllMetricSizesDf[dfIndex][metricname] = pd.Series() 
