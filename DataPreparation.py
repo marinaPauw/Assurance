@@ -26,7 +26,7 @@ import pandas as pd
 class DataPrep(object):
     """description of class"""
 
-    def ExtractNumericColumns(metrics):
+    def ExtractNumericColumns(self, metrics):
         # All analysis basically require numeric datatypes so lets \
         # sort the numeric columns into one dataset for future analysis:
 
