@@ -58,7 +58,7 @@ class DataPrep(object):
         # Now remove all columns that are not numeric, \
         # including date and starttimestamp
         NumericMetrics = NumericMetrics.replace([np.inf, -np.inf], np.nan)
-        NumericMetrics = np.nan_to_num(NumericMetrics)
+        NumericMetrics = NumericMetrics.fillna(0)
 
         FileInput.BrowseWindow.currentDataset = NumericMetrics
 
