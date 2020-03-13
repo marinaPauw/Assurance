@@ -317,27 +317,26 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                 if len(iii["value"]) in uniqueSizes: 
                                     dfIndex = uniqueSizes.index(len(iii["value"]))
                                     #Check if columnname already exists:
-                                    if(metricname in AllMetricSizesDf[dfIndex]):
+                                    if(metricname in AllMetricSizesDf[dfIndex].columns):
                                         # Check if its the first instance for this file, else we need to make new NA rows: The idea is that there should be dfIndex * iii["value"]
                                         if temp[0] not in AllMetricSizesDf[dfIndex]['Name']:# first instance of this file
                                             #create some NA's 
-                                            for iiii in range(1,len(temp)):
+                                            for iiii in range(0,len(temp)):
                                                 series = pd.Series()
-                                                series.name = temp[iiii]
+                                                series.name = str(temp[iiii])
                                                 AllMetricSizesDf[dfIndex]= AllMetricSizesDf[dfIndex].append(series)
-                                                AllMetricSizesDf[dfIndex]["Name"].loc[str(temp[iiii])] = temp[iiii]
-                                                AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii['value'][iiii]
-                                                if metricname == "Target mz":
-                                                    print(AllMetricSizesDf[dfIndex]["Target mz"])
+                                                AllMetricSizesDf[dfIndex]["Name"].loc[str(temp[iiii])] = str(temp[iiii])
+                                                AllMetricSizesDf[dfIndex][metricname].loc[str(temp[iiii])] = iii['value'][iiii]
+                                                
                                         else:
                                             for iiii in range(0,len(temp)):
-                                                 AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii["value"][iiii]
+                                                 AllMetricSizesDf[dfIndex][metricname].loc[str(temp[iiii])] = iii["value"][iiii]
                                    
 
                                     else:# We first need to create the column:
 
                                        # Check if the length of the other columns is still just one file else we need to fill with NAs:
-                                       if temp[0] in AllMetricSizesDf[dfIndex]['Name']: #This file hs other values
+                                       if temp[1] in AllMetricSizesDf[dfIndex]['Name']: #This file hs other values
                                            #Create some NA's
                                             AllMetricSizesDf[dfIndex][metricname] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].index))])
                                             for iiii in range(0,len(temp)):
