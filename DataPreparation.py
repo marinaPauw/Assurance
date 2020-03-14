@@ -26,17 +26,19 @@ import pandas as pd
 class DataPrep(object):
     """description of class"""
 
-    def ExtractNumericColumns(metrics):
+    def ExtractNumericColumns(self, metrics):
         # All analysis basically require numeric datatypes so lets \
         # sort the numeric columns into one dataset for future analysis:
 
         NumericMetrics = metrics
         dateColumn = False
+        namecolumn = False
         for col in metrics.columns:
-            if "StartTimeStamp" in col:
-                dateColumn = True
-            if "Name" in col:
-                namecolumn = True
+            if isinstance(col,str):
+                if "StartTimeStamp" in col:
+                    dateColumn = True
+                if "Name" in col:
+                    namecolumn = True
         if dateColumn:
             metrics["dates"] = "Default"
             dateVector = []
@@ -45,8 +47,7 @@ class DataPrep(object):
             metrics["dates"] = dateVector
             print("Date column added. There are now %d columns",
                   len(metrics.columns))
-        else:
-            print("No StartTimeStamp column.")
+        
         if namecolumn:
             del NumericMetrics[NumericMetrics.columns[0]]
         
@@ -57,20 +58,22 @@ class DataPrep(object):
         # Now remove all columns that are not numeric, \
         # including date and starttimestamp
         NumericMetrics = NumericMetrics.replace([np.inf, -np.inf], np.nan)
-        # NumericMetrics = np.nan_to_num(NumericMetrics)
+        NumericMetrics = NumericMetrics.fillna(0)
+
         FileInput.BrowseWindow.currentDataset = NumericMetrics
 
     def RemoveLowVarianceColumns(self):
         Nm = FileInput.BrowseWindow.currentDataset
+        print(type(FileInput.BrowseWindow.currentDataset))
         droppedColumns = []
         dpIndex = []
         threshold = 0.01
-        #if (len(Nm.columns)) < 1:
+        if (len(Nm.columns)) < 1:
 
-        #    QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-         #                     "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
-         #   UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
-         #                                               Ui_MainWindow)
+            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
+                              "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
+            UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
+                                                        Ui_MainWindow)
 
         for i in range(len(Nm.columns)):
             variance = np.var(Nm.iloc[:, i])

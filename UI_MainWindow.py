@@ -49,9 +49,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.tab.setStyleSheet("background-color: gainsboro;")
 
          #--------------------------------------------------------------Frames:-------------------------------------------------------
-        Ui_MainWindow.tab.UploadFrame = QFrame(self)
-        Ui_MainWindow.tab.UploadFrame.setFrameShape(QFrame.StyledPanel)
-        Ui_MainWindow.tab.UploadFrame.setFrameShadow(QFrame.Raised)
+        Ui_MainWindow.tab.UploadFrame = QtWidgets.QFrame(self)
+        Ui_MainWindow.tab.UploadFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.tab.UploadFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         Ui_MainWindow.tab.UploadFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
          
          
@@ -82,11 +82,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.leftFrame.files = QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
         Ui_MainWindow.tab.UploadFrame.leftFrame.fileList = QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
         Ui_MainWindow.tab.UploadFrame.leftFrame.cpusLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
-        Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox = QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame)
         Ui_MainWindow.tab.UploadFrame.leftFrame.CLOLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
-        Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox = QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame)
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
-        Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame) 
+        Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox = QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame) 
         Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.leftFrame)
         #Ui_MainWindow.tab.UploadFrame.leftFrame.Dir = QtWidgets.QRadioButton("Whole Directory")
         
@@ -130,9 +130,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         hbox3.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel)
         hbox3.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox)
         QuaMetervbox.addLayout(hbox3)
-        #hboxdir = QtWidgets.QHBoxLayout()
-        #hboxdir.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.Dir)
-        #QuaMetervbox.addLayout(hboxdir)
         hbox4 = QtWidgets.QHBoxLayout()
         hbox4.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton)
         QuaMetervbox.addLayout(hbox4)
@@ -158,7 +155,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        #Ui_MainWindow.tab.UploadFrame.rightFrame.Dir = QtWidgets.QRadioButton("Whole Directory")
         Ui_MainWindow.tab.UploadFrame.rightFrame.textedit =QtWidgets.QTextEdit(readOnly=True)
         Ui_MainWindow.IRTinputFile = None
 
@@ -208,7 +204,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMehbox3.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox)
         SwaMevbox.addLayout(SwaMehbox3)
         SwaMehbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        #SwaMehbox4.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.Dir)
         SwaMehbox4.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.iRT)
         SwaMevbox.addLayout(SwaMehbox4)
         SwaMehbox5 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame.rightFrame)
@@ -253,6 +248,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.filename.setGeometry(QtCore.QRect(90, 120, 300, 10))
         Ui_MainWindow.tab.UploadFrame.InputLabel = QtWidgets.QLabel()
         Ui_MainWindow.tab.UploadFrame.uploadLabel = QtWidgets.QLabel()
+        self.tab.AnalysisFrame.UploadProgress = QtWidgets.QProgressBar()
+        self.tab.AnalysisFrame.UploadProgress.setGeometry(200, 80, 250, 20)
         self.tab.AnalysisFrame.progress1 = QtWidgets.QProgressBar()
         self.tab.AnalysisFrame.progress1.setGeometry(200, 80, 250, 20)
         self.tab.AnalysisFrame.chooseLabel = QtWidgets.QLabel()
@@ -273,8 +270,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         uploadvbox.addLayout(QuaMehbox)
         hbox7 = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.UploadFrame)
         hbox7.addWidget(Ui_MainWindow.tab.UploadFrame.uploadLabel)
-        hbox7.addWidget(Ui_MainWindow.tab.UploadFrame.filename)
         hbox7.addWidget(Ui_MainWindow.tab.UploadFrame.browse)
+        hbox7.addWidget(Ui_MainWindow.tab.UploadFrame.filename)
+        hbox7.addWidget(Ui_MainWindow.tab.AnalysisFrame.UploadProgress)
         Ui_MainWindow.tab.UploadFrame.browse.setFixedHeight(30)
         uploadvbox.addLayout(hbox7)
 
@@ -347,22 +345,17 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     @pyqtSlot()
     def onBrowseClicked(self):
         Ui_MainWindow.DisableAnalysisButtons(self)
-        FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, Ui_MainWindow)
+        FileInput.BrowseWindow.__init__(Ui_MainWindow)
         inputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
         global metrics
         if inputFile:
             filepath = FileInput.BrowseWindow.FileCheck(inputFile)
             Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(inputFile)
-            Ui_MainWindow.checkColumnLength(self)
+            #Ui_MainWindow.checkColumnLength(self)
             Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
-            DataPreparation.DataPrep.ExtractNumericColumns(self.metrics)
+            DataPreparation.DataPrep.ExtractNumericColumns(self, self.metrics)
             DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
         Ui_MainWindow.EnableAnalysisButtons(self)
-        
-    #def checkColumnLength(self):
-    #   if(len(Ui_MainWindow.metrics.columns)<1):
-    #            QMessageBox.warning(self.tab,"Error:" ,"After removing low variance columns, there were no columns left from which to conduct any sort of analysis.")
-    #            self.onBrowseClicked()
 
     @pyqtSlot()
     def onOutliersClicked(self):
@@ -374,10 +367,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
        
         self.EnableAnalysisButtons()
         
-        for dataset in range(1,len(Ui_MainWindow.NumericMetrics)):
-            FileInput.BrowseWindow.currentDataset = Ui_MainWindow.metrics[dataset]
+        FileInput.BrowseWindow.currentDataset = Ui_MainWindow.NumericMetrics[0]
              # Check if you have the correct number of variables/samples
-            if self.checkColumnNumberForPCA() == 1:
+        if self.checkColumnNumberForPCA() == 1:
 
                 if self.checkSampleNumberForPCA() == 1:
                     if len(FileInput.BrowseWindow.currentDataset.columns)>1:
@@ -486,7 +478,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.setEnabled(False) 
         Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton.setEnabled(False)
-        #Ui_MainWindow.tab.UploadFrame.leftFrame.Dir.setEnabled(False)
 
     def EnableSwaMeArguments(self):
         
@@ -499,7 +490,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.setEnabled(True)
-        #Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton.setEnabled(True)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRT.setEnabled(True)
         
@@ -513,7 +503,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox.setEnabled(False)
-        #Ui_MainWindow.tab.UploadFrame.rightFrame.Dir.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton.setEnabled(False)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRT.setEnabled(False)
         Ui_MainWindow.DisableSwaMeIRTArguments(self)
@@ -553,8 +542,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onIndMetricsClicked(self):
-        # First open a pop-up window informing the user
-        # that this takes a moment:
         Ui_MainWindow.DisableAnalysisButtons(self)
         Ui_MainWindow.tab.AnalysisFrame.progress2.show()
         Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(10)
@@ -598,7 +585,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def checkColumnNumberForPCA(self):
         if(len(FileInput.BrowseWindow.currentDataset.columns) < 3):
-            QMessageBox.warning(self, "Warning:", "There are less than three \
+            QtWidgets.QMessageBox.warning(self, "Warning:", "There are less than three \
                               numeric columns in the dataset. PCA will not \
                               be performed.")
             return 0
@@ -607,7 +594,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def checkSampleNumberForPCA(self):
         if(len(FileInput.BrowseWindow.currentDataset.index) < 4):
-            QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
+            QtWidgets.QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
             return 0
         else:
             return 1
@@ -630,7 +617,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.badpredictionList = []
 
         # InputtingFile:
-        QMessageBox.about(Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
+        QtWidgets.QMessageBox.about(Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
                           "You will be asked to select a separated value file (.tsv or .csv) containing two columns. The first should contain the filename and the second the metric on which you would like to separate good quality data from bad, for example ID's. From the corresponding graph you will select which samples are to be used for the guide set.")
         
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, Ui_MainWindow)
@@ -665,12 +652,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         PCAGraph.annot.xyann = (PCA.plotdata[closestx[0], 0],
                                 PCA.plotdata[closestx[0], 1])
         samplenames = DataPreparation.DataPrep.FindRealSampleNames(
-            Ui_MainWindow, Ui_MainWindow.metrics.iloc[:, 0])
+            Ui_MainWindow, FileInput.BrowseWindow.currentDataset.loc['Name'])
         if(len(samplenames) != len(set(samplenames))):
             # if there are duplicates in the filenames column like RTsegments
             # or per swath metrics
             sampleNameColumn1Combination = samplenames[closestx[0]] + "-" \
-                + str(self.metrics.iloc[closestx[0], 1])
+                + str(FileInput.BrowseWindow.currentDataset.iloc[closestx[0], 1])
             text = sampleNameColumn1Combination.format(PCA.plotdata[
                                                        closestx[0], 0],
                                                        PCA.plotdata[
@@ -733,12 +720,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         medianDistances = Ui_MainWindow.createMedianDistances(self, sampleSize)
         outlierDistance = Ui_MainWindow.calculateOutLierDistances(self, medianDistances)
         Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(65)
+        Q3 = np.percentile(medianDistances["MedianDistance"], 75)  # Q3
 
-        # Zscores:
-        from scipy.stats import zscore
-        medianDistances["zScore"] = zscore(medianDistances["MedianDistance"])
-        medianDistances["outlier"] = medianDistances["zScore"].apply(
-            lambda x: x <= -3.5 or x >= 3.5
+        medianDistances["outlier"] = medianDistances["MedianDistance"].apply(
+            lambda x: x >= Q3 + outlierDistance
         )
         print("The following runs were identified as outliers \
         based on their z-scores:")
