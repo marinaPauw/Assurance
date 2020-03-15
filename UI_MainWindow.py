@@ -325,7 +325,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def enable_slot():
-        PCAGraph.PCAGraph.loadingsToggledOn()
+        PCAGraph.PCAGraph.loadingsToggledOn(Ui_MainWindow)
         Ui_MainWindow.PCA.LoadingsProgressBar.setValue(100)
 
     def disable_slot():

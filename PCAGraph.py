@@ -65,7 +65,8 @@ class PCAGraph(FigureCanvas):
     def compute_initial_figure(self):
         pass
 
-    def loadingsToggledOn(self, dataset):
+    def loadingsToggledOn(self):
+        dataset = FileInput.BrowseWindow.currentDataset
         UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.show()
         UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.setValue(10)
         minx = min(a for (a,c) in PCA.plotdata)
