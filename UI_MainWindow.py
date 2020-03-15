@@ -720,13 +720,23 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         medianDistances = Ui_MainWindow.createMedianDistances(self, sampleSize)
         outlierDistance = Ui_MainWindow.calculateOutLierDistances(self, medianDistances)
         Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(65)
-        Q3 = np.percentile(medianDistances["MedianDistance"], 75)  # Q3
 
-        medianDistances["outlier"] = medianDistances["MedianDistance"].apply(
-            lambda x: x >= Q3 + outlierDistance
+        for iterator in sampleSize:
+            medianDistances["MedianDistance"][iterator] = np.percentile(PCA.Distances[iterator], 50)
+        print(medianDistances)      
+        Q1 = np.percentile(medianDistances["MedianDistance"], 25)
+        Q3 =np.percentile(medianDistances["MedianDistance"], 75)
+        IQR = Q3-Q1
+        outlierDistance = Q3 + 1.5*IQR
+        Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(65)
+       #Zscores:
+        from scipy.stats import zscore
+        medianDistances["zScore"] = zscore(medianDistances["MedianDistance"])
+        medianDistances["outlier"]= medianDistances["zScore"].apply(
+        lambda x: x <= -3.5 or x >= 3.5
         )
-        print("The following runs were identified as outliers \
-        based on their z-scores:")
+        print("The following runs were identified as outliers based on their z-scores:")
+        Q3 = np.percentile(medianDistances["MedianDistance"], 75)  # Q3
 
         Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(75)
         Outliers = medianDistances[medianDistances["outlier"]]
@@ -734,7 +744,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def createMedianDistances(self, sampleSize):
         medianDistances = pd.DataFrame()
-        medianDistances["Filename"] = FileInput.BrowseWindow.currentDataset.index
+        if FileInput.BrowseWindow.currentDataset.index[0] != 1:
+            medianDistances["Filename"] = FileInput.BrowseWindow.currentDataset.index
+        else:
+            medianDistances["Filename"] = FileInput.BrowseWindow.currentDataset["Filename"]
         medianDistances["MedianDistance"] = 'default value'
         for iterator in sampleSize:
             medianDistances["MedianDistance"][iterator] = np.percentile(
