@@ -38,21 +38,23 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
                 if(justJSONFiles==True):
-                    inputFiles = possibleinputFiles
-                    UI_MainWindow.Ui_MainWindow.metrics =  \
-                        BrowseWindow.CombineJSONs(
-                            UI_MainWindow.Ui_MainWindow, inputFiles)
-                    UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-                    #for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
-                        #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
-                            #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-                    BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
-                    DataPreparation.DataPrep.ExtractNumericColumns(self, BrowseWindow.currentDataset)
-                    DataPreparation.DataPrep.RemoveLowVarianceColumns(UI_MainWindow.Ui_MainWindow)
-                    UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
-                    str1 = " " 
-                    UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText(str1.join(inputFiles))
-                    UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
+                   inputFiles = possibleinputFiles
+                   UI_MainWindow.Ui_MainWindow.metrics =  \
+                       BrowseWindow.CombineJSONs(
+                           UI_MainWindow.Ui_MainWindow, inputFiles)
+                   UI_MainWindow.Ui_MainWindow.NumericMetrics = []
+                   for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
+                       #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
+                        #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
+                       BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
+                       DataPreparation.DataPrep.ExtractNumericColumns(
+                           BrowseWindow.currentDataset)
+                       DataPreparation.DataPrep.RemoveLowVarianceColumns(
+                           UI_MainWindow.Ui_MainWindow)
+                       UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
+                   str1 = " " 
+                   UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText(str1.join(inputFiles))
+                   UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
             else:
                 possibleinputFile = possibleinputFiles[0]
                 inputFile = BrowseWindow.fileTypeCheck(self, possibleinputFile)
@@ -189,7 +191,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
             i=0
             while i < len(inputFiles):
                 if file == inputFiles[i]:
-                    fileIndexInFiles = i
+                    fileIndexInFiles = i+1
                 i=i+1
 
             UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.UploadProgress.setValue(fileIndexInFiles/len(inputFiles)*100)
@@ -317,26 +319,27 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                 if len(iii["value"]) in uniqueSizes: 
                                     dfIndex = uniqueSizes.index(len(iii["value"]))
                                     #Check if columnname already exists:
-                                    if(metricname in AllMetricSizesDf[dfIndex].columns):
+                                    if(metricname in AllMetricSizesDf[dfIndex]):
                                         # Check if its the first instance for this file, else we need to make new NA rows: The idea is that there should be dfIndex * iii["value"]
                                         if temp[0] not in AllMetricSizesDf[dfIndex]['Name']:# first instance of this file
                                             #create some NA's 
-                                            for iiii in range(0,len(temp)):
+                                            for iiii in range(1,len(temp)):
                                                 series = pd.Series()
-                                                series.name = str(temp[iiii])
+                                                series.name = temp[iiii]
                                                 AllMetricSizesDf[dfIndex]= AllMetricSizesDf[dfIndex].append(series)
-                                                AllMetricSizesDf[dfIndex]["Name"].loc[str(temp[iiii])] = str(temp[iiii])
-                                                AllMetricSizesDf[dfIndex][metricname].loc[str(temp[iiii])] = iii['value'][iiii]
-                                                
+                                                AllMetricSizesDf[dfIndex]["Name"].loc[str(temp[iiii])] = temp[iiii]
+                                                AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii['value'][iiii]
+                                                if metricname == "Target mz":
+                                                    print(AllMetricSizesDf[dfIndex]["Target mz"])
                                         else:
                                             for iiii in range(0,len(temp)):
-                                                 AllMetricSizesDf[dfIndex][metricname].loc[str(temp[iiii])] = iii["value"][iiii]
+                                                 AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii["value"][iiii]
                                    
 
                                     else:# We first need to create the column:
 
                                        # Check if the length of the other columns is still just one file else we need to fill with NAs:
-                                       if temp[1] in AllMetricSizesDf[dfIndex]['Name']: #This file hs other values
+                                       if temp[0] in AllMetricSizesDf[dfIndex]['Name']: #This file hs other values
                                            #Create some NA's
                                             AllMetricSizesDf[dfIndex][metricname] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].index))])
                                             for iiii in range(0,len(temp)):
@@ -344,11 +347,9 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
                                        else:#This is the first occurence of this file 
                                             for iiii in range(0,len(temp)-1):
-                                                series = pd.Series()
-                                                series.name = temp[iiii]
-                                                AllMetricSizesDf[dfIndex] = AllMetricSizesDf[dfIndex].append(series)
-                                                AllMetricSizesDf[dfIndex]['Name'].loc[temp[iiii]] = temp[iiii]
-                                                AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii['value'][iiii]
+                                                AllMetricSizesDf[dfIndex].loc[temp[iiii]] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].index))])
+                                                AllMetricSizesDf[dfIndex][AllMetricSizesDf[dfIndex].tail(1).index.item(), 'Name'] = temp[iiii]
+                                                AllMetricSizesDf[dfIndex][AllMetricSizesDf[dfIndex].tail(1).index.item(), metricname] = iii['value'][iiii]
 
                                 else: # We create the df:
                                     uniqueSizes.append(len(iii["value"]))
@@ -381,8 +382,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                     else: #this file has other values, but not this metric
                                         if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
                                                 AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
-                                        else:
-                                            AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'] 
 
                                  else:# We first need to create the column:
 
@@ -395,20 +394,20 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
                                                 AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
                                         else:
-                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value']
+                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
                                    else:# filename exists, column name is new
-                                        #if len(AllMetricSizesDf[dfIndex].index) >1:
-                                            AllMetricSizesDf[dfIndex][metricname] = pd.Series() 
-                                            for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
-                                                if AllMetricSizesDf[dfIndex]['Name'].index[y] == filename:
-                                                    fileIndex = y
-                                            if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
-                                                AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value'][0]
-                                            else:
-                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value']
-                                        
+                                     if len(AllMetricSizesDf[dfIndex].index) >1:
+                                        AllMetricSizesDf[dfIndex][metricname] = pd.Series() 
+                                        for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
+                                               if AllMetricSizesDf[dfIndex]['Name'].index[y] == filename:
+                                                   fileIndex = y
+                                        if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
+                                            AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value'][0]
 
-                                    
+                                     else: #There is only one file at this stage:
+                                         AllMetricSizesDf[dfIndex][metricname] = iii['value']
+
+
                         else: # We create need to create the comprehensive table:
                                 uniqueSizes.append(1)
                                 dfIndex = uniqueSizes.index(1)
