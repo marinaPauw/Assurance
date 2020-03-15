@@ -804,8 +804,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         if(len(Ui_MainWindow.outlierlist) > 0):
             outlierstring = Ui_MainWindow.outlierlist.array[0]
             for element in array:
-                outlierstring = outlierstring + "\n" \
-                    + Ui_MainWindow.outlierlist.array[element]
+                outlierstring = str(outlierstring) + "\n" + str(Ui_MainWindow.outlierlist.array[element])
         else:
             outlierstring = "No outliers found."
         Ui_MainWindow.OutlierSamples.setText(outlierstring)
