@@ -91,6 +91,8 @@ class DataPrep(object):
         print("Low variance columns removed. There are now %d columns",
               len(Nm.columns))
         print(Nm.columns.values)
+        if "Filename" in UI_MainWindow.Ui_MainWindow.metrics.columns:
+            Nm.index = UI_MainWindow.Ui_MainWindow.metrics["Filename"]
         UI_MainWindow.Ui_MainWindow.NumericMetrics = list()
         UI_MainWindow.Ui_MainWindow.NumericMetrics.append(Nm)
         FileInput.BrowseWindow.currentDataset = Nm
