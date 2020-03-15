@@ -25,10 +25,11 @@ class PCAGraph(FigureCanvas):
     global annot
     global plotdata
 
-    def __init__(self, plotdata,parent=None, width=25, height=10, dpi=80):
+    def __init__(self, parent=None, width=25, height=10, dpi=80):
+        UI_MainWindow.Ui_MainWindow.tab.showMaximized()
         loadings = UI_MainWindow.Ui_MainWindow.loadings 
         global fig
-        fig = Figure(figsize=(width, height), dpi=dpi)
+        fig = Figure()#figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         aaa = range(0,(len(FileInput.BrowseWindow.currentDataset.index)))
         global ax
@@ -36,14 +37,14 @@ class PCAGraph(FigureCanvas):
         ax = fig.add_subplot(1,1,1)
         ############Need to correctly calculate euc distance in N dimension
         for iii in aaa:
-            ax.plot(plotdata[iii, 0],  plotdata[iii, 1], linestyle="-",linewidth=0, marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+            ax.plot(PCA.plotdata[iii, 0],  PCA.plotdata[iii, 1], linestyle="-",linewidth=0, marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
         for element in UI_MainWindow.Ui_MainWindow.outlierlist:
             outlierIndex = np.where([FileInput.BrowseWindow.currentDataset.iloc[:,0]==element])
-            ax.plot(plotdata[outlierIndex[1], 0],  plotdata[outlierIndex[1], 1], linestyle="none",linewidth=0, marker='o', markerfacecolor='r', markeredgecolor='k')
+            ax.plot(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1], linestyle="none",linewidth=0, marker='o', markerfacecolor='r', markeredgecolor='k')
         ax.set_xlabel("PC1")
         ax.set_ylabel("PC2")
         FigureCanvas.__init__(self, fig)
-        self.setParent(parent)
+        #self.setParent(parent)
 
         FigureCanvas.setSizePolicy(self,
                                    QtWidgets.QSizePolicy.Expanding,

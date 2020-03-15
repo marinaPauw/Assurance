@@ -652,7 +652,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         PCAGraph.annot.xyann = (PCA.plotdata[closestx[0], 0],
                                 PCA.plotdata[closestx[0], 1])
         samplenames = DataPreparation.DataPrep.FindRealSampleNames(
-            Ui_MainWindow, FileInput.BrowseWindow.currentDataset.loc['Name'])
+            Ui_MainWindow, FileInput.BrowseWindow.currentDataset.index)
         if(len(samplenames) != len(set(samplenames))):
             # if there are duplicates in the filenames column like RTsegments
             # or per swath metrics
