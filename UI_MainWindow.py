@@ -349,8 +349,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         inputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
         global metrics
         if inputFile:
-            filepath = FileInput.BrowseWindow.FileCheck(inputFile)
-            Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(inputFile)
+            filepath = FileInput.BrowseWindow.FileCheck(self, inputFile)
+            Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
             #Ui_MainWindow.checkColumnLength(self)
             Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
             DataPreparation.DataPrep.ExtractNumericColumns(self, self.metrics)
