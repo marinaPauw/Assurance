@@ -339,7 +339,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                     else:# We first need to create the column:
 
                                        # Check if the length of the other columns is still just one file else we need to fill with NAs:
-                                       if temp[0] in AllMetricSizesDf[dfIndex]['Name']: #This file hs other values
+                                       if temp[1] in AllMetricSizesDf[dfIndex]['Name']: #This file hs other values
                                            #Create some NA's
                                             AllMetricSizesDf[dfIndex][metricname] = pd.Series([np.repeat("NA",len(AllMetricSizesDf[dfIndex].index))])
                                             for iiii in range(0,len(temp)):
@@ -384,6 +384,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                     else: #this file has other values, but not this metric
                                         if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
                                                 AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
+                                        else:
+                                            AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'] 
 
                                  else:# We first need to create the column:
 
