@@ -91,21 +91,27 @@ class DataPrep(object):
         print("Low variance columns removed. There are now %d columns",
               len(Nm.columns))
         print(Nm.columns.values)
+        UI_MainWindow.Ui_MainWindow.NumericMetrics = list()
+        UI_MainWindow.Ui_MainWindow.NumericMetrics.append(Nm)
         FileInput.BrowseWindow.currentDataset = Nm
 
     def FindRealSampleNames(self, rawSampleNames):
         realSampleNames = []
         for rawSampleName in rawSampleNames:
-            counter = rawSampleName.count('.')
-            if (counter == 1):  # .mzML
-                realSampleName, throw = rawSampleName.split('.')
-            elif (counter == 2):  # .wiff.scan
-                realSampleName, throw, throw = rawSampleName.split('.')
-            elif (counter == 3):
-                realSampleName, throw, throw, throw = rawSampleName.split('.')
+            if type(rawSampleName) != int:
+                counter = rawSampleName.count('.')
+                if (counter == 1):  # .mzML
+                    realSampleName, throw = rawSampleName.split('.')
+                elif (counter == 2):  # .wiff.scan
+                    realSampleName, throw, throw = rawSampleName.split('.')
+                elif (counter == 3):
+                    realSampleName, throw, throw, throw = rawSampleName.split('.')
+                else:
+                    realSampleName = rawSampleName
+                realSampleNames.append(realSampleName)
             else:
-                realSampleName = rawSampleName
-            realSampleNames.append(realSampleName)
+                rawSampleName = str(rawSampleName)
+                realSampleNames.append(rawSampleName)
         return realSampleNames
 
     def contains_string(l):
