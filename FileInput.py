@@ -319,11 +319,11 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                 if len(iii["value"]) in uniqueSizes: 
                                     dfIndex = uniqueSizes.index(len(iii["value"]))
                                     #Check if columnname already exists:
-                                    if(metricname in AllMetricSizesDf[dfIndex]):
+                                    if(metricname in AllMetricSizesDf[dfIndex].columns):
                                         # Check if its the first instance for this file, else we need to make new NA rows: The idea is that there should be dfIndex * iii["value"]
                                         if temp[0] not in AllMetricSizesDf[dfIndex]['Name']:# first instance of this file
                                             #create some NA's 
-                                            for iiii in range(1,len(temp)):
+                                            for iiii in range(0,len(temp)):
                                                 series = pd.Series()
                                                 series.name = temp[iiii]
                                                 AllMetricSizesDf[dfIndex]= AllMetricSizesDf[dfIndex].append(series)
