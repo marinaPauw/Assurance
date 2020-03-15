@@ -39,7 +39,7 @@ class PCAGraph(FigureCanvas):
         for iii in aaa:
             ax.plot(PCA.plotdata[iii, 0],  PCA.plotdata[iii, 1], linestyle="-",linewidth=0, marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
         for element in UI_MainWindow.Ui_MainWindow.outlierlist:
-            outlierIndex = np.where([FileInput.BrowseWindow.currentDataset.iloc[:,0]==element])
+            outlierIndex = np.where([FileInput.BrowseWindow.currentDataset.index==element])
             ax.plot(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1], linestyle="none",linewidth=0, marker='o', markerfacecolor='r', markeredgecolor='k')
         ax.set_xlabel("PC1")
         ax.set_ylabel("PC2")
