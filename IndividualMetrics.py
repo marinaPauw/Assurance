@@ -71,23 +71,24 @@ class MyIndMetricsCanvas(FigureCanvas):
         manager = plt.get_current_fig_manager()
         manager.resize(*manager.window.maxsize())
         MyIndMetricsCanvas.samplenames = []
-        counter = tableContainingRownames.iloc[0,0].count('.') 
-        if(counter==1):# .mzML
-             for iii in sampleSize:
-                        temp,throw = tableContainingRownames.iloc[iii,0].split('.')
-                        MyIndMetricsCanvas.samplenames.append(temp)
-        elif(counter==2):#For example .wiff.scan
-             for iii in sampleSize:
-                        temp,throw,throw = tableContainingRownames.iloc[iii,0].split('.')
-                        MyIndMetricsCanvas.samplenames.append(temp)
-        elif(counter==3):
-             for iii in sampleSize:
-                        temp,throw,throw = tableContainingRownames.iloc[iii,0].split('.')
-                        MyIndMetricsCanvas.samplenames.append(temp)
+        if isinstance( tableContainingRownames.iloc[0,0], str) and "." in tableContainingRownames.iloc[0,0] :
+            counter = tableContainingRownames.iloc[0,0].count('.') 
+            if(counter==1):# .mzML
+                for iii in sampleSize:
+                            temp, throw = tableContainingRownames.iloc[iii,0].split('.')
+                            MyIndMetricsCanvas.samplenames.append(temp)
+            elif(counter==2):#For example .wiff.scan
+                for iii in sampleSize:
+                            temp,throw,throw = tableContainingRownames.iloc[iii,0].split('.')
+                            MyIndMetricsCanvas.samplenames.append(temp)
+            elif(counter==3):
+                for iii in sampleSize:
+                            temp,throw,throw = tableContainingRownames.iloc[iii,0].split('.')
+                            MyIndMetricsCanvas.samplenames.append(temp)
         else:
             MyIndMetricsCanvas.samplenames = tableContainingRownames.iloc[:,0]
         MyIndMetricsCanvas.ax.get_yaxis().get_major_formatter().set_scientific(False)
-        Ymax = table.iloc[:,element].max()
+        Ymax = table[element].max()
         if Ymax > 10000:
             MyIndMetricsCanvas.ax.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.0e'))
         #Find if there are duplicates in MyIndMetricsCanvas.samplenames (like n a swath/RT file for SwaMe)
@@ -101,14 +102,14 @@ class MyIndMetricsCanvas(FigureCanvas):
                 for ii in sampleSize:
                     if(tableContainingRownames.iloc[ii,0]==uniqueSamples[item]):
                         rowNumList.append(ii)
-                lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table.iloc[rowNumList,element], marker='o', label = uniqueSamples[item])   
+                lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table[element].iloc[rowNumList], marker='o', label = uniqueSamples[item])   
                
         else:
-           lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table.iloc[:,element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+           lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table[element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
         if(len(MyIndMetricsCanvas.samplenames)<=32 or len(MyIndMetricsCanvas.samplenames) == len(set(MyIndMetricsCanvas.samplenames))):
             MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
         else:
-            figlegend = pylab.figure(figsize = (30,40))
+            figlegend = pylab.figure()#figsize = (30,40))
             handles, labels = MyIndMetricsCanvas.ax.get_legend_handles_labels()
             if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
               figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 2, borderaxespad=0.1 )
@@ -118,9 +119,8 @@ class MyIndMetricsCanvas(FigureCanvas):
               figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 4, borderaxespad=0.1 )
             else:
               figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 5, borderaxespad=0.1 )
-            if element == len(table.columns)-1:
-                MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
-                Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
+            MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
+            Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
         
         MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
         for tick in MyIndMetricsCanvas.ax.get_xticklabels():
@@ -131,10 +131,10 @@ class MyIndMetricsCanvas(FigureCanvas):
         FigureCanvas.__init__(self, MyIndMetricsCanvas.fig)
         #MyIndMetricsCanvas.setParent(parent)
 
-        FigureCanvas.setSizePolicy(self,
-                                   QtWidgets.QSizePolicy.Expanding,
-                                   QtWidgets.QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)
+        #FigureCanvas.setSizePolicy(self,
+         #                          QtWidgets.QSizePolicy.Expanding,
+         #                          QtWidgets.QSizePolicy.Expanding)
+        #FigureCanvas.updateGeometry(self)
         # drawtype is 'box' or 'line' or 'none'
         if(rectangleSelection):
             MyIndMetricsCanvas.toggle_selector.RS = RectangleSelector(MyIndMetricsCanvas.ax,  MyIndMetricsCanvas.line_select_callback,

@@ -116,16 +116,18 @@ class BrowseWindow(QtWidgets.QMainWindow):
             return metrics
 
         elif inputFile.endswith('.csv'):
-            metrics = pd.DataFrame(pd.read_csv(inputFile, sep=","))
-            if(metrics.iloc[:, 0].count() < 2):
+            metrics = list()
+            metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep=",")))
+            if len(metrics[0].index) < 2:
                 QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
                                   "There are not enough samples in your file to conduct analysis. Please choose another file.")
                 UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
             return metrics
 
         elif inputFile.endswith('.tsv'):
-            metrics = pd.DataFrame(pd.read_csv(inputFile, sep="\t"))
-            if(metrics.iloc[:, 0].count() < 2):
+            metrics = list()
+            metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep="\t")))
+            if len(metrics[0].index) < 2:
                 QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
                                   "There are not enough samples in your file to conduct analysis. Please choose another file.")
                 UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
