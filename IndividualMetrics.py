@@ -71,11 +71,11 @@ class MyIndMetricsCanvas(FigureCanvas):
         manager = plt.get_current_fig_manager()
         manager.resize(*manager.window.maxsize())
         MyIndMetricsCanvas.samplenames = []
-        if isinstance( tableContainingRownames.iloc[0,0], str) and "." in tableContainingRownames.iloc[0,0] :
+        if isinstance( tableContainingRownames.iloc[0,0], str) and "." in 
             counter = tableContainingRownames.iloc[0,0].count('.') 
             if(counter==1):# .mzML
                 for iii in sampleSize:
-                            temp, throw = tableContainingRownames.iloc[iii,0].split('.')
+                            temp,throw = tableContainingRownames.iloc[iii,0].split('.')
                             MyIndMetricsCanvas.samplenames.append(temp)
             elif(counter==2):#For example .wiff.scan
                 for iii in sampleSize:
@@ -109,7 +109,7 @@ class MyIndMetricsCanvas(FigureCanvas):
         if(len(MyIndMetricsCanvas.samplenames)<=32 or len(MyIndMetricsCanvas.samplenames) == len(set(MyIndMetricsCanvas.samplenames))):
             MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
         else:
-            figlegend = pylab.figure()#figsize = (30,40))
+            figlegend = pylab.figure(figsize = (30,40))
             handles, labels = MyIndMetricsCanvas.ax.get_legend_handles_labels()
             if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
               figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 2, borderaxespad=0.1 )
@@ -131,10 +131,10 @@ class MyIndMetricsCanvas(FigureCanvas):
         FigureCanvas.__init__(self, MyIndMetricsCanvas.fig)
         #MyIndMetricsCanvas.setParent(parent)
 
-        #FigureCanvas.setSizePolicy(self,
-         #                          QtWidgets.QSizePolicy.Expanding,
-         #                          QtWidgets.QSizePolicy.Expanding)
-        #FigureCanvas.updateGeometry(self)
+        FigureCanvas.setSizePolicy(self,
+                                   QtWidgets.QSizePolicy.Expanding,
+                                   QtWidgets.QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
         # drawtype is 'box' or 'line' or 'none'
         if(rectangleSelection):
             MyIndMetricsCanvas.toggle_selector.RS = RectangleSelector(MyIndMetricsCanvas.ax,  MyIndMetricsCanvas.line_select_callback,
