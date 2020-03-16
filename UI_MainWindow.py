@@ -55,21 +55,21 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
          
          
-        Ui_MainWindow.tab.UploadFrame.leftFrame = QFrame(Ui_MainWindow.tab.UploadFrame)
-        Ui_MainWindow.tab.UploadFrame.leftFrame.setFrameShape(QFrame.StyledPanel)
-        Ui_MainWindow.tab.UploadFrame.leftFrame.setFrameShadow(QFrame.Raised)
+        Ui_MainWindow.tab.UploadFrame.leftFrame = QtWidgets.QFrame(Ui_MainWindow.tab.UploadFrame)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.tab.UploadFrame.leftFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         Ui_MainWindow.tab.UploadFrame.leftFrame.setStyleSheet("background-color: rgb(192,192,192); margin:5px;")
         
 
-        Ui_MainWindow.tab.UploadFrame.rightFrame = QFrame(Ui_MainWindow.tab.UploadFrame)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.setFrameShape(QFrame.StyledPanel)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.setFrameShadow(QFrame.Raised)
+        Ui_MainWindow.tab.UploadFrame.rightFrame = QtWidgets.QFrame(Ui_MainWindow.tab.UploadFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         Ui_MainWindow.tab.UploadFrame.rightFrame.setStyleSheet("background-color: rgb(192,192,192); margin:5px;")
 
         
-        Ui_MainWindow.tab.AnalysisFrame = QFrame(self)
-        Ui_MainWindow.tab.AnalysisFrame.setFrameShape(QFrame.StyledPanel)
-        Ui_MainWindow.tab.AnalysisFrame.setFrameShadow(QFrame.Raised)
+        Ui_MainWindow.tab.AnalysisFrame = QtWidgets.QFrame(self)
+        Ui_MainWindow.tab.AnalysisFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.tab.AnalysisFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         Ui_MainWindow.tab.AnalysisFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
 
 
@@ -142,19 +142,19 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.rightFrame.Sfiles = QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.SfileList = QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.divisionLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.divisionTextBox= QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.divisionTextBox= QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.MTLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.MTTextBox = QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox = QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.RTTextBox = QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRT = QtWidgets.QRadioButton("iRT")
-        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceLabel =QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityLabel =QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesLabel =QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
-        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesTB =QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceLabel =QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityLabel =QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesLabel =QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTtoleranceTB =QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminintensityTB =QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
+        Ui_MainWindow.tab.UploadFrame.rightFrame.iRTminpeptidesTB =QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.rightFrame)
         Ui_MainWindow.tab.UploadFrame.rightFrame.textedit =QtWidgets.QTextEdit(readOnly=True)
         Ui_MainWindow.IRTinputFile = None
 
@@ -324,11 +324,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
         QtCore.QMetaObject.connectSlotsByName(self)
 
-    def enable_slot():
+    def enable_slot(self):
         PCAGraph.PCAGraph.loadingsToggledOn(Ui_MainWindow)
         Ui_MainWindow.PCA.LoadingsProgressBar.setValue(100)
 
-    def disable_slot():
+    def disable_slot(self):
         PCAGraph.PCAGraph.loadingsToggledOff()
 
     @pyqtSlot()
@@ -347,9 +347,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.DisableAnalysisButtons(self)
         FileInput.BrowseWindow.__init__(Ui_MainWindow)
         inputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
-        global metrics
         if inputFile:
-            filepath = FileInput.BrowseWindow.FileCheck(self, inputFile)
+            #filepath = FileInput.BrowseWindow.FileCheck(self, inputFile)
             Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
             #Ui_MainWindow.checkColumnLength(self)
             Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
@@ -374,8 +373,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 if self.checkSampleNumberForPCA() == 1:
                     if len(FileInput.BrowseWindow.currentDataset.columns)>1:
 
-                        sampleToVariableRatio = PCA.PCA.\
-                            calculateSampleToVariableRatio(self, FileInput.BrowseWindow.currentDataset)
+                        #sampleToVariableRatio = PCA.PCA.calculateSampleToVariableRatio(self, FileInput.BrowseWindow.currentDataset)
         
        
                         PCA.PCA.CreatePCAGraph(FileInput.BrowseWindow.currentDataset)
@@ -384,6 +382,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         outliers = Ui_MainWindow.CalculateOutliers(self)
                         Ui_MainWindow.outlierlist = outliers["Filename"]
 
+# --------------------------------------Widgets-------------------------------------------
                         Ui_MainWindow.PCA = QtWidgets.QTabWidget()
                         Ui_MainWindow.PCA.plotlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
                         Ui_MainWindow.PCA.plotlabel.setGeometry(10, 500, 1000, 300)
@@ -402,10 +401,21 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                                                                          Ui_MainWindow.PCA)
                         Ui_MainWindow.PCA.Checkbox.setChecked(False)
                         Ui_MainWindow.PCA.Checkbox.stateChanged.connect(
-                            lambda x: Ui_MainWindow.enable_slot()
-                            if x else Ui_MainWindow.disable_slot())
+                            lambda x: Ui_MainWindow.enable_slot(self)
+                            if x else Ui_MainWindow.disable_slot(self))
                         Ui_MainWindow.PCA.LoadingsProgressBar = QtWidgets.QProgressBar()
                         Ui_MainWindow.PCA.LoadingsProgressBar.setGeometry(200, 80, 250, 20)
+
+                        
+                        Ui_MainWindow.PCA.Redolabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
+                        Ui_MainWindow.PCA.Redolabel.setText("Redo analysis without the outliers:")
+                        Ui_MainWindow.PCA.Redobox = QtWidgets.QCheckBox("Redo",
+                                                                         Ui_MainWindow.PCA)
+                        Ui_MainWindow.PCA.Redobox.setChecked(False)
+                        Ui_MainWindow.PCA.Redobox.stateChanged.connect(
+                            lambda x: Ui_MainWindow.enable_reanalysis(self))
+
+# --------------------------------------Layout-------------------------------------------
 
                         vbox2 = QtWidgets.QVBoxLayout(Ui_MainWindow.PCA)
                         hbox = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
@@ -416,6 +426,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         vbox3.addWidget(Ui_MainWindow.PCA.Checkboxlabel)
                         vbox3.addWidget(Ui_MainWindow.PCA.Checkbox)
                         vbox3.addWidget(Ui_MainWindow.PCA.LoadingsProgressBar)
+                        vbox3.addWidget(Ui_MainWindow.PCA.Redolabel)
+                        vbox3.addWidget(Ui_MainWindow.PCA.Redobox)
                         vbox3.addStretch()
                         vbox3.setAlignment(QtCore.Qt.AlignLeft)
 
@@ -534,6 +546,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.AnalysisFrame.Outliers.setEnabled(False)
         Ui_MainWindow.tab.AnalysisFrame.IndMetrics.setEnabled(False)
         Ui_MainWindow.tab.AnalysisFrame.Longitudinal.setEnabled(False)
+
+    @pyqtSlot()
+    def enable_reanalysis(self):
+        Ui_MainWindow.NumericMetrics[0] = Ui_MainWindow.NumericMetrics[0].drop(Ui_MainWindow.outlierlist)
+        Ui_MainWindow.onOutliersClicked(self)
 
     @pyqtSlot()
     def onIRTClicked(self):
