@@ -582,6 +582,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
                     whichds = dataset
                     break
+        Ui_MainWindow.sampleSelected = Ui_MainWindow.metrics[0].index[0]
         Ui_MainWindow.createGraph(self, whichds)
 
     def createGraph(self, whichds):
@@ -589,6 +590,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         for metric in Ui_MainWindow.listOfMetrics:
             Ui_MainWindow.indMetrics.comboBox.addItem(metric)
         Ui_MainWindow.indMetrics.comboBox.activated[str].connect(self.metric_change)
+        Ui_MainWindow.indMetrics.sampleBox = QtWidgets.QComboBox(Ui_MainWindow.indMetrics)
+        for sample in Ui_MainWindow.metrics[0].index:
+            Ui_MainWindow.indMetrics.sampleBox.addItem(sample)
+        Ui_MainWindow.indMetrics.sampleBox.activated[str].connect(self.sample_change)
         Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(100)
         vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.indMetrics)
         hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
@@ -601,6 +606,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         hbox1.addWidget(Ui_MainWindow.indMetrics.indPlotLabel)
         hbox1.addStretch()
         vbox.addLayout(hbox1)
+        hbox15 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
+        hbox15.addStretch()
+        hbox15.addWidget(Ui_MainWindow.indMetrics.sampleBox)
+        vbox.addLayout(hbox15)
         hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
         hbox2.addStretch()
         try:
@@ -609,7 +618,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         except NameError:
             indMetPlot = None
         indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.metrics[whichds],
-                            Ui_MainWindow.metrics[whichds], Ui_MainWindow.element, False, False)
+                            Ui_MainWindow.metrics[whichds], Ui_MainWindow.element, False)
         hbox2.addWidget(indMetPlot)
         hbox2.addStretch()
         vbox.addLayout(hbox2)
@@ -629,6 +638,19 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
                     whichds = dataset
                     break
+        Ui_MainWindow.removeTab(self, Ui_MainWindow.iIndex)
+        Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
+        Ui_MainWindow.iIndex = self.addTab(Ui_MainWindow.indMetrics,
+                                 "Individual metrics")
+        Ui_MainWindow.createGraph(self, whichds)
+
+    def sample_change(self, text):
+        Ui_MainWindow.sampleSelected = text
+        for dataset in range(len(Ui_MainWindow.metrics)):
+                if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
+                    whichds = dataset
+                    break
+
         Ui_MainWindow.removeTab(self, Ui_MainWindow.iIndex)
         Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
         Ui_MainWindow.iIndex = self.addTab(Ui_MainWindow.indMetrics,
