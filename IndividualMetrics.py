@@ -68,25 +68,25 @@ class MyIndMetricsCanvas(FigureCanvas):
         colors = [hsv_to_rgb([(i * 0.618033988749895) % 1.0, (i * 0.32) % 1.0, (i * 0.112) % 1.0])
           for i in range(1000)]
         plt.rc("axes", prop_cycle=(cycler('color', colors)))
-        manager = plt.get_current_fig_manager()
-        manager.resize(*manager.window.maxsize())
+        #manager = plt.get_current_fig_manager()
+        #manager.resize(*manager.window.maxsize())
         MyIndMetricsCanvas.samplenames = []
-        if isinstance( tableContainingRownames.iloc[0,0], str) and "." in 
-            counter = tableContainingRownames.iloc[0,0].count('.') 
+        if isinstance( tableContainingRownames.index[0], str) and "." in tableContainingRownames.index[0] :
+            counter = tableContainingRownames.index[0].count('.') 
             if(counter==1):# .mzML
                 for iii in sampleSize:
-                            temp,throw = tableContainingRownames.iloc[iii,0].split('.')
+                            temp,throw = tableContainingRownames.index[0].split('.')
                             MyIndMetricsCanvas.samplenames.append(temp)
             elif(counter==2):#For example .wiff.scan
                 for iii in sampleSize:
-                            temp,throw,throw = tableContainingRownames.iloc[iii,0].split('.')
+                            temp,throw,throw = tableContainingRownames.index[0].split('.')
                             MyIndMetricsCanvas.samplenames.append(temp)
             elif(counter==3):
                 for iii in sampleSize:
-                            temp,throw,throw = tableContainingRownames.iloc[iii,0].split('.')
+                            temp,throw,throw = tableContainingRownames.index[0].split('.')
                             MyIndMetricsCanvas.samplenames.append(temp)
         else:
-            MyIndMetricsCanvas.samplenames = tableContainingRownames.iloc[:,0]
+            MyIndMetricsCanvas.samplenames = tableContainingRownames.index
         MyIndMetricsCanvas.ax.get_yaxis().get_major_formatter().set_scientific(False)
         Ymax = table[element].max()
         if Ymax > 10000:
@@ -129,7 +129,7 @@ class MyIndMetricsCanvas(FigureCanvas):
         for tick in MyIndMetricsCanvas.ax.get_yticklabels():
             tick.set_rotation(90)
         FigureCanvas.__init__(self, MyIndMetricsCanvas.fig)
-        #MyIndMetricsCanvas.setParent(parent)
+      #  MyIndMetricsCanvas.setParent(parent)
 
         FigureCanvas.setSizePolicy(self,
                                    QtWidgets.QSizePolicy.Expanding,

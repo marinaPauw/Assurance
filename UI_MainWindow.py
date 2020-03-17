@@ -566,28 +566,36 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(33)
         Ui_MainWindow.iIndex = self.addTab(Ui_MainWindow.indMetrics,
                                  "Individual metrics")
-                                 
-        listOfMetrics = list()
+         
+       
+        Ui_MainWindow.listOfMetrics = list()
         for dataset in range(len(Ui_MainWindow.metrics)): # For each dataset in all the datasets we have
             for element in Ui_MainWindow.metrics[dataset].columns:
                 if element!= "Name" and element != "Filename":
-                    listOfMetrics.append(element)
+                    Ui_MainWindow.listOfMetrics.append(element)
+                    
+        Ui_MainWindow.element = Ui_MainWindow.listOfMetrics[0]
+        #-------------- widgets ---------------------------------------
         
-        Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()       
         whichds = 0
-        element = listOfMetrics[0]
         for dataset in range(len(Ui_MainWindow.metrics)):
-                if element in Ui_MainWindow.metrics[dataset].columns:
+                if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
                     whichds = dataset
                     break
+        Ui_MainWindow.createGraph(self, whichds)
+
+    def createGraph(self, whichds):
+        Ui_MainWindow.indMetrics.comboBox = QtWidgets.QComboBox(Ui_MainWindow.indMetrics)
+        for metric in Ui_MainWindow.listOfMetrics:
+            Ui_MainWindow.indMetrics.comboBox.addItem(metric)
+        Ui_MainWindow.indMetrics.comboBox.activated[str].connect(self.metric_change)
         Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(100)
-        self.setCurrentIndex(Ui_MainWindow.iIndex)
         vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.indMetrics)
         hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
         hbox1.addStretch()
         Ui_MainWindow.indMetrics.indPlotLabel = QtWidgets.QLabel(
                         Ui_MainWindow.indMetrics)
-        Ui_MainWindow.indMetrics.indPlotLabel.setText(element)
+        Ui_MainWindow.indMetrics.indPlotLabel.setText(Ui_MainWindow.element)
         Ui_MainWindow.indMetrics.indPlotLabel.setFont(
                             Ui_MainWindow.boldfont)
         hbox1.addWidget(Ui_MainWindow.indMetrics.indPlotLabel)
@@ -595,12 +603,37 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         vbox.addLayout(hbox1)
         hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
         hbox2.addStretch()
+        try:
+            indMetPlot
+            indMetPlot.clear()
+        except NameError:
+            indMetPlot = None
         indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.metrics[whichds],
-                            Ui_MainWindow.metrics[whichds], element, False, False)
+                            Ui_MainWindow.metrics[whichds], Ui_MainWindow.element, False, False)
         hbox2.addWidget(indMetPlot)
         hbox2.addStretch()
         vbox.addLayout(hbox2)
+        hbox3 =  QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
+        hbox3.addStretch()
+        hbox3.addWidget(Ui_MainWindow.indMetrics.comboBox)
+        hbox3.addStretch()
+        vbox.addLayout(hbox3)
+        vbox.setContentsMargins(30, 20, 30, 100)
+        self.setCurrentIndex(Ui_MainWindow.iIndex)
         Ui_MainWindow.EnableAnalysisButtons(self)
+
+    def metric_change(self, text):
+        Ui_MainWindow.element = text
+        whichds = 0
+        for dataset in range(len(Ui_MainWindow.metrics)):
+                if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
+                    whichds = dataset
+                    break
+        Ui_MainWindow.removeTab(self, Ui_MainWindow.iIndex)
+        Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
+        Ui_MainWindow.iIndex = self.addTab(Ui_MainWindow.indMetrics,
+                                 "Individual metrics")
+        Ui_MainWindow.createGraph(self, whichds)
 
     def checkColumnNumberForPCA(self):
         if(len(FileInput.BrowseWindow.currentDataset.columns) < 3):
