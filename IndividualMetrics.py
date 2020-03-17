@@ -107,8 +107,9 @@ class MyIndMetricsCanvas(FigureCanvas):
                
         else:
             lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table[element], linestyle="-",marker='o', markerfacecolor = "dimgrey",color = "black")
+        MyIndMetricsCanvas.ax.set_facecolor('gainsboro')
         sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
-        MyIndMetricsCanvas.ax.plot(tableContainingRownames.index[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='c', markeredgecolor='c')
+        MyIndMetricsCanvas.ax.plot(tableContainingRownames.index[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
         if(len(MyIndMetricsCanvas.samplenames)<=32 or len(MyIndMetricsCanvas.samplenames) == len(set(MyIndMetricsCanvas.samplenames))):
             MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
         else:
