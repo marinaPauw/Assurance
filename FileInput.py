@@ -116,16 +116,18 @@ class BrowseWindow(QtWidgets.QMainWindow):
             return metrics
 
         elif inputFile.endswith('.csv'):
-            metrics = pd.DataFrame(pd.read_csv(inputFile, sep=","))
-            if(metrics.iloc[:, 0].count() < 2):
+            metrics = list()
+            metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep=",")))
+            if len(metrics[0].index) < 2:
                 QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
                                   "There are not enough samples in your file to conduct analysis. Please choose another file.")
                 UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
             return metrics
 
         elif inputFile.endswith('.tsv'):
-            metrics = pd.DataFrame(pd.read_csv(inputFile, sep="\t"))
-            if(metrics.iloc[:, 0].count() < 2):
+            metrics = list()
+            metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep="\t")))
+            if len(metrics[0].index) < 2:
                 QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
                                   "There are not enough samples in your file to conduct analysis. Please choose another file.")
                 UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
@@ -195,8 +197,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 if file == inputFiles[i]:
                     fileIndexInFiles = i+1
                 i=i+1
-
-            UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.UploadProgress.setValue(fileIndexInFiles/len(inputFiles)*100)
+            
+            UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.UploadProgress.setValue(fileIndexInFiles/(len(inputFiles)+1)*100)
 
             for ii in metricsDf["mzQC"]["runQuality"]:
                # NumofTotalTransitions = []
@@ -424,7 +426,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                 AllMetricSizesDf[dfIndex]["Name"].loc[filename] = iii["name"]
                                 AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii['value']
         
-        print(AllMetricSizesDf[0])
+        UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.UploadProgress.setValue(100)
         return AllMetricSizesDf
 
 
