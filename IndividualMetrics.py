@@ -101,12 +101,14 @@ class MyIndMetricsCanvas(FigureCanvas):
                 rowNumList = []
                 xAxis = []
                 for ii in sampleSize:
-                    if(tableContainingRownames.iloc[ii,0]==uniqueSamples[item]):
+                    if tableContainingRownames.iloc[ii,0]==uniqueSamples[item]:
                         rowNumList.append(ii)
-                lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table[element].iloc[rowNumList], marker='o', label = uniqueSamples[item])   
+                lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table[element].iloc[rowNumList], marker='o', color = "black",label = uniqueSamples[item])   
                
         else:
-           lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table[element], linestyle="-",marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+            lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table[element], linestyle="-",marker='o', markerfacecolor = "dimgrey",color = "black")
+        sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
+        MyIndMetricsCanvas.ax.plot(tableContainingRownames.index[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='c', markeredgecolor='c')
         if(len(MyIndMetricsCanvas.samplenames)<=32 or len(MyIndMetricsCanvas.samplenames) == len(set(MyIndMetricsCanvas.samplenames))):
             MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
         else:
