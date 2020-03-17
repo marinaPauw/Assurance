@@ -24,7 +24,6 @@ import pylab
 from matplotlib.colors import hsv_to_rgb
 from cycler import cycler
 
-
 class MyIndMetricsCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
     def line_select_callback(eclick, erelease):
@@ -64,6 +63,8 @@ class MyIndMetricsCanvas(FigureCanvas):
         MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
         sampleSize = range(len(table))
         MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
+        tableContainingRownames = tableContainingRownames.sort_values(element)
+        table = table.sort_values(element)
         plt.grid(color ="ghostwhite")
         colors = [hsv_to_rgb([(i * 0.618033988749895) % 1.0, (i * 0.32) % 1.0, (i * 0.112) % 1.0])
           for i in range(1000)]
