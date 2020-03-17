@@ -351,7 +351,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             #filepath = FileInput.BrowseWindow.FileCheck(self, inputFile)
             Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
             #Ui_MainWindow.checkColumnLength(self)
-            Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics.iloc[:,0])
+            Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics[0].index[0])
             DataPreparation.DataPrep.ExtractNumericColumns(self, self.metrics)
             DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
         Ui_MainWindow.EnableAnalysisButtons(self)
@@ -382,7 +382,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         outliers = Ui_MainWindow.CalculateOutliers(self)
                         Ui_MainWindow.outlierlist = outliers["Filename"]
 
-# --------------------------------------Widgets-------------------------------------------
+                        # --------------------------------------Widgets-------------------------------------------
                         Ui_MainWindow.PCA = QtWidgets.QTabWidget()
                         Ui_MainWindow.PCA.plotlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
                         Ui_MainWindow.PCA.plotlabel.setGeometry(10, 500, 1000, 300)
@@ -415,7 +415,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         Ui_MainWindow.PCA.Redobox.stateChanged.connect(
                             lambda x: Ui_MainWindow.enable_reanalysis(self))
 
-# --------------------------------------Layout-------------------------------------------
+                    # --------------------------------------Layout-------------------------------------------
 
                         vbox2 = QtWidgets.QVBoxLayout(Ui_MainWindow.PCA)
                         hbox = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
@@ -562,43 +562,78 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.DisableAnalysisButtons(self)
         Ui_MainWindow.tab.AnalysisFrame.progress2.show()
         Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(10)
-        NumericMetrics = FileInput.BrowseWindow.currentDataset
-        global element
-        lw = 2
+        Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
         Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(33)
-        global iIndex
-        last=False
-        for element in range(len(NumericMetrics.columns)):
-            Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
-            iIndex = self.addTab(Ui_MainWindow.indMetrics,
-                                 NumericMetrics.columns[element])
-            if element == len(NumericMetrics.columns):
-                last = True
-            vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.indMetrics)
-            hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
-            hbox1.addStretch()
-            Ui_MainWindow.indMetrics.indPlotLabel = QtWidgets.QLabel(
-                  Ui_MainWindow.indMetrics)
-            Ui_MainWindow.indMetrics.indPlotLabel.setText(
-                  NumericMetrics.columns[element])
-            Ui_MainWindow.indMetrics.indPlotLabel.setFont(
-                    Ui_MainWindow.boldfont)
-            hbox1.addWidget(Ui_MainWindow.indMetrics.indPlotLabel)
-            hbox1.addStretch()
-            vbox.addLayout(hbox1)
-            hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
-            hbox2.addStretch()
-            indMetPlot = IndividualMetrics.MyIndMetricsCanvas(
-                    self.metrics,
-                    FileInput.BrowseWindow.currentDataset, element, False, False)
-            hbox2.addWidget(indMetPlot)
-            hbox2.addStretch()
-            vbox.addLayout(hbox2)
+        Ui_MainWindow.iIndex = self.addTab(Ui_MainWindow.indMetrics,
+                                 "Individual metrics")
+         
+       
+        Ui_MainWindow.listOfMetrics = list()
+        for dataset in range(len(Ui_MainWindow.metrics)): # For each dataset in all the datasets we have
+            for element in Ui_MainWindow.metrics[dataset].columns:
+                if element!= "Name" and element != "Filename":
+                    Ui_MainWindow.listOfMetrics.append(element)
+                    
+        Ui_MainWindow.element = Ui_MainWindow.listOfMetrics[0]
+        #-------------- widgets ---------------------------------------
+        
+        whichds = 0
+        for dataset in range(len(Ui_MainWindow.metrics)):
+                if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
+                    whichds = dataset
+                    break
+        Ui_MainWindow.createGraph(self, whichds)
 
-        #Ui_MainWindow.legend.show()
+    def createGraph(self, whichds):
+        Ui_MainWindow.indMetrics.comboBox = QtWidgets.QComboBox(Ui_MainWindow.indMetrics)
+        for metric in Ui_MainWindow.listOfMetrics:
+            Ui_MainWindow.indMetrics.comboBox.addItem(metric)
+        Ui_MainWindow.indMetrics.comboBox.activated[str].connect(self.metric_change)
+        Ui_MainWindow.tab.AnalysisFrame.progress2.setValue(100)
+        vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.indMetrics)
+        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
+        hbox1.addStretch()
+        Ui_MainWindow.indMetrics.indPlotLabel = QtWidgets.QLabel(
+                        Ui_MainWindow.indMetrics)
+        Ui_MainWindow.indMetrics.indPlotLabel.setText(Ui_MainWindow.element)
+        Ui_MainWindow.indMetrics.indPlotLabel.setFont(
+                            Ui_MainWindow.boldfont)
+        hbox1.addWidget(Ui_MainWindow.indMetrics.indPlotLabel)
+        hbox1.addStretch()
+        vbox.addLayout(hbox1)
+        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
+        hbox2.addStretch()
+        try:
+            indMetPlot
+            indMetPlot.clear()
+        except NameError:
+            indMetPlot = None
+        indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.metrics[whichds],
+                            Ui_MainWindow.metrics[whichds], Ui_MainWindow.element, False, False)
+        hbox2.addWidget(indMetPlot)
+        hbox2.addStretch()
+        vbox.addLayout(hbox2)
+        hbox3 =  QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
+        hbox3.addStretch()
+        hbox3.addWidget(Ui_MainWindow.indMetrics.comboBox)
+        hbox3.addStretch()
+        vbox.addLayout(hbox3)
+        vbox.setContentsMargins(30, 20, 30, 100)
+        self.setCurrentIndex(Ui_MainWindow.iIndex)
         Ui_MainWindow.EnableAnalysisButtons(self)
-        Ui_MainWindow.tab.progress2.setValue(100)
-        self.setCurrentIndex(iIndex)
+
+    def metric_change(self, text):
+        Ui_MainWindow.element = text
+        whichds = 0
+        for dataset in range(len(Ui_MainWindow.metrics)):
+                if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
+                    whichds = dataset
+                    break
+        Ui_MainWindow.removeTab(self, Ui_MainWindow.iIndex)
+        Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
+        Ui_MainWindow.iIndex = self.addTab(Ui_MainWindow.indMetrics,
+                                 "Individual metrics")
+        Ui_MainWindow.createGraph(self, whichds)
 
     def checkColumnNumberForPCA(self):
         if(len(FileInput.BrowseWindow.currentDataset.columns) < 3):
