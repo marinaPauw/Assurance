@@ -197,7 +197,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 if file == inputFiles[i]:
                     fileIndexInFiles = i+1
                 i=i+1
-
+            
+            UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.UploadProgress.setValue(fileIndexInFiles/(len(inputFiles)+1)*100)
 
             for ii in metricsDf["mzQC"]["runQuality"]:
                # NumofTotalTransitions = []
@@ -425,8 +426,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                 AllMetricSizesDf[dfIndex]["Name"].loc[filename] = iii["name"]
                                 AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii['value']
         
-        UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.UploadProgress.setValue(fileIndexInFiles/len(inputFiles)*100)
-        print(AllMetricSizesDf[0])
+        UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.UploadProgress.setValue(100)
         return AllMetricSizesDf
 
 
