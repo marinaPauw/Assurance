@@ -49,7 +49,7 @@ class SwaMe():
                 os.rename(dirpath,dirpath+timestr )
            
         SwaMe.process = QtCore.QProcess()
-        SwaMe.process.setProcessChannelMode(QProcess.MergedChannels)
+        SwaMe.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         SwaMe.process.readyReadStandardOutput.connect(lambda: SwaMe.on_readyReadStandardOutput(self))
         SwaMe.process.finished.connect(SwaMe.on_Finished)
         arguments = ""
