@@ -90,52 +90,57 @@ class BrowseWindow(QtWidgets.QMainWindow):
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
     def metricsParsing(self,inputFile):
-       try:
-        if inputFile.endswith('.json'):
-            with open(inputFile) as f:
-             metrics = json.loads(f.read())
-            metricsDf = pd.DataFrame(metrics)
-            columnNames = []
-            for ii in metricsDf["mzQC"]["runQuality"]:
-               for iii in ii["qualityParameters"]:
-                columnNames.append (iii["name"])
-            PCAInput = pd.DataFrame(columns = columnNames)
-            myPIArray = PCAInput.values
-            tempVec = []
-            for ii in metricsDf["mzQC"]["runQuality"]:
-               for iii in ii["qualityParameters"]:
-                  tempVec.append(iii["value"])
-        
-            myPIArray = np.vstack((myPIArray, tempVec)) 
-            PCAInput = pd.DataFrame(myPIArray, columns=columnNames)
-            metrics = PCAInput
-            if(metrics.iloc[:, 0].count() < 2) :
-                QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"Error:", 
-                                  "There are not enough samples in your file to conduct analysis. Please choose another file.")
-                UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
-            return metrics
+        try:
+            if inputFile.endswith('.json'):
+                with open(inputFile) as f:
+                    metrics = json.loads(f.read())
+                metricsDf = pd.DataFrame(metrics)
+                columnNames = []
+                for ii in metricsDf["mzQC"]["runQuality"]:
+                    for iii in ii["qualityParameters"]:
+                        columnNames.append (iii["name"])
+                PCAInput = pd.DataFrame(columns = columnNames)
+                myPIArray = PCAInput.values
+                tempVec = []
+                for ii in metricsDf["mzQC"]["runQuality"]:
+                    for iii in ii["qualityParameters"]:
+                        tempVec.append(iii["value"])
+            
+                myPIArray = np.vstack((myPIArray, tempVec)) 
+                PCAInput = pd.DataFrame(myPIArray, columns=columnNames)
+                metrics = PCAInput
+                if(metrics.iloc[:, 0].count() < 2) :
+                    QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"Error:", 
+                                    "There are not enough samples in your file to conduct analysis. Please choose another file.")
+                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+                return metrics
 
-        elif inputFile.endswith('.csv'):
-            metrics = list()
-            metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep=",")))
-            if len(metrics[0].index) < 2:
-                QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                                  "There are not enough samples in your file to conduct analysis. Please choose another file.")
-                UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
-            return metrics
+            elif inputFile.endswith('.csv'):
+                metrics = list()
+                metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep=",")))
+                if len(metrics[0].index) < 2:
+                    QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
+                                    "There are not enough samples in your file to conduct analysis. Please choose another file.")
+                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+                return metrics
 
-        elif inputFile.endswith('.tsv'):
-            metrics = list()
-            metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep="\t")))
-            if len(metrics[0].index) < 2:
-                QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                                  "There are not enough samples in your file to conduct analysis. Please choose another file.")
-                UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
-            return metrics
+            elif inputFile.endswith('.tsv'):
+                metrics = list()
+                metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep="\t")))
+                if len(metrics[0].index) < 2:
+                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
+                                    "There are not enough samples in your file to conduct analysis. Please choose another file.")
+                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+                return metrics
 
 
-       except json.decoder.JSONDecodeError:
+        except json.decoder.JSONDecodeError:
             QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Message from Assurance: ", "This file does not contain data in the correct format. Please load a different file.")
+            UI_MainWindow.Ui_MainWindow.onBrowseClicked(
+                UI_MainWindow.Ui_MainWindow)
+        
+        except:
+            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Message from Assurance: ", "Some error has occurred during parsing, please check the file again.")
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(
                 UI_MainWindow.Ui_MainWindow)
 
