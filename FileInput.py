@@ -175,7 +175,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
     def TrainingSetFileMatchNames(self, TrainingSet):
         for i in range(0, len(TrainingSet.iloc[:, 0])):
-            if(UI_MainWindow.Ui_MainWindow.metrics.iloc[i, 0] != TrainingSet.iloc[i, 0]):
+            if(UI_MainWindow.Ui_MainWindow.metrics[0].iloc[i, 0] != TrainingSet.iloc[i, 0]):
                QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
                                   "The first column of the  file does not match that of the quality metrics input file. Try again.")
                UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
