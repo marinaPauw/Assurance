@@ -444,25 +444,16 @@ class BrowseWindow(QtWidgets.QMainWindow):
              UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
      
     def GetQuaMeterInputFiles(self):
-        possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(None, " Files for QuaMeter input", "", "mzML files (*.mzML)", 
+        possibleinputFile,_ = QtWidgets. QFileDialog.getOpenFileName(None, " One file in the directory for QuaMeter input", "", "mzML files (*.mzML)", 
                                                                options=
-                                                               QtWidgets.QFileDialog.\
-                                                                   Options())
-        if(possibleinputFiles):
-           inputFiles = [] 
-           if(len(possibleinputFiles) > 1):
-                for possiblefile in possibleinputFiles:
-                  inputFiles.append(BrowseWindow.QuaMeterFileTypeCheck(self, possiblefile))
-               
-           else:
-                possiblefile = possibleinputFiles[0]
-                inputFiles.append(BrowseWindow.QuaMeterFileTypeCheck(self, possiblefile))
-
-        if(inputFiles):
-            return inputFiles
+                                                               QtWidgets.QFileDialog.Options())
+        if(possibleinputFile):
+            inputFile = BrowseWindow.QuaMeterFileTypeCheck(self, possibleinputFile)
+            if(inputFile):
+                return inputFile
 
     def GetQuaMeterPath(self):
-        QuaMeterPath,_ = QtWidgets. QFileDialog.getOpenFileNames(None, "Please locate the QuaMeter exe on your system:", "", "exe files (*.exe)", 
+        QuaMeterPath,_ = QtWidgets. QFileDialog.getOpenFileName(None, "Please locate the QuaMeter exe on your system:", "", "exe files (*.exe)", 
                                                                options=
                                                                QtWidgets.QFileDialog.\
                                                                    Options())
