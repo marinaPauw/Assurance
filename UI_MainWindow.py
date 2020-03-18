@@ -88,7 +88,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel= QtWidgets.QLabel(Ui_MainWindow.tab.UploadFrame.leftFrame)
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox = QtWidgets.QLineEdit(Ui_MainWindow.tab.UploadFrame.leftFrame) 
         Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton = QtWidgets.QPushButton(Ui_MainWindow.tab.UploadFrame.leftFrame)
-        #Ui_MainWindow.tab.UploadFrame.leftFrame.Dir = QtWidgets.QRadioButton("Whole Directory")
+        Ui_MainWindow.tab.UploadFrame.leftFrame.textedit =QtWidgets.QTextEdit(readOnly=True)
         
 
         #Widget stylesheets:
@@ -132,6 +132,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         QuaMetervbox.addLayout(hbox3)
         hbox4 = QtWidgets.QHBoxLayout()
         hbox4.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton)
+        hbox4.addWidget(Ui_MainWindow.tab.UploadFrame.leftFrame.textedit)
         QuaMetervbox.addLayout(hbox4)
 
         #-------------------------------------------------SwaMeLayout--------------------------------------------------------
