@@ -27,7 +27,7 @@ import unittest
 class Test_test_DataPreparation(unittest.TestCase):
     def setUp(self):
         df = pd.read_csv("HeunisMetrics.tsv", sep="\t")
-        DataPreparation.DataPrep.ExtractNumericColumns(df)
+        df = DataPreparation.DataPrep.ExtractNumericColumns(df)
     
     def test_ExtractNumericColumns(self):
         self.assertTrue(len(FileInput.BrowseWindow.currentDataset.columns)==44)
