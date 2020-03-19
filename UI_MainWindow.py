@@ -352,8 +352,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             #filepath = FileInput.BrowseWindow.FileCheck(self, inputFile)
             Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
             #Ui_MainWindow.checkColumnLength(self)
-            Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics[0].index[0])
-            DataPreparation.DataPrep.ExtractNumericColumns(self, self.metrics)
+            #Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics[0].index[0])
+            self.metrics[0] = DataPreparation.DataPrep.ExtractNumericColumns(self, self.metrics[0])
             DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
         Ui_MainWindow.EnableAnalysisButtons(self)
 
