@@ -27,7 +27,7 @@ class Test_test_PCA(unittest.TestCase):
         df = pd.read_csv("HeunisMetrics.tsv", sep="\t")
         UI_MainWindow.Ui_MainWindow.tab = QtWidgets.QWidget()
         UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.progress1 = QtWidgets.QProgressBar()
-        DataPreparation.DataPrep.ExtractNumericColumns(df)
+        df = DataPreparation.DataPrep.ExtractNumericColumns(df)
         DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
     
     def test_PCA(self):

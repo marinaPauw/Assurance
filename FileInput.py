@@ -40,23 +40,25 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
                 if(justJSONFiles==True):
-                   inputFiles = possibleinputFiles
-                   UI_MainWindow.Ui_MainWindow.metrics =  \
+                    inputFiles = possibleinputFiles
+                    UI_MainWindow.Ui_MainWindow.metrics =  \
                        BrowseWindow.CombineJSONs(
                            UI_MainWindow.Ui_MainWindow, inputFiles)
-                   UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-                   for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
+                    if "Filename" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
+                            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
+                    UI_MainWindow.Ui_MainWindow.NumericMetrics = []
+                    for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
                        #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
                         #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
                        BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
-                       DataPreparation.DataPrep.ExtractNumericColumns(self,
+                       BrowseWindow.currentDataset =DataPreparation.DataPrep.ExtractNumericColumns(self,
                            BrowseWindow.currentDataset)
                        DataPreparation.DataPrep.RemoveLowVarianceColumns(
                            UI_MainWindow.Ui_MainWindow)
                        UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
-                   str1 = " " 
-                   UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText(str1.join(inputFiles))
-                   UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
+                    str1 = " " 
+                    UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText(str1.join(inputFiles))
+                    UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
             else:
                 possibleinputFile = possibleinputFiles[0]
                 inputFile = BrowseWindow.fileTypeCheck(self, possibleinputFile)
@@ -90,52 +92,57 @@ class BrowseWindow(QtWidgets.QMainWindow):
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
     def metricsParsing(self,inputFile):
-       try:
-        if inputFile.endswith('.json'):
-            with open(inputFile) as f:
-             metrics = json.loads(f.read())
-            metricsDf = pd.DataFrame(metrics)
-            columnNames = []
-            for ii in metricsDf["mzQC"]["runQuality"]:
-               for iii in ii["qualityParameters"]:
-                columnNames.append (iii["name"])
-            PCAInput = pd.DataFrame(columns = columnNames)
-            myPIArray = PCAInput.values
-            tempVec = []
-            for ii in metricsDf["mzQC"]["runQuality"]:
-               for iii in ii["qualityParameters"]:
-                  tempVec.append(iii["value"])
-        
-            myPIArray = np.vstack((myPIArray, tempVec)) 
-            PCAInput = pd.DataFrame(myPIArray, columns=columnNames)
-            metrics = PCAInput
-            if(metrics.iloc[:, 0].count() < 2) :
-                QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"Error:", 
-                                  "There are not enough samples in your file to conduct analysis. Please choose another file.")
-                UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
-            return metrics
+        try:
+            if inputFile.endswith('.json'):
+                with open(inputFile) as f:
+                    metrics = json.loads(f.read())
+                metricsDf = pd.DataFrame(metrics)
+                columnNames = []
+                for ii in metricsDf["mzQC"]["runQuality"]:
+                    for iii in ii["qualityParameters"]:
+                        columnNames.append (iii["name"])
+                PCAInput = pd.DataFrame(columns = columnNames)
+                myPIArray = PCAInput.values
+                tempVec = []
+                for ii in metricsDf["mzQC"]["runQuality"]:
+                    for iii in ii["qualityParameters"]:
+                        tempVec.append(iii["value"])
+            
+                myPIArray = np.vstack((myPIArray, tempVec)) 
+                PCAInput = pd.DataFrame(myPIArray, columns=columnNames)
+                metrics = PCAInput
+                if(metrics.iloc[:, 0].count() < 2) :
+                    QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"Error:", 
+                                    "There are not enough samples in your file to conduct analysis. Please choose another file.")
+                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+                return metrics
 
-        elif inputFile.endswith('.csv'):
-            metrics = list()
-            metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep=",")))
-            if len(metrics[0].index) < 2:
-                QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                                  "There are not enough samples in your file to conduct analysis. Please choose another file.")
-                UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
-            return metrics
+            elif inputFile.endswith('.csv'):
+                metrics = list()
+                metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep=",")))
+                if len(metrics[0].index) < 2:
+                    QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
+                                    "There are not enough samples in your file to conduct analysis. Please choose another file.")
+                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+                return metrics
 
-        elif inputFile.endswith('.tsv'):
-            metrics = list()
-            metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep="\t")))
-            if len(metrics[0].index) < 2:
-                QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                                  "There are not enough samples in your file to conduct analysis. Please choose another file.")
-                UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
-            return metrics
+            elif inputFile.endswith('.tsv'):
+                metrics = list()
+                metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep="\t")))
+                if len(metrics[0].index) < 2:
+                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
+                                    "There are not enough samples in your file to conduct analysis. Please choose another file.")
+                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+                return metrics
 
 
-       except json.decoder.JSONDecodeError:
+        except json.decoder.JSONDecodeError:
             QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Message from Assurance: ", "This file does not contain data in the correct format. Please load a different file.")
+            UI_MainWindow.Ui_MainWindow.onBrowseClicked(
+                UI_MainWindow.Ui_MainWindow)
+        
+        except:
+            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Message from Assurance: ", "Some error has occurred during parsing, please check the file again.")
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(
                 UI_MainWindow.Ui_MainWindow)
 
@@ -170,7 +177,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
     def TrainingSetFileMatchNames(self, TrainingSet):
         for i in range(0, len(TrainingSet.iloc[:, 0])):
-            if(UI_MainWindow.Ui_MainWindow.metrics.iloc[i, 0] != TrainingSet.iloc[i, 0]):
+            if(UI_MainWindow.Ui_MainWindow.metrics[0].iloc[i, 0] != TrainingSet.iloc[i, 0]):
                QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
                                   "The first column of the  file does not match that of the quality metrics input file. Try again.")
                UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
@@ -439,25 +446,16 @@ class BrowseWindow(QtWidgets.QMainWindow):
              UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
      
     def GetQuaMeterInputFiles(self):
-        possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(None, " Files for QuaMeter input", "", "mzML files (*.mzML)", 
+        possibleinputFile,_ = QtWidgets. QFileDialog.getOpenFileName(None, " One file in the directory for QuaMeter input", "", "mzML files (*.mzML)", 
                                                                options=
-                                                               QtWidgets.QFileDialog.\
-                                                                   Options())
-        if(possibleinputFiles):
-           inputFiles = [] 
-           if(len(possibleinputFiles) > 1):
-                for possiblefile in possibleinputFiles:
-                  inputFiles.append(BrowseWindow.QuaMeterFileTypeCheck(self, possiblefile))
-               
-           else:
-                possiblefile = possibleinputFiles[0]
-                inputFiles.append(BrowseWindow.QuaMeterFileTypeCheck(self, possiblefile))
-
-        if(inputFiles):
-            return inputFiles
+                                                               QtWidgets.QFileDialog.Options())
+        if(possibleinputFile):
+            inputFile = BrowseWindow.QuaMeterFileTypeCheck(self, possibleinputFile)
+            if(inputFile):
+                return inputFile
 
     def GetQuaMeterPath(self):
-        QuaMeterPath,_ = QtWidgets. QFileDialog.getOpenFileNames(None, "Please locate the QuaMeter exe on your system:", "", "exe files (*.exe)", 
+        QuaMeterPath,_ = QtWidgets. QFileDialog.getOpenFileName(None, "Please locate the QuaMeter exe on your system:", "", "exe files (*.exe)", 
                                                                options=
                                                                QtWidgets.QFileDialog.\
                                                                    Options())
