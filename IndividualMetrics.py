@@ -66,8 +66,7 @@ class MyIndMetricsCanvas(FigureCanvas):
                 if "dates" in UI_MainWindow.Ui_MainWindow.metrics[0]:
                     table["runDate"]= "Default"
                     for x in range(0,len(UI_MainWindow.Ui_MainWindow.metrics[0]["dates"])):
-                        table["runDate"].iloc[x] = mpl.dates.date2num(datetime.datetime.strptime(table["dates"].iloc[x], '%Y-%m-%d').date())
-                    #UI_MainWindow.Ui_MainWindow.metrics[0]["dates"] =  mpl.dates.date2num( UI_MainWindow.Ui_MainWindow.metrics[0]["dates"])
+                        table["runDate"].iloc[x] = datetime.datetime.strptime(table["dates"].iloc[x], '%Y-%m-%d')
                     tableContainingRownames["runDate"] = table["runDate"]
                     tableContainingRownames = tableContainingRownames.sort_values("runDate")
                     table = table.sort_values("runDate")
@@ -83,11 +82,7 @@ class MyIndMetricsCanvas(FigureCanvas):
             plt.grid(color ="ghostwhite")
             colors = [hsv_to_rgb([(i * 0.618033988749895) % 1.0, (i * 0.32) % 1.0, (i * 0.112) % 1.0]) for i in range(1000)]
             plt.rc("axes", prop_cycle=(cycler('color', colors)))
-            #manager = plt.get_current_fig_manager()
-            #manager.resize(*manager.window.maxsize())
             MyIndMetricsCanvas.samplenames = []
-            #if "Filename" in tableContainingRownames.columns:
-            #    tableContainingRownames.index = tableContaingRownames["Filename"]
             if isinstance( tableContainingRownames.index[0], str) and "." in tableContainingRownames.index[0] :
                 counter = tableContainingRownames.index[0].count('.') 
                 if(counter==1):# .mzML
@@ -148,7 +143,8 @@ class MyIndMetricsCanvas(FigureCanvas):
             
             MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
             if element == "runDate":
-                MyIndMetricsCanvas.ax.set_yticklabels(table["dates"])
+                #MyIndMetricsCanvas.ax.set_yticklabels(set(table["dates"]))
+                MyIndMetricsCanvas.ax.yaxis_date()
             for tick in MyIndMetricsCanvas.ax.get_xticklabels():
                 tick.set_rotation(90)
                 tick.set_size(8)
