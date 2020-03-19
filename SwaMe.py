@@ -49,7 +49,7 @@ class SwaMe():
                 os.rename(dirpath,dirpath+timestr )
            
         SwaMe.process = QtCore.QProcess()
-        SwaMe.process.setProcessChannelMode(QProcess.MergedChannels)
+        SwaMe.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         SwaMe.process.readyReadStandardOutput.connect(lambda: SwaMe.on_readyReadStandardOutput(self))
         SwaMe.process.finished.connect(SwaMe.on_Finished)
         arguments = ""
@@ -94,7 +94,7 @@ class SwaMe():
         #UI_MainWindow.Ui_MainWindow.checkColumnLength(self)
         UI_MainWindow.Ui_MainWindow.NumericMetrics = []
         FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
-        DataPreparation.DataPrep.ExtractNumericColumns(self,
+        FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.ExtractNumericColumns(
                            FileInput.BrowseWindow.currentDataset)
         DataPreparation.DataPrep.RemoveLowVarianceColumns(
                            UI_MainWindow.Ui_MainWindow)
