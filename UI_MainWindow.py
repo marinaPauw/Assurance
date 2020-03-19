@@ -570,20 +570,21 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
          
        
         Ui_MainWindow.listOfMetrics = list()
-        for dataset in range(len(Ui_MainWindow.metrics)): # For each dataset in all the datasets we have
-            for element in Ui_MainWindow.metrics[dataset].columns:
-                if element!= "Name" and element != "Filename":
+        if "StartTimeStamp" in Ui_MainWindow.metrics[0].columns:
+            Ui_MainWindow.listOfMetrics.append("StartTimeStamp")
+        for dataset in range(len(Ui_MainWindow.NumericMetrics)): # For each dataset in all the datasets we have
+            for element in Ui_MainWindow.NumericMetrics[dataset].columns:
                     Ui_MainWindow.listOfMetrics.append(element)
                     
         Ui_MainWindow.element = Ui_MainWindow.listOfMetrics[0]
         #-------------- widgets ---------------------------------------
         
         whichds = 0
-        for dataset in range(len(Ui_MainWindow.metrics)):
-                if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
+        for dataset in range(len(Ui_MainWindow.NumericMetrics)):
+                if Ui_MainWindow.element in Ui_MainWindow.NumericMetrics[dataset].columns:
                     whichds = dataset
                     break
-        Ui_MainWindow.sampleSelected = Ui_MainWindow.metrics[0].index[0]
+        Ui_MainWindow.sampleSelected = Ui_MainWindow.NumericMetrics[0].index[0]
         Ui_MainWindow.createGraph(self, whichds)
 
     def createGraph(self, whichds):
@@ -618,8 +619,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             indMetPlot.clear()
         except NameError:
             indMetPlot = None
-        indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.metrics[whichds],
-                            Ui_MainWindow.metrics[whichds], Ui_MainWindow.element, False)
+        indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.NumericMetrics[whichds],
+                            Ui_MainWindow.NumericMetrics[whichds], Ui_MainWindow.element, False)
         hbox2.addWidget(indMetPlot)
         hbox2.addStretch()
         vbox.addLayout(hbox2)
@@ -635,8 +636,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def metric_change(self, text):
         Ui_MainWindow.element = text
         whichds = 0
-        for dataset in range(len(Ui_MainWindow.metrics)):
-                if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
+        for dataset in range(len(Ui_MainWindow.NumericMetrics)):
+                if Ui_MainWindow.element in Ui_MainWindow.NumericMetrics[dataset].columns:
                     whichds = dataset
                     break
         Ui_MainWindow.removeTab(self, Ui_MainWindow.iIndex)
@@ -647,8 +648,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def sample_change(self, text):
         Ui_MainWindow.sampleSelected = text
-        for dataset in range(len(Ui_MainWindow.metrics)):
-                if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
+        for dataset in range(len(Ui_MainWindow.NumericMetrics)):
+                if Ui_MainWindow.element in Ui_MainWindow.NumericMetrics[dataset].columns:
                     whichds = dataset
                     break
 
