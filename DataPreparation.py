@@ -61,6 +61,7 @@ class DataPrep(object):
         NumericMetrics = NumericMetrics.fillna(0)
 
         FileInput.BrowseWindow.currentDataset = NumericMetrics
+        return metrics
 
     def RemoveLowVarianceColumns(self):
         Nm = FileInput.BrowseWindow.currentDataset
@@ -91,8 +92,9 @@ class DataPrep(object):
         print("Low variance columns removed. There are now %d columns",
               len(Nm.columns))
         print(Nm.columns.values)
-        if Nm.index[0]==0 and "Filename" in UI_MainWindow.Ui_MainWindow.metrics.columns:
-            Nm.index = UI_MainWindow.Ui_MainWindow.metrics["Filename"]
+        if Nm.index[0]==0 and "Filename" in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
+            Nm.index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
+            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
         UI_MainWindow.Ui_MainWindow.NumericMetrics = list()
         UI_MainWindow.Ui_MainWindow.NumericMetrics.append(Nm)
         FileInput.BrowseWindow.currentDataset = Nm
@@ -116,5 +118,5 @@ class DataPrep(object):
                 realSampleNames.append(rawSampleName)
         return realSampleNames
 
-    def contains_string(l):
+    def contains_string(self, l):
         return any(isinstance(item, str) for item in l)

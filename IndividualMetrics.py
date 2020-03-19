@@ -20,6 +20,7 @@ import datetime
 import UI_MainWindow
 import re
 import Legend
+import FileInput
 import pylab
 from matplotlib.colors import hsv_to_rgb
 from cycler import cycler
@@ -58,98 +59,112 @@ class MyIndMetricsCanvas(FigureCanvas):
         return unique_list
 
     def __init__(self, tableContainingRownames, table,element, rectangleSelection,parent=None, width=25, height=8, dpi=100):
-        MyIndMetricsCanvas.fig = Figure(figsize=(width, height), dpi=dpi)
-        #self.axes = MyIndMetricsCanvas.fig.add_subplot(111)
-        MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
-        sampleSize = range(len(table))
-        MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
-        tableContainingRownames = tableContainingRownames.sort_values(element)
-        table = table.sort_values(element)
-        plt.grid(color ="ghostwhite")
-        colors = [hsv_to_rgb([(i * 0.618033988749895) % 1.0, (i * 0.32) % 1.0, (i * 0.112) % 1.0])
-          for i in range(1000)]
-        plt.rc("axes", prop_cycle=(cycler('color', colors)))
-        #manager = plt.get_current_fig_manager()
-        #manager.resize(*manager.window.maxsize())
-        MyIndMetricsCanvas.samplenames = []
-        if isinstance( tableContainingRownames.index[0], str) and "." in tableContainingRownames.index[0] :
-            counter = tableContainingRownames.index[0].count('.') 
-            if(counter==1):# .mzML
-                for iii in sampleSize:
-                            temp,throw = tableContainingRownames.index[0].split('.')
-                            MyIndMetricsCanvas.samplenames.append(temp)
-            elif(counter==2):#For example .wiff.scan
-                for iii in sampleSize:
-                            temp,throw,throw = tableContainingRownames.index[0].split('.')
-                            MyIndMetricsCanvas.samplenames.append(temp)
-            elif(counter==3):
-                for iii in sampleSize:
-                            temp,throw,throw = tableContainingRownames.index[0].split('.')
-                            MyIndMetricsCanvas.samplenames.append(temp)
-        else:
-            MyIndMetricsCanvas.samplenames = tableContainingRownames.index
-        MyIndMetricsCanvas.ax.get_yaxis().get_major_formatter().set_scientific(False)
-        Ymax = table[element].max()
-        if Ymax > 10000:
-            MyIndMetricsCanvas.ax.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.0e'))
-        #Find if there are duplicates in MyIndMetricsCanvas.samplenames (like n a swath/RT file for SwaMe)
-        if(len(MyIndMetricsCanvas.samplenames) != len(set(MyIndMetricsCanvas.samplenames))):#duplicates present
-            for iii in sampleSize:#If they are numeric values they should be strings
-                tableContainingRownames.iloc[iii,1] = str(tableContainingRownames.iloc[iii,1])
-            uniqueSamples = MyIndMetricsCanvas.unique(tableContainingRownames.iloc[:,0])
-            for item in range(len(uniqueSamples)):
-                rowNumList = []
-                xAxis = []
-                for ii in sampleSize:
-                    if tableContainingRownames.iloc[ii,0]==uniqueSamples[item]:
-                        rowNumList.append(ii)
-                lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table[element].iloc[rowNumList], marker='o', color = "black",label = uniqueSamples[item])   
-               
-        else:
-            lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table[element], linestyle="-",marker='o', markerfacecolor = "dimgrey",color = "black")
-        MyIndMetricsCanvas.ax.set_facecolor('gainsboro')
-        sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
-        MyIndMetricsCanvas.ax.plot(tableContainingRownames.index[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
-        if(len(MyIndMetricsCanvas.samplenames)<=32 or len(MyIndMetricsCanvas.samplenames) == len(set(MyIndMetricsCanvas.samplenames))):
-            MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
-        else:
-            figlegend = pylab.figure(figsize = (30,40))
-            handles, labels = MyIndMetricsCanvas.ax.get_legend_handles_labels()
-            if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
-              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 2, borderaxespad=0.1 )
-            elif(len(MyIndMetricsCanvas.samplenames)>64 and len(MyIndMetricsCanvas.samplenames)<=96):
-              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 3, borderaxespad=0.1 )
-            elif(len(MyIndMetricsCanvas.samplenames)>96 and len(MyIndMetricsCanvas.samplenames)<=128):
-              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 4, borderaxespad=0.1 )
+        try:
+            if element == "StartTimeStamp":
+                table = UI_MainWindow.Ui_MainWindow.metrics[0]
+                tableContainingRownames = UI_MainWindow.Ui_MainWindow.metrics[0]
+                if "dates" in UI_MainWindow.Ui_MainWindow.metrics[0]:
+                    element = "dates"
+            MyIndMetricsCanvas.fig = Figure(figsize=(width, height), dpi=dpi)
+            #self.axes = MyIndMetricsCanvas.fig.add_subplot(111)
+            MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
+            sampleSize = range(len(table))
+            MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
+            if type(element) == int or type(element) == float:
+                tableContainingRownames = tableContainingRownames.sort_values(element)
+                table = table.sort_values(element)
+            plt.grid(color ="ghostwhite")
+            colors = [hsv_to_rgb([(i * 0.618033988749895) % 1.0, (i * 0.32) % 1.0, (i * 0.112) % 1.0])
+            for i in range(1000)]
+            plt.rc("axes", prop_cycle=(cycler('color', colors)))
+            #manager = plt.get_current_fig_manager()
+            #manager.resize(*manager.window.maxsize())
+            MyIndMetricsCanvas.samplenames = []
+            if isinstance( tableContainingRownames.index[0], str) and "." in tableContainingRownames.index[0] :
+                counter = tableContainingRownames.index[0].count('.') 
+                if(counter==1):# .mzML
+                    for iii in sampleSize:
+                                temp,throw = tableContainingRownames.index[0].split('.')
+                                MyIndMetricsCanvas.samplenames.append(temp)
+                elif(counter==2):#For example .wiff.scan
+                    for iii in sampleSize:
+                                temp,throw,throw = tableContainingRownames.index[0].split('.')
+                                MyIndMetricsCanvas.samplenames.append(temp)
+                elif(counter==3):
+                    for iii in sampleSize:
+                                temp,throw,throw = tableContainingRownames.index[0].split('.')
+                                MyIndMetricsCanvas.samplenames.append(temp)
             else:
-              figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 5, borderaxespad=0.1 )
-            MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
-            Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
-        
-        MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
-        for tick in MyIndMetricsCanvas.ax.get_xticklabels():
-            tick.set_rotation(90)
-            tick.set_size(8)
-        for tick in MyIndMetricsCanvas.ax.get_yticklabels():
-            tick.set_rotation(90)
-        FigureCanvas.__init__(self, MyIndMetricsCanvas.fig)
-      #  MyIndMetricsCanvas.setParent(parent)
+                MyIndMetricsCanvas.samplenames = tableContainingRownames.index
+            MyIndMetricsCanvas.ax.get_yaxis().get_major_formatter().set_scientific(False)
+            if type(element) =="int" or type(element) == "float" :
+                Ymax = table[element].max()
+                if Ymax > 10000:
+                    MyIndMetricsCanvas.ax.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.0e'))
+            #Find if there are duplicates in MyIndMetricsCanvas.samplenames (like n a swath/RT file for SwaMe)
+            if(len(MyIndMetricsCanvas.samplenames) != len(set(MyIndMetricsCanvas.samplenames))):#duplicates present
+                for iii in sampleSize:#If they are numeric values they should be strings
+                    tableContainingRownames.iloc[iii,1] = str(tableContainingRownames.iloc[iii,1])
+                uniqueSamples = MyIndMetricsCanvas.unique(tableContainingRownames.iloc[:,0])
+                for item in range(len(uniqueSamples)):
+                    rowNumList = []
+                    xAxis = []
+                    for ii in sampleSize:
+                        if tableContainingRownames.iloc[ii,0]==uniqueSamples[item]:
+                            rowNumList.append(ii)
+                    if element == "dates":
+                        lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table[element].iloc[rowNumList], marker='o', color = "black",label = uniqueSamples[item])   
+                    else:    
+                        lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table[element].iloc[rowNumList], marker='o', color = "black",label = uniqueSamples[item])   
+                
+            else:
+                lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table[element], linestyle="-",marker='o', markerfacecolor = "dimgrey",color = "black")
+            MyIndMetricsCanvas.ax.set_facecolor('gainsboro')
+            sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
+            MyIndMetricsCanvas.ax.plot(tableContainingRownames.index[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
+            if(len(MyIndMetricsCanvas.samplenames)<=32 or len(MyIndMetricsCanvas.samplenames) == len(set(MyIndMetricsCanvas.samplenames))):
+                MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
+            else:
+                figlegend = pylab.figure(figsize = (30,40))
+                handles, labels = MyIndMetricsCanvas.ax.get_legend_handles_labels()
+                if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
+                    figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 2, borderaxespad=0.1 )
+                elif(len(MyIndMetricsCanvas.samplenames)>64 and len(MyIndMetricsCanvas.samplenames)<=96):
+                    figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 3, borderaxespad=0.1 )
+                elif(len(MyIndMetricsCanvas.samplenames)>96 and len(MyIndMetricsCanvas.samplenames)<=128):
+                    figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 4, borderaxespad=0.1 )
+                else:
+                    figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 5, borderaxespad=0.1 )
+                MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
+                Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
+            
+            MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
+            for tick in MyIndMetricsCanvas.ax.get_xticklabels():
+                tick.set_rotation(90)
+                tick.set_size(8)
+            for tick in MyIndMetricsCanvas.ax.get_yticklabels():
+                tick.set_rotation(90)
+            FigureCanvas.__init__(self, MyIndMetricsCanvas.fig)
+        #  MyIndMetricsCanvas.setParent(parent)
 
-        FigureCanvas.setSizePolicy(self,
-                                   QtWidgets.QSizePolicy.Expanding,
-                                   QtWidgets.QSizePolicy.Expanding)
-        FigureCanvas.updateGeometry(self)
-        # drawtype is 'box' or 'line' or 'none'
-        if(rectangleSelection):
-            MyIndMetricsCanvas.toggle_selector.RS = RectangleSelector(MyIndMetricsCanvas.ax,  MyIndMetricsCanvas.line_select_callback,
-                                           drawtype='box', useblit=True,
-                                           button=[1, 3],  # don't use middle button
-                                           minspanx=5, minspany=5,
-                                           spancoords='pixels',
-                                           interactive=True)
-            plt.connect('key_press_event', MyIndMetricsCanvas.toggle_selector)
+            FigureCanvas.setSizePolicy(self,
+                                    QtWidgets.QSizePolicy.Expanding,
+                                    QtWidgets.QSizePolicy.Expanding)
+            FigureCanvas.updateGeometry(self)
+            # drawtype is 'box' or 'line' or 'none'
+            if(rectangleSelection):
+                MyIndMetricsCanvas.toggle_selector.RS = RectangleSelector(MyIndMetricsCanvas.ax,  MyIndMetricsCanvas.line_select_callback,
+                                            drawtype='box', useblit=True,
+                                            button=[1, 3],  # don't use middle button
+                                            minspanx=5, minspany=5,
+                                            spancoords='pixels',
+                                            interactive=True)
+                plt.connect('key_press_event', MyIndMetricsCanvas.toggle_selector)
 
-        self.compute_initial_figure()
+            self.compute_initial_figure()
+        except:
+            UI_MainWindow.Ui_MainWindow.element = UI_MainWindow.Ui_MainWindow.metrics[0].columns[ UI_MainWindow.Ui_MainWindow.metrics[0].columns.tolist().index(element)+1]
+            MyIndMetricsCanvas(tableContainingRownames, table, element, False)
 
       
     def compute_initial_figure(self):
