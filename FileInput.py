@@ -11,9 +11,6 @@ import json
 import DataPreparation
 
 
-
-
-
 class BrowseWindow(QtWidgets.QMainWindow):
     def __init__(self):
         self.title = "Load file"
@@ -75,13 +72,17 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText("   " + inputFile + "  ")
                     return inputFile
    
-    def GetTrainingSetFile(self):
-        possibleInputFile, _ =QtWidgets. QFileDialog.getOpenFileName(
-            UI_MainWindow.Ui_MainWindow.tab,"Select a file from which to create the training set:", "","All Files (*)", options = QtWidgets.QFileDialog.Options())
-        if(possibleInputFile):
-            TrainingSetFile = BrowseWindow.TrainingSetFileTypeCheck(self, possibleInputFile)
-            if(TrainingSetFile):
-                return TrainingSetFile
+    def GetTrainingSetFiles(self):
+        possibleInputFiles, _ =QtWidgets. QFileDialog.getOpenFileNames(
+            UI_MainWindow.Ui_MainWindow.tab,"Select the files from which to create the training set:", "","PepXML files (*.pepXML)", options = QtWidgets.QFileDialog.Options())
+        TrainingSetFiles = []
+        if(possibleInputFiles):
+            for file in possibleInputFiles:
+                inputFile = BrowseWindow.TrainingSetFileTypeCheck(self, file)
+                if inputFile:
+                    TrainingSetFiles.append(inputFile)
+            if(TrainingSetFiles):
+                return TrainingSetFiles
     
     def fileTypeCheck(self,inputFile):
         if inputFile.endswith('.json') or inputFile.endswith('.csv') or inputFile.endswith('.tsv'):
@@ -155,7 +156,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
             return 0
     
     def TrainingSetFileTypeCheck(self, inputFile):
-          if inputFile.endswith('.csv') or inputFile.endswith('.tsv'):
+          if inputFile.endswith('.pepXML'):
             return inputFile
 
           else:
