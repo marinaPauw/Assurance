@@ -4,12 +4,13 @@ import pandas as pd
 import xml.etree.ElementTree as ET
 import re
 import os
+import dateutil.parser
 
 
 class pepXMLReader():
     def parsePepXML(self, files):
         
-        table = pd.DataFrame(columns = ["Filename","IDCount","scoreLow","scoreMed","scoreHigh"])
+        table = pd.DataFrame(columns = ["Filename","Dates","IDCount","scoreLow","scoreMed","scoreHigh"])
         for file in files:
             filename = os.path.splitext(os.path.basename(file))[0]
             openFile = open(file, "r")
@@ -19,6 +20,8 @@ class pepXMLReader():
             scoreMed = 0
             scoreHigh = 0
             for line in lines:
+                if "date" in line:
+                    date = dateutil.parser.parse(re.search('date="(.+?)"', line).group(1))
                 if "search_hit" in line:
                     peptideIDCount = peptideIDCount +1
                 if "hyperscore" in line:
@@ -29,7 +32,7 @@ class pepXMLReader():
                         scoreMed= scoreMed+1
                     else:
                         scoreLow = scoreLow +1
-            series = pd.Series([filename,peptideIDCount, scoreLow, scoreMed, scoreHigh])
+            series = pd.Series([filename,date, peptideIDCount, scoreLow, scoreMed, scoreHigh])
             series.name = filename
             table.append(series)        
         return table
