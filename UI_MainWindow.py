@@ -29,6 +29,7 @@ import numpy as np
 import pandas as pd
 import SwaMe
 import pepXMLReader
+import RFSelectionPlots
 from scipy.spatial import distance_matrix
 
 
@@ -699,13 +700,18 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
         TrainingSetFiles = FileInput.BrowseWindow.GetTrainingSetFiles(Ui_MainWindow)
+        Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Dates","IDCount","scoreLow","scoreMed","scoreHigh"])
+        
         if TrainingSetFiles:
-            TrainingTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetFiles)
-            Ui_MainWindow.TrainingSetTable = \
-                FileInput.BrowseWindow.metricsParsing(TrainingSetFile)
+            pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetFiles)
+           # Ui_MainWindow.TrainingSetTable = \
+            #    FileInput.BrowseWindow.metricsParsing(TrainingSetFile)
             Ui_MainWindow.TrainingSet = QtWidgets.QTabWidget()
-            Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingSet,"Setting up the guide set:")
-            self.CreateRandomForestTab()
+            Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingSet,"Setting up the training set:")
+            
+            Ui_MainWindow.CreateRandomForestTab(self)
+            
+            
             self.setCurrentIndex(Ui_MainWindow.sIndex)
 
     def onhover(event):
@@ -746,14 +752,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def CreateRandomForestTab(self):
         # Create the tab which will contain the graph:
-        TrainingSetPlot = IndividualMetrics.MyIndMetricsCanvas(
-            Ui_MainWindow.TrainingSetTable, Ui_MainWindow.TrainingSetTable,
-            1, True)  # element = column index used for the y-value
+        Ui_MainWindow.tplot = FigureCanvas
+        Ui_MainWindow.TrainingSetPlot = RFSelectionPlots.RFSelectionPlots( Ui_MainWindow.TrainingSetTable) # element = column index used for the y-value
         vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingSet)
         hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingSet)
         hbox1.addStretch()
-        Ui_MainWindow.TrainingSet.PlotLabel = QtWidgets.QLabel(
-            Ui_MainWindow.TrainingSet)
+        Ui_MainWindow.TrainingSet.PlotLabel = QtWidgets.QLabel(Ui_MainWindow.TrainingSet)
         Ui_MainWindow.TrainingSet.PlotLabel.setText(
             "Graph of input data - Please draw a rectangle over the samples you would like to select for the guide set:")
         font = QtGui.QFont()
@@ -763,7 +767,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         vbox.addLayout(hbox1)
         hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingSet)
         hbox2.addStretch()
-        hbox2.addWidget(TrainingSetPlot)
+        hbox2.addWidget(Ui_MainWindow.TrainingSetPlot)
         hbox2.addStretch()
         vbox.addLayout(hbox2)
         hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingSet)

@@ -10,7 +10,6 @@ import dateutil.parser
 class pepXMLReader():
     def parsePepXML(self, files):
         
-        table = pd.DataFrame(columns = ["Filename","Dates","IDCount","scoreLow","scoreMed","scoreHigh"])
         for file in files:
             filename = os.path.splitext(os.path.basename(file))[0]
             openFile = open(file, "r")
@@ -21,7 +20,10 @@ class pepXMLReader():
             scoreHigh = 0
             for line in lines:
                 if "date" in line:
-                    date = dateutil.parser.parse(re.search('date="(.+?)"', line).group(1))
+                    tempDate = re.search('date="(.+?)"', line)
+                    if isinstance(tempDate, re.Match):
+                        tempDate = tempDate.group(1)
+                        date = dateutil.parser.parse(tempDate)
                 if "search_hit" in line:
                     peptideIDCount = peptideIDCount +1
                 if "hyperscore" in line:
@@ -32,7 +34,8 @@ class pepXMLReader():
                         scoreMed= scoreMed+1
                     else:
                         scoreLow = scoreLow +1
-            series = pd.Series([filename,date, peptideIDCount, scoreLow, scoreMed, scoreHigh])
+            series = pd.Series()
             series.name = filename
-            table.append(series)        
-        return table
+            UI_MainWindow.Ui_MainWindow.TrainingSetTable =  UI_MainWindow.Ui_MainWindow.TrainingSetTable.append(series)
+            UI_MainWindow.Ui_MainWindow.TrainingSetTable.loc[filename] = [filename,date, peptideIDCount, scoreLow, scoreMed, scoreHigh] 
+            a=10
