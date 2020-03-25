@@ -15,6 +15,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import datetime
 import FileInput
+import DataPreparation
 import UI_MainWindow
 import re
 import pandas as pd
@@ -33,23 +34,19 @@ class RandomForest(FigureCanvas):
 
         table = UI_MainWindow.Ui_MainWindow.TrainingSetTable
         area = UI_MainWindow.Ui_MainWindow.predictionArea
-        for i in range(0,len(table.index)):
-            if(table.iloc[i,1]>area[1]):
-                if(table.iloc[i,1]<area[3]):
-                    if(i>area[0]):
-                        if(i<area[2]):
-                            if(goodOrBad == "good"):
-                                 if(UI_MainWindow.Ui_MainWindow.badpredictionList.count(table.iloc[i,0])>0):#This item is already part of the badpredictionlist
+        for i in range(area[0], area[1]):
+            if(goodOrBad == "good"):
+                                 if(UI_MainWindow.Ui_MainWindow.badpredictionList.count(table["Filename"].iloc[i])>0):#This item is already part of the badpredictionlist
                                          self.GoodAndBadAreSame()
                                          return
                                  else:
-                                         UI_MainWindow.Ui_MainWindow.goodpredictionList.append(table.iloc[i,0])
-                            else:
-                                 if(UI_MainWindow.Ui_MainWindow.goodpredictionList.count(table.iloc[i,0])>0):#This item is already part of the badpredictionlist
+                                         UI_MainWindow.Ui_MainWindow.goodpredictionList.append(table["Filename"].iloc[i])
+            else:
+                                 if(UI_MainWindow.Ui_MainWindow.goodpredictionList.count(table["Filename"].iloc[i])>0):#This item is already part of the badpredictionlist
                                          self.GoodAndBadAreSame()
                                          return
                                  else:
-                                         UI_MainWindow.Ui_MainWindow.badpredictionList.append(table.iloc[i,0])
+                                         UI_MainWindow.Ui_MainWindow.badpredictionList.append(table["Filename"].iloc[i])
 
         if(len(UI_MainWindow.Ui_MainWindow.goodpredictionList)>0):
                   UI_MainWindow.Ui_MainWindow.goodPredicted=True
@@ -62,10 +59,10 @@ class RandomForest(FigureCanvas):
             if(UI_MainWindow.Ui_MainWindow.badPredicted):
                 RandomForest.createguideAndTestSet(RandomForest)
                 RandomForest.RunRandomForest(RandomForest)
-                QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"Your guideset consisted of the following desired samples: "+ str(UI_MainWindow.Ui_MainWindow.goodpredictionList).strip('[]')+ "and the following suboptimal samples: "+ str(UI_MainWindow.Ui_MainWindow.badpredictionList).strip('[]'))
+                QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"Your guideset consisted of the following desired samples: "+ str(UI_MainWindow.Ui_MainWindow.goodpredictionList).strip('[]')+ "and the following suboptimal samples: "+ str(UI_MainWindow.Ui_MainWindow.badpredictionList).strip('[]'))
     
     def GoodAndBadAreSame(self):
-        QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"You have selected the same sample for both groups. Please start over.")
+        QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"You have selected the same sample for both groups. Please start over.")
         UI_MainWindow.Ui_MainWindow.goodpredictionList.clear()
         UI_MainWindow.Ui_MainWindow.badpredictionList.clear()
         UI_MainWindow.Ui_MainWindow.TrainingSet.badbtn.setEnabled(True)
