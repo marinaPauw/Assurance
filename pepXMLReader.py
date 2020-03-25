@@ -1,6 +1,7 @@
 import sys
 import UI_MainWindow
 import pandas as pd
+import numpy as np
 import xml.etree.ElementTree as ET
 import re
 import os
@@ -9,6 +10,19 @@ import dateutil.parser
 
 class pepXMLReader():
     def parsePepXML(self, files):
+        # First lets find the quantiles:
+        
+        AllHyperscores = list()
+        for file in files:
+            openFile = open(file, "r")
+            lines = openFile.readlines()
+            for line in lines:
+                if "hyperscore" in line:
+                        m = float(re.search('value="(.+?)"', line).group(1))
+                        AllHyperscores.append(m)
+        Q3 = np.quantile(AllHyperscores, .75)
+        Q1 = np.quantile(AllHyperscores, .25)
+        
         
         for file in files:
             filename = os.path.splitext(os.path.basename(file))[0]
@@ -28,12 +42,12 @@ class pepXMLReader():
                     peptideIDCount = peptideIDCount +1
                 if "hyperscore" in line:
                     m = float(re.search('value="(.+?)"', line).group(1))
-                    if m > 50:
-                        scoreHigh= scoreHigh+1
-                    elif m < 50 and m>15:
-                        scoreMed= scoreMed+1
-                    else:
+                    if m> Q3:
+                        scoreHigh = scoreHigh+1
+                    elif m< Q1:
                         scoreLow = scoreLow +1
+                    else:
+                        scoreMed = scoreMed +1
             series = pd.Series()
             series.name = filename
             UI_MainWindow.Ui_MainWindow.TrainingSetTable =  UI_MainWindow.Ui_MainWindow.TrainingSetTable.append(series)
