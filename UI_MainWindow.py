@@ -622,7 +622,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         except NameError:
             indMetPlot = None
         indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.NumericMetrics[whichds],
-                            Ui_MainWindow.NumericMetrics[whichds], Ui_MainWindow.element, False)
+                            Ui_MainWindow.NumericMetrics[whichds], Ui_MainWindow.element)
         hbox2.addWidget(indMetPlot)
         hbox2.addStretch()
         vbox.addLayout(hbox2)
