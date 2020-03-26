@@ -31,15 +31,16 @@ class RFSelectionPlots(FigureCanvas):
             RFSelectionPlots.fig = Figure(figsize=(width, height), dpi=dpi)
             RFSelectionPlots.ax = RFSelectionPlots.fig.add_subplot(1,1,1)
             RFSelectionPlots.fig.subplots_adjust(bottom=0.5)
-            plt.grid(color ="ghostwhite")
-            RFSelectionPlots.ax.bar(table["Filename"], table["scoreLow"])
-            RFSelectionPlots.ax.bar(table["Filename"], table["scoreMed"], bottom=table["scoreLow"])
-            RFSelectionPlots.ax.bar(table["Filename"], table["scoreHigh"], bottom=table["scoreLow"]+table["scoreMed"])
+            RFSelectionPlots.ax.set_facecolor("gainsboro")
+            RFSelectionPlots.ax.set_ylabel("Number of peptides identified")
+            p1 = RFSelectionPlots.ax.bar(table["Filename"], table["scoreLow"],color = "darkorange")
+            p2 = RFSelectionPlots.ax.bar(table["Filename"], table["scoreMed"], bottom=table["scoreLow"], color = "maroon")
+            p3 = RFSelectionPlots.ax.bar(table["Filename"], table["scoreHigh"], bottom=table["scoreLow"]+table["scoreMed"], color = "coral")
             for tick in RFSelectionPlots.ax.get_xticklabels():
                 tick.set_rotation(90)
                 tick.set_size(8)
             throw, RFSelectionPlots.Ymax =  RFSelectionPlots.ax.get_ylim()
-            RFSelectionPlots.ax.legend(loc="upper left", ncol = 1)
+            RFSelectionPlots.ax.legend((p1[0], p2[0], p3[0]), ('Q1-', 'Q1-Q3',"Q3+"),title="Hyperscore quantiles")
             FigureCanvas.__init__(self, RFSelectionPlots.fig)
             RFSelectionPlots.toggle_selector.RS = RectangleSelector( RFSelectionPlots.ax,  RFSelectionPlots.line_select_callback, drawtype='box', useblit=True, button=[1, 3], minspanx=5, minspany=5,spancoords='pixels',
                                             interactive=True)
@@ -69,6 +70,5 @@ class RFSelectionPlots(FigureCanvas):
         x2 = erelease.xdata
         print("(%3.2f, %3.2f) --> (%3.2f, %3.2f)" % (x1, 0, x2, RFSelectionPlots.Ymax))
         UI_MainWindow.Ui_MainWindow.predictionArea = [math.ceil(x1), math.ceil(x2)]
-        UI_MainWindow.Ui_MainWindow.TrainingSet.goodbtn.setEnabled(True)
         UI_MainWindow.Ui_MainWindow.TrainingSet.badbtn.setEnabled(True)
             

@@ -772,15 +772,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         vbox.addLayout(hbox2)
         hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingSet)
         hbox3.addStretch()
-        Ui_MainWindow.TrainingSet.goodbtn = QtWidgets.QPushButton(
-            'This is my selection for desired quality.',
-            Ui_MainWindow.TrainingSet)
-        Ui_MainWindow.TrainingSet.goodbtn.setEnabled(False)
         Ui_MainWindow.TrainingSet.badbtn = QtWidgets.QPushButton(
             'This is my selection for suboptimal quality.',
             Ui_MainWindow.TrainingSet)
         Ui_MainWindow.TrainingSet.badbtn.setEnabled(False)
-        hbox3.addWidget(Ui_MainWindow.TrainingSet.goodbtn)
         hbox3.addWidget(Ui_MainWindow.TrainingSet.badbtn)
         hbox3.addStretch()
         vbox.addLayout(hbox3)
@@ -789,8 +784,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         vbox.addStretch()
 
         # Start prediction
-        Ui_MainWindow.TrainingSet.goodbtn.clicked.connect(lambda: RandomForest.RandomForest.computeSelectedSamplesFromArea(RandomForest.RandomForest, "good"))
-        Ui_MainWindow.TrainingSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeSelectedSamplesFromArea(RandomForest.RandomForest, "bad"))
+        Ui_MainWindow.TrainingSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeSelectedSamplesFromArea(RandomForest.RandomForest))
 
     def CalculateOutliers(self):
         sampleSize = range(len(FileInput.BrowseWindow.currentDataset.index))
@@ -858,13 +852,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.RandomForest.backbtn.setEnabled(True)
         self.RandomForest.sourceList.setEnabled(True)
         if(len(items) > 0):
-            self.RandomForest.goodbtn.setEnabled(True)
             self.RandomForest.badbtn.setEnabled(True)
         return
 
     def moveToSource(self):
         Ui_MainWindow.RandomForest.predictionList.clear()
-        Ui_MainWindow.RandomForest.goodbtn.setEnabled(False)
         Ui_MainWindow.RandomForest.badbtn.setEnabled(False)
 
     def sourceSelectionChanged(self):
