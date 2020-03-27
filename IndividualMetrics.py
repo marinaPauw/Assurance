@@ -110,21 +110,21 @@ class MyIndMetricsCanvas(FigureCanvas):
             MyIndMetricsCanvas.ax.set_facecolor('gainsboro')
             sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
             MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
-            if(len(MyIndMetricsCanvas.samplenames)<=32 or len(MyIndMetricsCanvas.samplenames) == len(set(MyIndMetricsCanvas.samplenames))):
-                MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
-            else:
-                figlegend = pylab.figure(figsize = (30,40))
-                handles, labels = MyIndMetricsCanvas.ax.get_legend_handles_labels()
-                if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
-                    figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 2, borderaxespad=0.1 )
-                elif(len(MyIndMetricsCanvas.samplenames)>64 and len(MyIndMetricsCanvas.samplenames)<=96):
-                    figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 3, borderaxespad=0.1 )
-                elif(len(MyIndMetricsCanvas.samplenames)>96 and len(MyIndMetricsCanvas.samplenames)<=128):
-                    figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 4, borderaxespad=0.1 )
-                else:
-                    figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 5, borderaxespad=0.1 )
-                MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
-                Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
+           # if(len(MyIndMetricsCanvas.samplenames)<=32 or len(MyIndMetricsCanvas.samplenames) == len(set(MyIndMetricsCanvas.samplenames))):
+             #   MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
+            #else:
+            #    figlegend = pylab.figure(figsize = (30,40))
+             #   handles, labels = MyIndMetricsCanvas.ax.get_legend_handles_labels()
+             #   if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
+             #       figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 2, borderaxespad=0.1 )
+             #   elif(len(MyIndMetricsCanvas.samplenames)>64 and len(MyIndMetricsCanvas.samplenames)<=96):
+              #      figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 3, borderaxespad=0.1 )
+              #  elif(len(MyIndMetricsCanvas.samplenames)>96 and len(MyIndMetricsCanvas.samplenames)<=128):
+             #       figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 4, borderaxespad=0.1 )
+            #    else:
+             #       figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 5, borderaxespad=0.1 )
+             #   MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
+            #    Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
             
             MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
             if element == "runDate":
