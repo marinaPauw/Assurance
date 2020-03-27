@@ -94,10 +94,10 @@ class SwaMe():
         #UI_MainWindow.Ui_MainWindow.checkColumnLength(self)
         UI_MainWindow.Ui_MainWindow.NumericMetrics = []
         FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
-        FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.ExtractNumericColumns(
+        FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.ExtractNumericColumns(UI_MainWindow.Ui_MainWindow,
                            FileInput.BrowseWindow.currentDataset)
-        DataPreparation.DataPrep.RemoveLowVarianceColumns(
-                           UI_MainWindow.Ui_MainWindow)
+        FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.RemoveLowVarianceColumns(
+                           UI_MainWindow.Ui_MainWindow, FileInput.BrowseWindow.currentDataset)
         UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
         UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
         UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(UI_MainWindow.Ui_MainWindow)
