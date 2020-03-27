@@ -33,8 +33,8 @@ class Test_test_DataPreparation(unittest.TestCase):
         self.assertTrue(len(FileInput.BrowseWindow.currentDataset.columns)==44)
 
     def test_removeLowVarianceColumns(self):
-         DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
-         self.assertTrue(len(FileInput.BrowseWindow.currentDataset.columns)==25)
+         results = DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
+         self.assertTrue(len(results.columns)==25)
 
     def test_FindRealSampleNames(self):
         rawSampleNames = ["abc.mzML","def.wiff.scan","ghi.wiff.scan.mzML"]

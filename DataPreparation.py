@@ -60,12 +60,12 @@ class DataPrep(object):
         NumericMetrics = NumericMetrics.replace([np.inf, -np.inf], np.nan)
         NumericMetrics = NumericMetrics.fillna(0)
 
-        FileInput.BrowseWindow.currentDataset = NumericMetrics
-        return metrics
+        return NumericMetrics
 
-    def RemoveLowVarianceColumns(self):
-        Nm = FileInput.BrowseWindow.currentDataset
-        print(type(FileInput.BrowseWindow.currentDataset))
+    def RemoveLowVarianceColumns(self, Nm):
+        Files = []
+        if "Filename" in Nm.columns:
+            Files = Nm["Filename"]
         droppedColumns = []
         dpIndex = []
         threshold = 0.01
@@ -77,27 +77,15 @@ class DataPrep(object):
                                                         Ui_MainWindow)
 
         for i in range(len(Nm.columns)):
-            variance = np.var(Nm.iloc[:, i])
+            variance = np.var(Nm.iloc[i])
             if (variance < threshold):
                 droppedColumns.append(Nm.columns[i])
                 dpIndex.append(i)
-        Nm = Nm.drop(droppedColumns, axis=1)
-        # Nm.drop(Nm.columns[dpIndex[i]],axis=1,inplace=True)
-        #if (len(Nm.columns)) < 1:
-        #    QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-       #                       "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
-        #    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
-        #                                                Ui_MainWindow)
+        Nm.drop(columns = droppedColumns, axis=1)
 
-        print("Low variance columns removed. There are now %d columns",
-              len(Nm.columns))
-        print(Nm.columns.values)
-        if Nm.index[0]==0 and "Filename" in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
-            Nm.index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
-            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
-        UI_MainWindow.Ui_MainWindow.NumericMetrics = list()
-        UI_MainWindow.Ui_MainWindow.NumericMetrics.append(Nm)
-        FileInput.BrowseWindow.currentDataset = Nm
+        if len(Files)>0:
+            Nm.index = Files
+        return Nm
 
     def FindRealSampleNames(self, rawSampleNames):
         realSampleNames = []

@@ -50,8 +50,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
                        BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
                        BrowseWindow.currentDataset =DataPreparation.DataPrep.ExtractNumericColumns(self,
                            BrowseWindow.currentDataset)
-                       DataPreparation.DataPrep.RemoveLowVarianceColumns(
-                           UI_MainWindow.Ui_MainWindow)
+                       BrowseWindow.currentDataset =DataPreparation.DataPrep.RemoveLowVarianceColumns(
+                           UI_MainWindow.Ui_MainWindow, BrowseWindow.currentDataset)
                        UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
                     str1 = " " 
                     UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText(str1.join(inputFiles))

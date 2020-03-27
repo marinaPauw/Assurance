@@ -353,10 +353,15 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         if inputFile:
             #filepath = FileInput.BrowseWindow.FileCheck(self, inputFile)
             Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
+            if  "Filename" in Ui_MainWindow.metrics[0].columns:
+                Ui_MainWindow.metrics[0].index = Ui_MainWindow.metrics[0]["Filename"]
+            Ui_MainWindow.NumericMetrics =[]
             #Ui_MainWindow.checkColumnLength(self)
             #Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics[0].index[0])
-            self.metrics[0] = DataPreparation.DataPrep.ExtractNumericColumns(self, self.metrics[0])
-            DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
+            Ui_MainWindow.NumericMetrics.append(DataPreparation.DataPrep.ExtractNumericColumns(self, self.metrics[0]))
+
+            Ui_MainWindow.NumericMetrics[0]  = DataPreparation.DataPrep.RemoveLowVarianceColumns(self, self.NumericMetrics[0])
+            Ui_MainWindow.NumericMetrics[0].index = Ui_MainWindow.metrics[0].index
         Ui_MainWindow.EnableAnalysisButtons(self)
 
     @pyqtSlot()
@@ -651,7 +656,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def sample_change(self, text):
         Ui_MainWindow.sampleSelected = text
         for dataset in range(len(Ui_MainWindow.NumericMetrics)):
-                if Ui_MainWindow.element in Ui_MainWindow.NumericMetrics[dataset].columns:
+                if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
                     whichds = dataset
                     break
 
@@ -662,7 +667,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.createGraph(self, whichds)
 
     def checkColumnNumberForPCA(self):
-        if(len(FileInput.BrowseWindow.currentDataset.columns) < 3):
+        if(len(Ui_MainWindow.NumericMetrics[0].columns) < 3):
             QtWidgets.QMessageBox.warning(self, "Warning:", "There are less than three \
                               numeric columns in the dataset. PCA will not \
                               be performed.")

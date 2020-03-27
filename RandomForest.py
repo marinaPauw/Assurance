@@ -38,32 +38,23 @@ class RandomForest(FigureCanvas):
                   UI_MainWindow.Ui_MainWindow.badPredicted=True
                   UI_MainWindow.Ui_MainWindow.TrainingSet.badbtn.setEnabled(False)
 
+        # Load in the quality data:
+        FileInput.BrowseWindow.__init__(Ui_MainWindow)
+        trainingInputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
+        if trainingInputFile:
+            #filepath = FileInput.BrowseWindow.FileCheck(self, inputFile)
+            Ui_MainWindow.trainingMetrics = FileInput.BrowseWindow.metricsParsing(self, trainingInputFile)
+            #Ui_MainWindow.checkColumnLength(self)
+            #Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics[0].index[0])
+            Ui_MainWindow.trainingMetrics[0] = DataPreparation.DataPrep.ExtractNumericColumns(self, Ui_MainWindow.trainingMetrics[0])
+            Ui_MainWindow.trainingMetrics[0] = DataPreparation.DataPrep.RemoveLowVarianceColumns(self,Ui_MainWindow.trainingMetrics[0])    
+
         if(UI_MainWindow.Ui_MainWindow.badPredicted):
                 RandomForest.createguideAndTestSet(RandomForest)
                 RandomForest.RunRandomForest(RandomForest)
                 QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"Your guideset consisted of the following desired samples: "+ str(UI_MainWindow.Ui_MainWindow.goodpredictionList).strip('[]')+ "and the following suboptimal samples: "+ str(UI_MainWindow.Ui_MainWindow.badpredictionList).strip('[]'))
     
    
-    def FindIndexes(self):
-        RandomForest.goodguidesetIndexes = []
-        RandomForest.badguidesetIndexes = []
-        for i in UI_MainWindow.Ui_MainWindow.goodpredictionList:
-            result = np.where(UI_MainWindow.Ui_MainWindow.metrics == i)
-            RandomForest.guideSetDf = RandomForest.guideSetDf.append(DataPreparation.DataPrep.NumericMetrics.iloc[result[0][0]])
-            RandomForest.goodguidesetIndexes.append(len(RandomForest.guideSetDf)-1) # Add the goods and bads to lists, then at the end we can allocate them
-            if(RandomForest.listToDrop.count(result[0][0])>0):#This item is already part of the badpredictionlist
-                self.GoodAndBadAreSame()
-            else:
-                RandomForest.listToDrop.append(result[0][0])
-
-        for i in UI_MainWindow.Ui_MainWindow.badpredictionList:
-            result = np.where(UI_MainWindow.Ui_MainWindow.metrics == i)
-            RandomForest.guideSetDf = RandomForest.guideSetDf.append(DataPreparation.DataPrep.NumericMetrics.iloc[result[0][0]])
-            RandomForest.badguidesetIndexes.append(len(RandomForest.guideSetDf)-1) # Add the goods and bads to lists, then at the end we can allocate them
-            if(RandomForest.listToDrop.count(result[0][0])>0):#This item is already part of the badpredictionlist
-                self.GoodAndBadAreSame()
-            else:
-                RandomForest.listToDrop.append(result[0][0])
                 
     def AllocateGoodOrBad(self):              
 

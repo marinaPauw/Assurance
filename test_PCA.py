@@ -28,7 +28,7 @@ class Test_test_PCA(unittest.TestCase):
         UI_MainWindow.Ui_MainWindow.tab = QtWidgets.QWidget()
         UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.progress1 = QtWidgets.QProgressBar()
         df = DataPreparation.DataPrep.ExtractNumericColumns(df)
-        DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
+        df = DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
     
     def test_PCA(self):
         PCA.PCA.CreatePCAGraph(data)
