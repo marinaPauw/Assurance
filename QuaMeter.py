@@ -5,6 +5,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import FileInput
 import UI_MainWindow
+import DataPreparation
 from PyQt5.QtWidgets import QMessageBox
 import os
 
@@ -30,22 +31,39 @@ class QuaMeter():
     def onQuaMeterBrowseClicked(self):
         #FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, self)
         UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.files.show()
-        QuaMeter.File = FileInput.BrowseWindow.GetQuaMeterInputFiles(QuaMeter)
-        if(QuaMeter.File):
-            for file in QuaMeter.File:
-                fname = os.path.basename(file)
-                UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.fileList.setText(fname)
+        QuaMeter.Dir = FileInput.BrowseWindow.GetQuaMeterInputFiles(QuaMeter)
+        if(QuaMeter.Dir):
+            UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.fileList.setText(QuaMeter.Dir)
     
     def onQuaMeterRUNClicked(self):
+        
+        argument1 = "cd/d " + QuaMeter.Dir 
+        
         QuaMeterPath = FileInput.BrowseWindow.GetQuaMeterPath(QuaMeter)
+        
         QuaMeter.process = QtCore.QProcess()
+        #arguments1 = " cd/d " + QuaMeter.Dir
+    #QuaMeter.process.start(arguments1)
+        QuaMeter.process.waitForFinished()
         QuaMeter.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         QuaMeter.process.readyReadStandardOutput.connect(lambda: QuaMeter.on_readyReadStandardOutput(self))
-        QuaMeter.process.finished.connect(QuaMeter.on_Finished)
-        if  UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text() and UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.text() and UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.text():
-            rstring = "r"
-            QuaMeter.process.start(rstring.join(QuaMeterPath), 
-                ["",QuaMeter.File,"-cpus", UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text(), "-ChromatogramMzUpperOffset", UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.text(), "-ChromatogramMzLowerOffset", UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.text()])
+
+        cpus = ""
+        CUO = ''
+        CLO = ""
+        if  UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text() and UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text()>0 and UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text()<6:
+            cpus = " -cpus "+UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text()
+        
+        if UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.text():
+            CUO = " -ChromatogramMzUpperOffset " + UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.text()
+        
+        if UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.text():
+            CLO = " -ChromatogramMzLowerOffset " + UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.text()
+            
+        #QuaMeter.process.start(" cd/d " + os.path.dirname(QuaMeter.File))
+        arguments2 = QuaMeterPath +" "+ QuaMeter.Dir +"/*.mzml " + cpus +  CUO + CLO +" -MetricsType idfree"
+
+        QuaMeter.process.start(arguments2)
 
 
     @QtCore.pyqtSlot()
@@ -56,8 +74,6 @@ class QuaMeter():
     @QtCore.pyqtSlot()
     def on_Finished(self):
         dirpath = os.path.dirname(os.path.realpath(QuaMeter.File))
-        dirpath = os.path.join(dirpath, "QC_Results", )
-        os.chdir(dirpath)
         files = []
         for root, dirs, allfiles in os.walk(dirpath):  
             for file in allfiles:
