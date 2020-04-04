@@ -2,36 +2,25 @@ import sys
 import UI_MainWindow
 import pandas as pd
 import numpy as np
-import xml.etree.ElementTree as ET
-import re
 import os
+import re
 import dateutil.parser
 
 
 class pepXMLReader():
     def parsePepXML(self, files):
         # First lets find the quantiles:
-        
-        AllHyperscores = list()
+        filenames = []
         for file in files:
-            openFile = open(file, "r")
-            lines = openFile.readlines()
-            for line in lines:
-                if "hyperscore" in line:
-                        m = float(re.search('value="(.+?)"', line).group(1))
-                        AllHyperscores.append(m)
-        Q3 = np.quantile(AllHyperscores, .75)
-        Q1 = np.quantile(AllHyperscores, .25)
+            filenames.append(os.path.splitext(os.path.basename(file))[0])
         
-        
+        pepTable = pd.DataFrame(index = filenames , columns = ["Filename","Dates","Number of Distinct peptides","Number of spectra identified"])
         for file in files:
             filename = os.path.splitext(os.path.basename(file))[0]
-            openFile = open(file, "r")
-            lines = openFile.readlines()
-            peptideIDCount = 0
-            scoreLow = 0
-            scoreMed = 0
-            scoreHigh = 0
+            with open(file) as thisFile:
+                lines = thisFile.readlines()
+            spectrumCount = 0
+            uniquepeptides = list()
             for line in lines:
                 if "date" in line:
                     tempDate = re.search('date="(.+?)"', line)
@@ -39,17 +28,10 @@ class pepXMLReader():
                         tempDate = tempDate.group(1)
                         date = dateutil.parser.parse(tempDate)
                 if "search_hit" in line:
-                    peptideIDCount = peptideIDCount +1
-                if "hyperscore" in line:
-                    m = float(re.search('value="(.+?)"', line).group(1))
-                    if m> Q3:
-                        scoreHigh = scoreHigh+1
-                    elif m< Q1:
-                        scoreLow = scoreLow +1
-                    else:
-                        scoreMed = scoreMed +1
-            series = pd.Series()
-            series.name = filename
-            UI_MainWindow.Ui_MainWindow.TrainingSetTable =  UI_MainWindow.Ui_MainWindow.TrainingSetTable.append(series)
-            UI_MainWindow.Ui_MainWindow.TrainingSetTable.loc[filename] = [filename,date, peptideIDCount, scoreLow, scoreMed, scoreHigh] 
-            a=10
+                    spectrumCount = spectrumCount+1
+                    m = re.search('peptide="(.+?)"', line)
+                    if m not in uniquepeptides:
+                        uniquepeptides.append(m)
+                        
+            pepTable.loc[filename] =  [filename,date, len(uniquepeptides), spectrumCount]
+        return pepTable
