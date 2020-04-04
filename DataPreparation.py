@@ -1,6 +1,6 @@
 import sys
 import PyQt5
-from PyQt5.QtWidgets import *
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import math
@@ -76,8 +76,8 @@ class DataPrep(object):
             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
                                                         Ui_MainWindow)
 
-        for i in range(len(Nm.columns)):
-            variance = np.var(Nm.iloc[i])
+        for i in range(0, len(Nm.columns)):
+            variance = np.var(Nm.iloc[:,i])
             if (variance < threshold):
                 droppedColumns.append(Nm.columns[i])
                 dpIndex.append(i)
