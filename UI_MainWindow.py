@@ -698,13 +698,13 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.badPredicted = False
         Ui_MainWindow.goodpredictionList = []
         Ui_MainWindow.badpredictionList = []
-
+        Ui_MainWindow.TOrT = "Training"
         # InputtingFile:
         QtWidgets.QMessageBox.about(Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
                           "For this supervised approach you will need to provide training and test set data that contains both good and bad quality data. It is imperitive that you have high confidence in the training set and we recommend that you run PCA on the set to ascertain that there are no outliers. \n You will be asked to select a folder which contains corresponding pepxml files and QuaMeter/SwaMe output files for training set selection. Then you will be presented with a graph on which you should separate good from bad. Next you will do the same for the test set after which you will be presented with the model fit results.")
         
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
-        TrainingSetFiles = FileInput.BrowseWindow.GetTrainingSetFiles(Ui_MainWindow)
+        TrainingSetFiles = FileInput.BrowseWindow.GetTrainingSetFiles(self)
         Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Dates","Number of Distinct peptides","Number of spectra identified"])
         
         if TrainingSetFiles:
@@ -712,9 +712,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
             Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
             
-            Ui_MainWindow.CreateRandomForestTab(self, "training")
+            Ui_MainWindow.CreateTrainingTab(self)
             self.setCurrentIndex(Ui_MainWindow.sIndex)
         
+        if Ui_MainWindow.TOrT == "Test":
+            Ui_MainWindow.createTestTab(Ui_MainWindow) 
         
 
     def onhover(event):
@@ -753,22 +755,62 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 PCA.plotdata[closestx[0], 1])
         PCAGraph.annot.set_text(text)
 
-    def CreateRandomForestTab(self, testortraining):
+    def CreateTrainingTab(self):
         # Create the tab which will contain the graph:
         Ui_MainWindow.tplot = FigureCanvas
-        if testortraining == "training":
-            try:
+        try:
                 Ui_MainWindow.TrainingSetPlot 
                 Ui_MainWindow.TrainingSetPlot .clear()
-            except:
+        except:
                 Ui_MainWindow.TrainingSetPlot  = None
-            Ui_MainWindow.TrainingSetPlot = RFSelectionPlots.RFSelectionPlots( Ui_MainWindow.TrainingSetTable, "training") # element = column index used for the y-value
+        Ui_MainWindow.TrainingSetPlot = RFSelectionPlots.RFSelectionPlots( Ui_MainWindow.TrainingSetTable, "training") # element = column index used for the y-value
+        vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+        hbox1.addStretch()
+        Ui_MainWindow.TrainingOrTestSet.PlotLabel = QtWidgets.QLabel(Ui_MainWindow.TrainingOrTestSet)
+        Ui_MainWindow.TrainingOrTestSet.PlotLabel.setText(
+                "Graph of input data - Please draw a rectangle over the samples you would like to select for the guide set:")
+        font = QtGui.QFont()
+        font.setPointSize(18)
+        hbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.PlotLabel)
+        hbox1.addStretch()
+        vbox.addLayout(hbox1)
+        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+        hbox2.addStretch()
+        hbox2.addWidget(Ui_MainWindow.TrainingSetPlot)
+        hbox2.addStretch()
+        vbox.addLayout(hbox2)
+        hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+        hbox3.addStretch()
+        Ui_MainWindow.TrainingOrTestSet.badbtn = QtWidgets.QPushButton(
+                'This is my selection for suboptimal quality.',
+                Ui_MainWindow.TrainingOrTestSet)
+        Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
+        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.badbtn)
+        hbox3.addStretch()
+        vbox.addLayout(hbox3)
+        hbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+        vbox.addLayout(hbox4)
+        vbox.addStretch()
+
+            # Create full training set
+        Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTrainingSamplesFromArea(self))
+        
+
+    def createTestTab(self):  
+            # Now we start with the test set:
+            Ui_MainWindow.removeTab(self,Ui_MainWindow.sIndex)
+            Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
+            Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the test set:")
+            
+            Ui_MainWindow.tplot = FigureCanvas
+            Ui_MainWindow.TestSetPlot = RFSelectionPlots.RFSelectionPlots(Ui_MainWindow.TestSetTable, "test") # element = column index used for the y-value
             vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet)
             hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
             hbox1.addStretch()
             Ui_MainWindow.TrainingOrTestSet.PlotLabel = QtWidgets.QLabel(Ui_MainWindow.TrainingOrTestSet)
             Ui_MainWindow.TrainingOrTestSet.PlotLabel.setText(
-                "Graph of input data - Please draw a rectangle over the samples you would like to select for the guide set:")
+                "Graph of input data - Please draw a rectangle over the samples you would like to select for the test set:")
             font = QtGui.QFont()
             font.setPointSize(18)
             hbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.PlotLabel)
@@ -776,7 +818,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             vbox.addLayout(hbox1)
             hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
             hbox2.addStretch()
-            hbox2.addWidget(Ui_MainWindow.TrainingSetPlot)
+            hbox2.addWidget(Ui_MainWindow.TestSetPlot)
             hbox2.addStretch()
             vbox.addLayout(hbox2)
             hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
@@ -784,61 +826,18 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.TrainingOrTestSet.badbtn = QtWidgets.QPushButton(
                 'This is my selection for suboptimal quality.',
                 Ui_MainWindow.TrainingOrTestSet)
-            Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
+            Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(True)
             hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.badbtn)
             hbox3.addStretch()
             vbox.addLayout(hbox3)
             hbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
             vbox.addLayout(hbox4)
             vbox.addStretch()
-            self.setCurrentIndex(Ui_MainWindow.sIndex)
-
-            # Create full training set
-            Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTrainingSamplesFromArea(RandomForest.RandomForest))
-        
-        elif testortraining == "test":  
-            # Now we start with the test set:
-            
-            Ui_MainWindow.removeTab(Ui_MainWindow.TrainingOrTestSet,Ui_MainWindow.sIndex)
-            Ui_MainWindow.TestSet = QtWidgets.QTabWidget()
-            Ui_MainWindow.rIndex = Ui_MainWindow.addTab( Ui_MainWindow.TestSet,Ui_MainWindow.tab,"Setting up the test set:")
-            
-            Ui_MainWindow.tplot = FigureCanvas
-            Ui_MainWindow.TestSetPlot = RFSelectionPlots.RFSelectionPlots(Ui_MainWindow.TestSetTable, "test") # element = column index used for the y-value
-            vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TestSet)
-            hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TestSet)
-            hbox1.addStretch()
-            Ui_MainWindow.TestSet.PlotLabel = QtWidgets.QLabel(Ui_MainWindow.TestSet)
-            Ui_MainWindow.TestSet.PlotLabel.setText(
-                "Graph of input data - Please draw a rectangle over the samples you would like to select for the test set:")
-            font = QtGui.QFont()
-            font.setPointSize(18)
-            hbox1.addWidget(Ui_MainWindow.TestSet.PlotLabel)
-            hbox1.addStretch()
-            vbox.addLayout(hbox1)
-            hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TestSet)
-            hbox2.addStretch()
-            hbox2.addWidget(Ui_MainWindow.TestSetPlot)
-            hbox2.addStretch()
-            vbox.addLayout(hbox2)
-            hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TestSet)
-            hbox3.addStretch()
-            Ui_MainWindow.TestSet.badbtn = QtWidgets.QPushButton(
-                'This is my selection for suboptimal quality.',
-                Ui_MainWindow.TestSet)
-            Ui_MainWindow.TestSet.badbtn.setEnabled(True)
-            hbox3.addWidget(Ui_MainWindow.TestSet.badbtn)
-            hbox3.addStretch()
-            vbox.addLayout(hbox3)
-            hbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.TestSet)
-            vbox.addLayout(hbox4)
-            vbox.addStretch()
-            
-            Ui_MainWindow.setCurrentIndex(Ui_MainWindow.TestSet, Ui_MainWindow.rIndex)
+            Ui_MainWindow.setCurrentIndex(self, Ui_MainWindow.sIndex)
+            print("End.............")
             # Allocate the bad and good data in the test set:
-            Ui_MainWindow.TestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTestSamplesFromArea(RandomForest.RandomForest))
-            
-        
+            #Ui_MainWindow.TestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTestSamplesFromArea(RandomForest.RandomForest))
+                
         
 
     def CalculateOutliers(self):

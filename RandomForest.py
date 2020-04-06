@@ -63,8 +63,10 @@ class RandomForest(FigureCanvas):
                 UI_MainWindow.Ui_MainWindow.TestSetTable = pd.DataFrame(columns = ["Filename","Dates","Number of Distinct peptides","Number of spectra identified"])
         
                 if TestSetFiles:
-                    UI_MainWindow.Ui_MainWindow.TestSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TestSetFiles)            
-                    UI_MainWindow.Ui_MainWindow.CreateRandomForestTab(self, "test")
+                    print("Before.......")
+                    UI_MainWindow.Ui_MainWindow.TestSetTable = pepXMLReader.pepXMLReader.parsePepXML(UI_MainWindow.Ui_MainWindow, TestSetFiles)            
+                    UI_MainWindow.Ui_MainWindow.TOrT = "Test"    
+                    UI_MainWindow.Ui_MainWindow.createTestTab(self) 
             
      
     def computeTestSamplesFromArea(self):
@@ -105,7 +107,7 @@ class RandomForest(FigureCanvas):
         UI_MainWindow.Ui_MainWindow.TestSetTable = pd.DataFrame(columns = ["Filename","Dates","Number of Distinct peptides","Number of spectra identified"])
         
         if TestSetFiles:
-            UI_MainWindow.Ui_MainWindow.TestSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TestSetFiles)            
+            UI_MainWindow.Ui_MainWindow.TestSetTable = pepXMLReader.pepXMLReader.parsePepXML(self,TestSetFiles)            
             UI_MainWindow.Ui_MainWindow.CreateRandomForestTab(self, "test")
             
    
