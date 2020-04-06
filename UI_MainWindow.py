@@ -705,7 +705,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
         TrainingSetFiles = FileInput.BrowseWindow.GetTrainingSetFiles(self)
-        Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Dates","Number of Distinct peptides","Number of spectra identified"])
+        Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Number of Distinct peptides","Number of spectra identified"])
         
         if TrainingSetFiles:
             Ui_MainWindow.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetFiles)

@@ -104,7 +104,7 @@ class RandomForest(FigureCanvas):
         
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
         TestSetFiles = FileInput.BrowseWindow.GetTrainingSetFiles(UI_MainWindow.Ui_MainWindow)
-        UI_MainWindow.Ui_MainWindow.TestSetTable = pd.DataFrame(columns = ["Filename","Dates","Number of Distinct peptides","Number of spectra identified"])
+        UI_MainWindow.Ui_MainWindow.TestSetTable = pd.DataFrame(columns = ["Filename","Number of Distinct peptides","Number of spectra identified"])
         
         if TestSetFiles:
             UI_MainWindow.Ui_MainWindow.TestSetTable = pepXMLReader.pepXMLReader.parsePepXML(self,TestSetFiles)            
