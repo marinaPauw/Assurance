@@ -26,8 +26,6 @@ from matplotlib.widgets  import RectangleSelector
 class RFSelectionPlots(FigureCanvas):
     def __init__( self,table, trainingortest, parent=None, width=25, height=8, dpi=100):
         try:
-            if "Dates" in table.columns:
-                table.sort_values("Dates")
             RFSelectionPlots.fig = Figure(figsize=(width, height), dpi=dpi)
             RFSelectionPlots.ax = RFSelectionPlots.fig.add_subplot(1,1,1)
             RFSelectionPlots.fig.subplots_adjust(bottom=0.5)
