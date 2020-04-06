@@ -835,8 +835,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             vbox.addStretch()
             Ui_MainWindow.setCurrentIndex(self, Ui_MainWindow.sIndex)
             print("End.............")
+            Ui_MainWindow.Numerictestmetrics =[]
             # Allocate the bad and good data in the test set:
-            #Ui_MainWindow.TestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTestSamplesFromArea(RandomForest.RandomForest))
+            Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTestSamplesFromArea(self))
                 
         
 

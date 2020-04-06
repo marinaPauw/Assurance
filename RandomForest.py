@@ -98,19 +98,9 @@ class RandomForest(FigureCanvas):
                 
                 #RandomForest.RunRandomForest(RandomForest)
                 #QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"Your guideset consisted of the following desired samples: "+ str(UI_MainWindow.Ui_MainWindow.goodpredictionList).strip('[]')+ "and the following suboptimal samples: "+ str(UI_MainWindow.Ui_MainWindow.badpredictionList).strip('[]'))
-            
-        QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
-                          "You will now be asked to provide the test set identification data.")
+          
         
-        FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
-        TestSetFiles = FileInput.BrowseWindow.GetTrainingSetFiles(UI_MainWindow.Ui_MainWindow)
-        UI_MainWindow.Ui_MainWindow.TestSetTable = pd.DataFrame(columns = ["Filename","Number of Distinct peptides","Number of spectra identified"])
-        
-        if TestSetFiles:
-            UI_MainWindow.Ui_MainWindow.TestSetTable = pepXMLReader.pepXMLReader.parsePepXML(self,TestSetFiles)            
-            UI_MainWindow.Ui_MainWindow.CreateRandomForestTab(self, "test")
-            
-   
+       
                 
     def AllocateGoodOrBad(self, table):              
 

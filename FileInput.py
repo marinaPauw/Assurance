@@ -141,7 +141,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
                             NMColumnsonly))
                     elif trainingortest == "test":
                         testmetrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)
-                        UI_MainWindow.Ui_MainWindow.Numerictestmetrics = []
                         for i in range(0,len(testmetrics)):
                             NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, testmetrics[i])
                             UI_MainWindow.Ui_MainWindow.Numerictestmetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
