@@ -98,7 +98,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
         #Widget texts:
         Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.setText("Browse ")
-        Ui_MainWindow.tab.UploadFrame.leftFrame.files.setText("File:")
+        Ui_MainWindow.tab.UploadFrame.leftFrame.files.setText("Folder:")
         Ui_MainWindow.tab.UploadFrame.leftFrame.cpusLabel.setText("Number of CPU's: ")
         Ui_MainWindow.tab.UploadFrame.leftFrame.CLOLabel.setText("Chromatogram Lower Offset:")
         Ui_MainWindow.tab.UploadFrame.leftFrame.CUOLabel.setText("Chromatogram Upper Offset:")
@@ -171,7 +171,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
         #Widget texts:
         Ui_MainWindow.tab.UploadFrame.rightFrame.SBrowseButton.setText("Browse ")
-        Ui_MainWindow.tab.UploadFrame.rightFrame.Sfiles.setText("File: ")
+        Ui_MainWindow.tab.UploadFrame.rightFrame.Sfiles.setText("Folder: ")
         Ui_MainWindow.tab.UploadFrame.rightFrame.divisionLabel.setText("Number of segments to divide the RT into: ")
         Ui_MainWindow.tab.UploadFrame.rightFrame.MTLabel.setText("MassTolerance:")
         Ui_MainWindow.tab.UploadFrame.rightFrame.RTLabel.setText("RTTolerance:")
@@ -698,26 +698,26 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.badPredicted = False
         Ui_MainWindow.goodpredictionList = []
         Ui_MainWindow.badpredictionList = []
-
+        Ui_MainWindow.TOrT = "Training"
         # InputtingFile:
         QtWidgets.QMessageBox.about(Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
                           "For this supervised approach you will need to provide training and test set data that contains both good and bad quality data. It is imperitive that you have high confidence in the training set and we recommend that you run PCA on the set to ascertain that there are no outliers. \n You will be asked to select a folder which contains corresponding pepxml files and QuaMeter/SwaMe output files for training set selection. Then you will be presented with a graph on which you should separate good from bad. Next you will do the same for the test set after which you will be presented with the model fit results.")
         
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
-        TrainingSetFiles = FileInput.BrowseWindow.GetTrainingSetFiles(Ui_MainWindow)
-        Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Dates","IDCount","scoreLow","scoreMed","scoreHigh"])
+        TrainingSetFiles = FileInput.BrowseWindow.GetTrainingSetFiles(self)
+        Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Dates","Number of Distinct peptides","Number of spectra identified"])
         
         if TrainingSetFiles:
-            pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetFiles)
-           # Ui_MainWindow.TrainingSetTable = \
-            #    FileInput.BrowseWindow.metricsParsing(TrainingSetFile)
-            Ui_MainWindow.TrainingSet = QtWidgets.QTabWidget()
-            Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingSet,"Setting up the training set:")
+            Ui_MainWindow.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetFiles)
+            Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
+            Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
             
-            Ui_MainWindow.CreateRandomForestTab(self)
-            
-            
+            Ui_MainWindow.CreateTrainingTab(self)
             self.setCurrentIndex(Ui_MainWindow.sIndex)
+        
+        if Ui_MainWindow.TOrT == "Test":
+            Ui_MainWindow.createTestTab(Ui_MainWindow) 
+        
 
     def onhover(event):
         vis = PCAGraph.annot.get_visible()
@@ -755,41 +755,90 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 PCA.plotdata[closestx[0], 1])
         PCAGraph.annot.set_text(text)
 
-    def CreateRandomForestTab(self):
+    def CreateTrainingTab(self):
         # Create the tab which will contain the graph:
         Ui_MainWindow.tplot = FigureCanvas
-        Ui_MainWindow.TrainingSetPlot = RFSelectionPlots.RFSelectionPlots( Ui_MainWindow.TrainingSetTable) # element = column index used for the y-value
-        vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingSet)
-        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingSet)
+        try:
+                Ui_MainWindow.TrainingSetPlot 
+                Ui_MainWindow.TrainingSetPlot .clear()
+        except:
+                Ui_MainWindow.TrainingSetPlot  = None
+        Ui_MainWindow.TrainingSetPlot = RFSelectionPlots.RFSelectionPlots( Ui_MainWindow.TrainingSetTable, "training") # element = column index used for the y-value
+        vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
         hbox1.addStretch()
-        Ui_MainWindow.TrainingSet.PlotLabel = QtWidgets.QLabel(Ui_MainWindow.TrainingSet)
-        Ui_MainWindow.TrainingSet.PlotLabel.setText(
-            "Graph of input data - Please draw a rectangle over the samples you would like to select for the guide set:")
+        Ui_MainWindow.TrainingOrTestSet.PlotLabel = QtWidgets.QLabel(Ui_MainWindow.TrainingOrTestSet)
+        Ui_MainWindow.TrainingOrTestSet.PlotLabel.setText(
+                "Graph of input data - Please draw a rectangle over the samples you would like to select for the guide set:")
         font = QtGui.QFont()
         font.setPointSize(18)
-        hbox1.addWidget(Ui_MainWindow.TrainingSet.PlotLabel)
+        hbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.PlotLabel)
         hbox1.addStretch()
         vbox.addLayout(hbox1)
-        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingSet)
+        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
         hbox2.addStretch()
         hbox2.addWidget(Ui_MainWindow.TrainingSetPlot)
         hbox2.addStretch()
         vbox.addLayout(hbox2)
-        hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingSet)
+        hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
         hbox3.addStretch()
-        Ui_MainWindow.TrainingSet.badbtn = QtWidgets.QPushButton(
-            'This is my selection for suboptimal quality.',
-            Ui_MainWindow.TrainingSet)
-        Ui_MainWindow.TrainingSet.badbtn.setEnabled(False)
-        hbox3.addWidget(Ui_MainWindow.TrainingSet.badbtn)
+        Ui_MainWindow.TrainingOrTestSet.badbtn = QtWidgets.QPushButton(
+                'This is my selection for suboptimal quality.',
+                Ui_MainWindow.TrainingOrTestSet)
+        Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
+        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.badbtn)
         hbox3.addStretch()
         vbox.addLayout(hbox3)
-        hbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingSet)
+        hbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
         vbox.addLayout(hbox4)
         vbox.addStretch()
 
-        # Start prediction
-        Ui_MainWindow.TrainingSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeSelectedSamplesFromArea(RandomForest.RandomForest))
+            # Create full training set
+        Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTrainingSamplesFromArea(self))
+        
+
+    def createTestTab(self):  
+            # Now we start with the test set:
+            Ui_MainWindow.removeTab(self,Ui_MainWindow.sIndex)
+            Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
+            Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the test set:")
+            
+            Ui_MainWindow.tplot = FigureCanvas
+            Ui_MainWindow.TestSetPlot = RFSelectionPlots.RFSelectionPlots(Ui_MainWindow.TestSetTable, "test") # element = column index used for the y-value
+            vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+            hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+            hbox1.addStretch()
+            Ui_MainWindow.TrainingOrTestSet.PlotLabel = QtWidgets.QLabel(Ui_MainWindow.TrainingOrTestSet)
+            Ui_MainWindow.TrainingOrTestSet.PlotLabel.setText(
+                "Graph of input data - Please draw a rectangle over the samples you would like to select for the test set:")
+            font = QtGui.QFont()
+            font.setPointSize(18)
+            hbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.PlotLabel)
+            hbox1.addStretch()
+            vbox.addLayout(hbox1)
+            hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+            hbox2.addStretch()
+            hbox2.addWidget(Ui_MainWindow.TestSetPlot)
+            hbox2.addStretch()
+            vbox.addLayout(hbox2)
+            hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+            hbox3.addStretch()
+            Ui_MainWindow.TrainingOrTestSet.badbtn = QtWidgets.QPushButton(
+                'This is my selection for suboptimal quality.',
+                Ui_MainWindow.TrainingOrTestSet)
+            Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(True)
+            hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.badbtn)
+            hbox3.addStretch()
+            vbox.addLayout(hbox3)
+            hbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+            vbox.addLayout(hbox4)
+            vbox.addStretch()
+            Ui_MainWindow.setCurrentIndex(self, Ui_MainWindow.sIndex)
+            print("End.............")
+            # Allocate the bad and good data in the test set:
+            #Ui_MainWindow.TestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTestSamplesFromArea(RandomForest.RandomForest))
+                
+        
 
     def CalculateOutliers(self):
         sampleSize = range(len(FileInput.BrowseWindow.currentDataset.index))
@@ -814,7 +863,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         medianDistances["outlier"]= medianDistances["zScore"].apply(
         lambda x: x <= -3.5 or x >= 3.5
         )
-        print("The following runs were identified as outliers based on their z-scores:")
+        print("The following runs were identified as candidates for possible outliers based on their z-scores:")
         Q3 = np.percentile(medianDistances["MedianDistance"], 75)  # Q3
 
         Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(75)
@@ -873,7 +922,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         _translate = QtCore.QCoreApplication.translate
         array = range(1, len(Ui_MainWindow.outlierlist), 1)
         Ui_MainWindow.outlierlistLabel.setText(
-            "The following runs were identified as outliers: ")
+            "The following runs are suggested as candidates for being possible outliers: ")
         Ui_MainWindow.PCA.plotlabel.setText(
             "Principal components analysis of quality metrics for outlier detection:")
         font = QtGui.QFont()
@@ -905,7 +954,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.UploadFrame.InputLabel.setFont(Ui_MainWindow.boldfont)
         Ui_MainWindow.tab.UploadFrame.uploadLabel.setText(_translate("MainWindow", "Upload a file (Either json, csv or tsv format):"))
         Ui_MainWindow.tab.UploadFrame.uploadLabel.setFont(Ui_MainWindow.boldfont)
-        Ui_MainWindow.tab.AnalysisFrame.analysisLabel.setText(_translate("MainWindow", "File Analysis"))
+        Ui_MainWindow.tab.AnalysisFrame.analysisLabel.setText(_translate("MainWindow", "Experiment Analysis"))
         Ui_MainWindow.tab.AnalysisFrame.analysisLabel.setFont(Ui_MainWindow.boldfont)
         Ui_MainWindow.tab.AnalysisFrame.chooseLabel.setText(_translate("MainWindow", "Choose the analysis you would like to conduct:"))
         Ui_MainWindow.DisableAnalysisButtons(self)
