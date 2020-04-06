@@ -489,9 +489,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                    else:# filename exists, column name is new
                                         #if len(AllMetricSizesDf[dfIndex].index) >1:
                                             AllMetricSizesDf[dfIndex][metricname] = pd.Series() 
-                                            for y in range(0,len(AllMetricSizesDf[dfIndex]['Name'])):
-                                                if AllMetricSizesDf[dfIndex]['Name'].index[y] == filename:
-                                                    fileIndex = y
                                             if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
                                                 AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value'][0]
                                             else:
