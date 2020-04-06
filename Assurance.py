@@ -26,7 +26,6 @@ from matplotlib.figure import Figure
 import datetime
 import re
 import UI_MainWindow
-from PyQt5.QtWidgets import QMessageBox
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
