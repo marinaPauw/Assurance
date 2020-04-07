@@ -21,6 +21,7 @@ import UI_MainWindow
 import re
 import pandas as pd
 import numpy as np
+import imblearn
 
 class RandomForest(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -63,7 +64,6 @@ class RandomForest(FigureCanvas):
                 UI_MainWindow.Ui_MainWindow.TestSetTable = pd.DataFrame(columns = ["Filename","Dates","Number of Distinct peptides","Number of spectra identified"])
         
                 if TestSetFiles:
-                    print("Before.......")
                     UI_MainWindow.Ui_MainWindow.TestSetTable = pepXMLReader.pepXMLReader.parsePepXML(UI_MainWindow.Ui_MainWindow, TestSetFiles)            
                     UI_MainWindow.Ui_MainWindow.TOrT = "Test"    
                     UI_MainWindow.Ui_MainWindow.createTestTab(self) 
@@ -85,17 +85,26 @@ class RandomForest(FigureCanvas):
 
         # Load in the quality data:
         FileInput.BrowseWindow.__init__(UI_MainWindow.Ui_MainWindow)
-        FileInput.BrowseWindow.GetTrainingQualityFiles(UI_MainWindow.Ui_MainWindow, "test")
+        FileInput.BrowseWindow.GetTrainingQualityFiles(UI_MainWindow.Ui_MainWindow, "test") 
         if(UI_MainWindow.Ui_MainWindow.badPredicted):
                 # Test that Filenames in the quality side and the pepXML's are the same:
                 for filename in  UI_MainWindow.Ui_MainWindow.Numerictestmetrics[0].index:
                             if filename not in table["Filename"]:
                                 QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" , "A sample has been identified for which the raw file name was not found in the pepXML's: "+filename )
-    
-                
+                            
                 
                 RandomForest.createtestSet(RandomForest)
                 
+                WithoutClass = np.array(UI_MainWindow.Ui_MainWindow.Numerictestmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictestmetrics[0].columns != 'GoodOrBad'])
+                Classy = np.array(UI_MainWindow.Ui_MainWindow.Numerictestmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictestmetrics[0].columns == 'GoodOrBad'])
+                minSamples = min(len(Classy[Classy=="G"]), len(Classy[Classy=="B"]))
+                #try:
+                
+                oversample = imblearn.over_sampling.SMOTE(k_neighbors=minSamples-1)
+                X, Y = oversample.fit_resample(WithoutClass, Classy.ravel())
+                #except ValueError:
+               #     QtWidgets.QMessageBox.warning("ValueError", "Perhaps the number of samples of one of the classes was not enough?")
+                a = 10
                 #RandomForest.RunRandomForest(RandomForest)
                 #QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"Your guideset consisted of the following desired samples: "+ str(UI_MainWindow.Ui_MainWindow.goodpredictionList).strip('[]')+ "and the following suboptimal samples: "+ str(UI_MainWindow.Ui_MainWindow.badpredictionList).strip('[]'))
           
@@ -106,12 +115,12 @@ class RandomForest(FigureCanvas):
 
         #Now we have to create a column and add to it whether the sample was in the desired or suboptimal group. 
         #This column will serve as our value to predict
-        table["GoodOrBad"] = 2
+        table["GoodOrBad"] = "G"
         for i in UI_MainWindow.Ui_MainWindow.badpredictionList:
             found = False
             for ii in  range(0, len(table.index)):
                 if table.index[ii] == i:
-                    table["GoodOrBad"].iloc[ii] = 0
+                    table["GoodOrBad"].iloc[ii] = "B"
                     found = True
                     continue
             if not found:
