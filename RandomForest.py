@@ -110,24 +110,34 @@ class RandomForest(FigureCanvas):
         RandomForest.guideSetDf = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]
         RandomForest.guideSetDf = RandomForest.AllocateGoodOrBad(self,RandomForest.guideSetDf) 
         
-     
-    def RunRandomForest(self):
-        model = RandomForestClassifier(n_estimators = 100, max_depth=2)
-        model.fit(RandomForest.guideSetDf.loc[:,RandomForest.guideSetDf.columns !="GoodOrBad"], RandomForest.guideSetDf.loc[:,"GoodOrBad"])
-        results = model.predict(RandomForest.testSetDf)
-        get_indexes = lambda x, xs: [i for (y, i) in zip(xs, range(len(xs))) if x == y]
-        problems = get_indexes(0, results)
-        problemSamples = []
-        for i in range(len(problems)):
-            NMIndex = np.where(DataPreparation.DataPrep.NumericMetrics.iloc[:,0] == RandomForest.testSetDf.iloc[problems[i],0])
-            problemSamples.append(UI_MainWindow.Ui_MainWindow.metrics.iloc[ NMIndex[0][0],0])
-        print(problems)
-        if(len(problems)>0):
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Samples identified as suboptimal:", "The following samples have been identified as candidates for outliers/out of control data "+ str(problemSamples).strip('[]'))
-        else:
-            QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"No samples identified as suboptimal:", "For the criteria given, with the given test and guide sets, no samples have been identified as candidates for outliers/out of control data. "+ str(problemSamples).strip('[]'))
-        
+    def  __init__(self, results):
+        badset = results["B"]
+        global fig
+        fig = Figure()#figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        global ax
+        global annot
+        ax = fig.add_subplot(1,1,1)
+        for i in range(0,len(badset.index)):
+            if badset[i]<0.5:
+                ax.plot(0, badset[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+            else:
+                ax.plot(0, badset[i],  marker='o', markerfacecolor='red', markeredgecolor='r')
+        ax.set_ylabel("Proportion of votes")
+        FigureCanvas.__init__(self, fig)
+        #self.setParent(parent)
 
+        FigureCanvas.setSizePolicy(self,
+                                   QtWidgets.QSizePolicy.Expanding,
+                                   QtWidgets.QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
+        fig.suptitle("Proportion of trees for each sample that voted the sample into the same category as the 'bad' training data", fontsize=10)
+        
+        self.compute_initial_figure()
+        #annot = ax.annotate("", xy=(0,0),color='green')
+
+    
+    
     def compute_initial_figure(self):
         pass
 
