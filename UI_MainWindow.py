@@ -698,7 +698,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.badPredicted = False
         Ui_MainWindow.goodpredictionList = []
         Ui_MainWindow.badpredictionList = []
-        Ui_MainWindow.TOrT = "Training"
         # InputtingFile:
         QtWidgets.QMessageBox.about(Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
                           "For this supervised approach you will need to provide training and test set data that contains both good and bad quality data. It is imperitive that you have high confidence in the training set and we recommend that you run PCA on the set to ascertain that there are no outliers. \n You will be asked to select a folder which contains corresponding pepxml files and QuaMeter/SwaMe output files for training set selection. Then you will be presented with a graph on which you should separate good from bad. Next you will do the same for the test set after which you will be presented with the model fit results.")
@@ -714,9 +713,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             
             Ui_MainWindow.CreateTrainingTab(self)
             self.setCurrentIndex(Ui_MainWindow.sIndex)
-        
-        if Ui_MainWindow.TOrT == "Test":
-            Ui_MainWindow.createTestTab(Ui_MainWindow) 
         
 
     def onhover(event):
@@ -796,50 +792,121 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             # Create full training set
         Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTrainingSamplesFromArea(self))
         
-
-    def createTestTab(self):  
-            # Now we start with the test set:
-            Ui_MainWindow.removeTab(self,Ui_MainWindow.sIndex)
-            Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
-            Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the test set:")
-            
-            Ui_MainWindow.tplot = FigureCanvas
-            Ui_MainWindow.TestSetPlot = RFSelectionPlots.RFSelectionPlots(Ui_MainWindow.TestSetTable, "test") # element = column index used for the y-value
-            vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet)
-            hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
-            hbox1.addStretch()
-            Ui_MainWindow.TrainingOrTestSet.PlotLabel = QtWidgets.QLabel(Ui_MainWindow.TrainingOrTestSet)
-            Ui_MainWindow.TrainingOrTestSet.PlotLabel.setText(
-                "Graph of input data - Please draw a rectangle over the samples you would like to select for the test set:")
-            font = QtGui.QFont()
-            font.setPointSize(18)
-            hbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.PlotLabel)
-            hbox1.addStretch()
-            vbox.addLayout(hbox1)
-            hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
-            hbox2.addStretch()
-            hbox2.addWidget(Ui_MainWindow.TestSetPlot)
-            hbox2.addStretch()
-            vbox.addLayout(hbox2)
-            hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
-            hbox3.addStretch()
-            Ui_MainWindow.TrainingOrTestSet.badbtn = QtWidgets.QPushButton(
-                'This is my selection for suboptimal quality.',
-                Ui_MainWindow.TrainingOrTestSet)
-            Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(True)
-            hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.badbtn)
-            hbox3.addStretch()
-            vbox.addLayout(hbox3)
-            hbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
-            vbox.addLayout(hbox4)
-            vbox.addStretch()
-            Ui_MainWindow.setCurrentIndex(self, Ui_MainWindow.sIndex)
-            print("End.............")
-            Ui_MainWindow.Numerictestmetrics =[]
-            # Allocate the bad and good data in the test set:
-            Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTestSamplesFromArea(self))
-                
+    def printModelResults(self, performance, results):
+        Ui_MainWindow.removeTab(self, Ui_MainWindow.sIndex)
+        print(Ui_MainWindow.currentIndex(self))
+        Ui_MainWindow.setCurrentIndex(self,0)
         
+        Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
+        Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Random Forest Results:")
+        Ui_MainWindow.TrainingOrTestSet.setStyleSheet("background-color: gainsboro;")
+        #QFrame declare:
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.resize(600,300)
+         
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
+
+        
+        
+        #Labels declare:
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel.setText("Performance results:")
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSELabel = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSELabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSELabel.setText("MSE:")
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSELabel.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSEresults = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSEresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSEresults.setText(str(performance._metric_json["MSE"]))
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel.setText("RMSE:")
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults.setText(str(performance._metric_json["RMSE"]))        
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label.setText("R2:")
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results.setText(str(performance._metric_json["r2"]))        
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel.setText("logloss:")
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults.setText(str(performance._metric_json["logloss"]))       
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel.setText("AUC:")
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults.setText(str(performance._metric_json["AUC"]))            
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel.setText("GINI:")
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults.setText(str(performance._metric_json["Gini"]))     
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel.setText("Mean per class error:")
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel.setFont(Ui_MainWindow.boldfont)
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults.setText(str(performance._metric_json["mean_per_class_error"]))    
+ 
+                
+        #Layout:
+        vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
+        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
+        hbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel)
+        vbox.addLayout(hbox1)
+        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
+        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSELabel)
+        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSEresults)
+        hbox2.addStretch()
+        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel)
+        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults)
+        hbox2.addStretch()
+        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label)
+        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results)
+        vbox.addLayout(hbox2)
+        hbox3= QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
+        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel)
+        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults)
+        hbox3.addStretch()
+        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel)
+        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults)
+        hbox3.addStretch()
+        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel)
+        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults)
+        hbox3.addStretch()
+        vbox.addLayout(hbox3)
+        hbox4= QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
+        hbox4.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel)
+        hbox4.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults)
+        vbox.addLayout(hbox4)
+        
+        # Add RandomForest.RandomForest.results to ia Qframe at the bottom
+        # Scatterplot with a line in the middle.
+        
+        self.setCurrentIndex(Ui_MainWindow.sIndex)
+         
+ 
 
     def CalculateOutliers(self):
         sampleSize = range(len(FileInput.BrowseWindow.currentDataset.index))

@@ -85,6 +85,7 @@ class RandomForest(FigureCanvas):
                 #Run the random Forest on the original data:
                 rf = model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
                 results = rf.as_data_frame()
+                UI_MainWindow.Ui_MainWindow.printModelResults(self, performance, results)
         
        
                 
