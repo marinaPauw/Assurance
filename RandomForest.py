@@ -28,6 +28,9 @@ from h2o.estimators import H2ORandomForestEstimator
 class RandomForest(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
     
+    global fig
+    global badset
+    global annot
 
     def computeTrainingSamplesFromArea(self):
         #The format is x1, y1, x2, y2: left, bottom, right, top
@@ -85,6 +88,7 @@ class RandomForest(FigureCanvas):
                 #Run the random Forest on the original data:
                 rf = model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
                 results = rf.as_data_frame()
+                results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
                 UI_MainWindow.Ui_MainWindow.printModelResults(self, performance, results)
         
        
@@ -111,7 +115,9 @@ class RandomForest(FigureCanvas):
         RandomForest.guideSetDf = RandomForest.AllocateGoodOrBad(self,RandomForest.guideSetDf) 
         
     def  __init__(self, results):
+        global badset
         badset = results["B"]
+        badset.index = results.index
         global fig
         fig = Figure()#figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
@@ -120,9 +126,9 @@ class RandomForest(FigureCanvas):
         ax = fig.add_subplot(1,1,1)
         for i in range(0,len(badset.index)):
             if badset[i]<0.5:
-                ax.plot(0, badset[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+                ax.plot(0+ np.random.randn(), badset[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
             else:
-                ax.plot(0, badset[i],  marker='o', markerfacecolor='red', markeredgecolor='r')
+                ax.plot(0+ np.random.randn(), badset[i],  marker='o', markerfacecolor='red', markeredgecolor='r')
         ax.set_ylabel("Proportion of votes")
         FigureCanvas.__init__(self, fig)
         #self.setParent(parent)
@@ -131,13 +137,11 @@ class RandomForest(FigureCanvas):
                                    QtWidgets.QSizePolicy.Expanding,
                                    QtWidgets.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
-        fig.suptitle("Proportion of trees for each sample that voted the sample into the same category as the 'bad' training data", fontsize=10)
-        
+        fig.suptitle("Proportion of trees that voted each sample into the same category as the 'bad' training data", fontsize=10)
+        annot = ax.annotate("", xy=(0,0),color='green')        
         self.compute_initial_figure()
-        #annot = ax.annotate("", xy=(0,0),color='green')
 
-    
-    
+   
     def compute_initial_figure(self):
         pass
 
