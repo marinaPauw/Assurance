@@ -22,6 +22,8 @@ import re
 import pandas as pd
 import numpy as np
 import imblearn
+import h2o
+from h2o.estimators import H2ORandomForestEstimator
 
 class RandomForest(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -53,61 +55,36 @@ class RandomForest(FigureCanvas):
                 
                 RandomForest.createguideSet(RandomForest)
                 
-                #RandomForest.RunRandomForest(RandomForest)
-                #QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"Your guideset consisted of the following desired samples: "+ str(UI_MainWindow.Ui_MainWindow.goodpredictionList).strip('[]')+ "and the following suboptimal samples: "+ str(UI_MainWindow.Ui_MainWindow.badpredictionList).strip('[]'))
-                    
-                QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
-                          "You will now be asked to provide the test set identification data.")
-        
-                FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
-                TestSetFiles = FileInput.BrowseWindow.GetTrainingSetFiles(UI_MainWindow.Ui_MainWindow)
-                UI_MainWindow.Ui_MainWindow.TestSetTable = pd.DataFrame(columns = ["Filename","Dates","Number of Distinct peptides","Number of spectra identified"])
-        
-                if TestSetFiles:
-                    UI_MainWindow.Ui_MainWindow.TestSetTable = pepXMLReader.pepXMLReader.parsePepXML(UI_MainWindow.Ui_MainWindow, TestSetFiles)            
-                    UI_MainWindow.Ui_MainWindow.TOrT = "Test"    
-                    UI_MainWindow.Ui_MainWindow.createTestTab(self) 
-            
-     
-    def computeTestSamplesFromArea(self):
-            #The format is x1, y1, x2, y2: left, bottom, right, top
-
-        table = UI_MainWindow.Ui_MainWindow.TestSetTable
-        area = UI_MainWindow.Ui_MainWindow.predictionArea
-        UI_MainWindow.Ui_MainWindow.badpredictionList = list()
-        badset = range(area[0], area[1])
-        for i in badset:
-                UI_MainWindow.Ui_MainWindow.badpredictionList.append(table["Filename"].iloc[i])
-
-        if(len(UI_MainWindow.Ui_MainWindow.badpredictionList)>0):
-                  UI_MainWindow.Ui_MainWindow.badPredicted=True
-                  UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
-
-        # Load in the quality data:
-        FileInput.BrowseWindow.__init__(UI_MainWindow.Ui_MainWindow)
-        FileInput.BrowseWindow.GetTrainingQualityFiles(UI_MainWindow.Ui_MainWindow, "test") 
-        if(UI_MainWindow.Ui_MainWindow.badPredicted):
-                # Test that Filenames in the quality side and the pepXML's are the same:
-                for filename in  UI_MainWindow.Ui_MainWindow.Numerictestmetrics[0].index:
-                            if filename not in table["Filename"]:
-                                QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" , "A sample has been identified for which the raw file name was not found in the pepXML's: "+filename )
-                            
-                
-                RandomForest.createtestSet(RandomForest)
-                
-                WithoutClass = np.array(UI_MainWindow.Ui_MainWindow.Numerictestmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictestmetrics[0].columns != 'GoodOrBad'])
-                Classy = np.array(UI_MainWindow.Ui_MainWindow.Numerictestmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictestmetrics[0].columns == 'GoodOrBad'])
+                WithoutClass = np.array(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns != 'GoodOrBad'])
+                Classy = np.array(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns == 'GoodOrBad'])
                 minSamples = min(len(Classy[Classy=="G"]), len(Classy[Classy=="B"]))
                 #try:
                 
                 oversample = imblearn.over_sampling.SMOTE(k_neighbors=minSamples-1)
-                X, Y = oversample.fit_resample(WithoutClass, Classy.ravel())
-                #except ValueError:
-               #     QtWidgets.QMessageBox.warning("ValueError", "Perhaps the number of samples of one of the classes was not enough?")
-                a = 10
-                #RandomForest.RunRandomForest(RandomForest)
-                #QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"guide set " ,"Your guideset consisted of the following desired samples: "+ str(UI_MainWindow.Ui_MainWindow.goodpredictionList).strip('[]')+ "and the following suboptimal samples: "+ str(UI_MainWindow.Ui_MainWindow.badpredictionList).strip('[]'))
-          
+                try:
+                    X, Y = oversample.fit_resample(WithoutClass, Classy.ravel())
+                except ValueError:
+                    QtWidgets.QMessageBox.warning("ValueError", "Perhaps the number of samples of one of the classes was not enough?")
+                
+                dataToBeSplit = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
+                # Input parameters that are going to train
+                dataToBeSplit.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
+                training_columns = list(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns != 'GoodOrBad'].columns)
+                # Output parameter train against input parameters
+                response_column = 'GoodOrBad'
+                # Split data into train and testing
+                h2o.init()
+                dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
+                train, test = dataToBeSplit.split_frame(ratios=[0.6])
+                model = H2ORandomForestEstimator(ntrees=50, max_depth=20, nfolds=round(minSamples/2), seed=1234)
+                # Train model
+                model.train(x=training_columns, y=response_column, training_frame=train)
+                # Model performance
+                performance = model.model_performance(test_data=test)
+                
+                #Run the random Forest on the original data:
+                rf = model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
+                results = rf.as_data_frame()
         
        
                 
@@ -132,11 +109,7 @@ class RandomForest(FigureCanvas):
         RandomForest.guideSetDf = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]
         RandomForest.guideSetDf = RandomForest.AllocateGoodOrBad(self,RandomForest.guideSetDf) 
         
-    def createtestSet(self):
-        RandomForest.testSetDf = pd.DataFrame()
-        RandomForest.testSetDf = UI_MainWindow.Ui_MainWindow.Numerictestmetrics[0]
-        RandomForest.testSetDf = RandomForest.AllocateGoodOrBad(self, RandomForest.testSetDf)
-       
+     
     def RunRandomForest(self):
         model = RandomForestClassifier(n_estimators = 100, max_depth=2)
         model.fit(RandomForest.guideSetDf.loc[:,RandomForest.guideSetDf.columns !="GoodOrBad"], RandomForest.guideSetDf.loc[:,"GoodOrBad"])
