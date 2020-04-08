@@ -802,7 +802,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Random Forest Results:")
         Ui_MainWindow.TrainingOrTestSet.setStyleSheet("background-color: gainsboro; margin:5px;")
         
-        #QFrame declare:
+        # -------------------------Metrics Frame Layout ------------------------------------
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -813,7 +813,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         #Labels declare:
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
-        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel.setText("Performance results:")
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel.setText("Performance metrics:")
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel.setFont(Ui_MainWindow.boldfont)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSELabel = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSELabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
@@ -875,25 +875,26 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         phbox2.addStretch()
         pgrid = QtWidgets.QGridLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
         pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel,0,0,1,8)
+        
         pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSELabel,1,0,1,1)
         pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSEresults,1,1,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel,1,2,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults,1,3,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label,1,4,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results,1,5,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel,1,6,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults,1,7,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel,1,8,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults,1,9,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel,1,10,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults,1,11,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel,1,12,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults,1,13,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel,1,3,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults,1,4,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label,1,6,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results,1,7,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel,1,9,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults,1,10,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel,1,12,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults,1,13,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel,1,15,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults,1,16,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel,1,18,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults,1,19,1,1)
         phbox2.addLayout(pgrid)
         phbox2.addStretch()
         pvbox.addLayout(phbox2)
     
-        # Add RandomForest.RandomForest.results to ia Qframe at the bottom
+        # -------------------------Results Layout ------------------------------------
         #Frame declare:
          
         Ui_MainWindow.TrainingOrTestSet.ResultsFrame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
@@ -902,18 +903,32 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.TrainingOrTestSet.ResultsFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
 
         #Labels declare:
-        
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.MainLabel = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.MainLabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.MainLabel.setText("Random Forest results:")
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.MainLabel.setFont(Ui_MainWindow.boldfont)        
         
         
         
         # Scatterplot with a line in the middle.
+        RFPlot = RandomForest.RandomForest( results)
+        
+        #Layout within Frame:
+        rvbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
+        rhbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
+        rhbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame.MainLabel)
+        rvbox.addLayout(rhbox1)
+        rhbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
+        rhbox2.addWidget(RFPlot)
+        rvbox.addLayout(rhbox2)
+        
+        # -------------------------Complete Tab Layout ------------------------------------
+        # Tab Layout
         grid = QtWidgets.QGridLayout(Ui_MainWindow.TrainingOrTestSet)
         grid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame,0,0,1,1)   
         grid.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame,1,0,3,1)  
                         
         self.setCurrentIndex(Ui_MainWindow.sIndex)
-         
- 
 
     def CalculateOutliers(self):
         sampleSize = range(len(FileInput.BrowseWindow.currentDataset.index))
@@ -964,7 +979,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         outlierDistance = Q3 + 1.5*IQR
         return outlierDistance
 
-    
 
     def calculateDistanceMatrix(self, df):
         PCA.Distances = pd.DataFrame(distance_matrix(
