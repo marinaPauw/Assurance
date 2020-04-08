@@ -709,6 +709,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         if TrainingSetFiles:
             Ui_MainWindow.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetFiles)
             Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
+            Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px")
             Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
             
             Ui_MainWindow.CreateTrainingTab(self)
@@ -799,19 +800,14 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
         Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Random Forest Results:")
-        Ui_MainWindow.TrainingOrTestSet.setStyleSheet("background-color: gainsboro;")
+        Ui_MainWindow.TrainingOrTestSet.setStyleSheet("background-color: gainsboro; margin:5px;")
+        
         #QFrame declare:
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setFrameShadow(QtWidgets.QFrame.Raised)
-        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
-        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.resize(600,300)
-         
-        Ui_MainWindow.TrainingOrTestSet.ResultsFrame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
-        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.setFrameShadow(QtWidgets.QFrame.Raised)
-        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
-
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setStyleSheet("background-color: rgb(245,245,245); margin:2px;")
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.resize(600,150)
         
         
         #Labels declare:
@@ -825,85 +821,96 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSELabel.setFont(Ui_MainWindow.boldfont)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSEresults = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSEresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
-        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSEresults.setText(str(performance._metric_json["MSE"]))
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSEresults.setText(str(round(performance._metric_json["MSE"],4)))
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel.setText("RMSE:")
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel.setFont(Ui_MainWindow.boldfont)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
-        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults.setText(str(performance._metric_json["RMSE"]))        
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults.setText(str(round(performance._metric_json["RMSE"],4)))        
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label.setText("R2:")
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label.setFont(Ui_MainWindow.boldfont)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
-        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results.setText(str(performance._metric_json["r2"]))        
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results.setText(str(round(performance._metric_json["r2"],4)))        
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel.setText("logloss:")
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel.setFont(Ui_MainWindow.boldfont)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
-        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults.setText(str(performance._metric_json["logloss"]))       
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults.setText(str(round(performance._metric_json["logloss"],4)))       
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel.setText("AUC:")
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel.setFont(Ui_MainWindow.boldfont)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
-        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults.setText(str(performance._metric_json["AUC"]))            
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults.setText(str(round(performance._metric_json["AUC"],4)))            
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel.setText("GINI:")
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel.setFont(Ui_MainWindow.boldfont)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
-        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults.setText(str(performance._metric_json["Gini"]))     
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults.setText(str(round(performance._metric_json["Gini"],4)))     
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel.setText("Mean per class error:")
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel.setFont(Ui_MainWindow.boldfont)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults = QtWidgets.QLabel()
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
-        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults.setText(str(performance._metric_json["mean_per_class_error"]))    
+        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults.setText(str(round(performance._metric_json["mean_per_class_error"],4)))    
  
                 
-        #Layout:
-        vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
-        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
-        hbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel)
-        vbox.addLayout(hbox1)
-        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
-        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSELabel)
-        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSEresults)
-        hbox2.addStretch()
-        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel)
-        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults)
-        hbox2.addStretch()
-        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label)
-        hbox2.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results)
-        vbox.addLayout(hbox2)
-        hbox3= QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
-        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel)
-        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults)
-        hbox3.addStretch()
-        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel)
-        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults)
-        hbox3.addStretch()
-        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel)
-        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults)
-        hbox3.addStretch()
-        vbox.addLayout(hbox3)
-        hbox4= QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
-        hbox4.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel)
-        hbox4.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults)
-        vbox.addLayout(hbox4)
-        
+        #Layout within Frame:
+        pvbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
+        phbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
+        phbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel)
+        pvbox.addLayout(phbox1)
+        phbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
+        phbox2.addStretch()
+        pgrid = QtWidgets.QGridLayout(Ui_MainWindow.TrainingOrTestSet.MetricsFrame)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel,0,0,1,8)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSELabel,1,0,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MSEresults,1,1,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSELabel,1,2,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.RMSEresults,1,3,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2Label,1,4,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.R2results,1,5,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLLabel,1,6,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.LLresults,1,7,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCLabel,1,8,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults,1,9,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel,1,10,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults,1,11,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel,1,12,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults,1,13,1,1)
+        phbox2.addLayout(pgrid)
+        phbox2.addStretch()
+        pvbox.addLayout(phbox2)
+    
         # Add RandomForest.RandomForest.results to ia Qframe at the bottom
-        # Scatterplot with a line in the middle.
+        #Frame declare:
+         
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
+
+        #Labels declare:
         
+        
+        
+        
+        # Scatterplot with a line in the middle.
+        grid = QtWidgets.QGridLayout(Ui_MainWindow.TrainingOrTestSet)
+        grid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame,0,0,1,1)   
+        grid.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame,1,0,3,1)  
+                        
         self.setCurrentIndex(Ui_MainWindow.sIndex)
          
  
