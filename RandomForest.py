@@ -154,9 +154,8 @@ class RandomForest(FigureCanvas):
                                    QtWidgets.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
         fig.suptitle("Proportion of trees that voted each sample into the same category as the 'bad' training data", fontsize=10)
-        annot = ax.annotate("", xy=(0,0),color='green')        
         self.compute_initial_figure()
-
+        annot = ax.annotate("", xy=(0,0.5),color='green') 
    
     def compute_initial_figure(self):
         pass

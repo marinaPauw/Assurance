@@ -928,10 +928,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         grid = QtWidgets.QGridLayout(Ui_MainWindow.TrainingOrTestSet)
         grid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame,0,0,1,1)   
         grid.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame,1,0,3,1)  
-                        
-        self.setCurrentIndex(Ui_MainWindow.sIndex)
+
         RandomForest.fig.canvas.mpl_connect("motion_notify_event",
-                                                        Ui_MainWindow.RFonhover)
+                                                        Ui_MainWindow.RFonhover)                        
+        self.setCurrentIndex(Ui_MainWindow.sIndex)
         
     def RFonhover(event):
         vis = RandomForest.annot.get_visible()
@@ -947,30 +947,14 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             RandomForest.fig.canvas.draw_idle()
             
     def RFupdate_annot(event):
-        pos = {event.xdata, event.ydata}
-        closesty = np.unravel_index((np.abs(RandomForest.badset["B"] - event.ydata))
-                                    .argmin(), RandomForest.badset.shape)
-        badsetxes = np.where((closesty[0] == RandomForest.badset[:,"B"])) 
-        closestx = np.unravel_index((np.abs(badsetxes["X"] - event.xdata))
-                                    .argmin(), RandomForest.badset.shape)
-        #RandomForest.annot.xyann = (RandomForest.badset.index[closestx[0]])
-        #samplenames = DataPreparation.DataPrep.FindRealSampleNames(
-        #    Ui_MainWindow, FileInput.BrowseWindow.currentDataset.index)
-        #if(len(samplenames) != len(set(samplenames))):
-            # if there are duplicates in the filenames column like RTsegments
-            # or per swath metrics
-            #sampleNameColumn1Combination = samplenames[closestx[0]] + "-" \
-             #   + str(FileInput.BrowseWindow.currentDataset.iloc[closestx[0], 1])
-            #text = sampleNameColumn1Combination.format(PCA.plotdata[
-              #                                         closestx[0], 0],
-             #                                          PCA.plotdata[
-             #                                          closestx[0], 1])
-       # else:
-            #text = samplenames[closestx[0]].format(
-              #  PCA.plotdata[closestx[0], 0],
-              #  PCA.plotdata[closestx[0], 1])
-        RandomForest.annot.set_text(RandomForest.badset.index[closestx[0]])
-
+        closestyIndex = np.abs(RandomForest.badset["B"] - event.ydata).argmin()
+        closesty = RandomForest.badset["B"].loc[closestyIndex]
+        badsetclosey = RandomForest.badset[RandomForest.badset['B']==closesty]
+        closestxIndex = np.abs(badsetclosey['X'] - event.xdata).argmin()        
+        closestx = RandomForest.badset["X"].loc[closestxIndex]
+        RandomForest.annot.xyann = (closestx , closesty)
+        RandomForest.annot.set_text(closestxIndex)
+        
     def CalculateOutliers(self):
         sampleSize = range(len(FileInput.BrowseWindow.currentDataset.index))
         PCA.Distances = self.calculateDistanceMatrix(PCA.finalDf)
