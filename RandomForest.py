@@ -116,8 +116,24 @@ class RandomForest(FigureCanvas):
         
     def  __init__(self, results):
         global badset
-        badset = results["B"]
+        badset = pd.DataFrame()
+        badset["B"] = results["B"]
+        badset["X"] = 0
         badset.index = results.index
+        # Trying to create a beeswarm plot that is semi impossible in matplotlib:
+        badsetround = badset["B"].round(2)
+        bsrset = set(badsetround)
+        for ii in bsrset:   
+            counter = -1    
+            for i in range(0, len(badsetround)):
+                if badsetround[i] == ii:
+                    counter=counter+1
+                    if counter>0:
+                        if counter % 2 == 0:
+                            badset["X"].iloc[i] = 0 + counter * 0.1
+                        else:
+                            badset["X"].iloc[i] = 0 - counter * 0.1                        
+        
         global fig
         fig = Figure()#figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
@@ -125,10 +141,10 @@ class RandomForest(FigureCanvas):
         global annot
         ax = fig.add_subplot(1,1,1)
         for i in range(0,len(badset.index)):
-            if badset[i]<0.5:
-                ax.plot(0+ np.random.randn(), badset[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+            if badset["B"].iloc[i]<0.5:
+                ax.plot(0+ badset["X"].iloc[i], badset["B"].iloc[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
             else:
-                ax.plot(0+ np.random.randn(), badset[i],  marker='o', markerfacecolor='red', markeredgecolor='r')
+                ax.plot(0+ badset["X"].iloc[i], badset["B"].iloc[i],  marker='o', markerfacecolor='red', markeredgecolor='r')
         ax.set_ylabel("Proportion of votes")
         FigureCanvas.__init__(self, fig)
         #self.setParent(parent)

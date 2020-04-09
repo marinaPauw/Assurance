@@ -948,10 +948,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             
     def RFupdate_annot(event):
         pos = {event.xdata, event.ydata}
-        closestx = np.unravel_index((np.abs(RandomForest.badset - event.xdata))
-                                    .argmin(), [len(RandomForest.badset),0])
-        RandomForest.annot.xyann = (RandomForest.badset[closestx[0]],
-                                0)
+        closesty = np.unravel_index((np.abs(RandomForest.badset["B"] - event.ydata))
+                                    .argmin(), RandomForest.badset.shape)
+        badsetxes = np.where((closesty[0] == RandomForest.badset[:,"B"])) 
+        closestx = np.unravel_index((np.abs(badsetxes["X"] - event.xdata))
+                                    .argmin(), RandomForest.badset.shape)
+        #RandomForest.annot.xyann = (RandomForest.badset.index[closestx[0]])
         #samplenames = DataPreparation.DataPrep.FindRealSampleNames(
         #    Ui_MainWindow, FileInput.BrowseWindow.currentDataset.index)
         #if(len(samplenames) != len(set(samplenames))):
@@ -967,7 +969,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             #text = samplenames[closestx[0]].format(
               #  PCA.plotdata[closestx[0], 0],
               #  PCA.plotdata[closestx[0], 1])
-        PCAGraph.annot.set_text(RandomForest.badset.index[closestx])
+        RandomForest.annot.set_text(RandomForest.badset.index[closestx[0]])
 
     def CalculateOutliers(self):
         sampleSize = range(len(FileInput.BrowseWindow.currentDataset.index))
