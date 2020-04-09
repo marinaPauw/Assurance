@@ -72,7 +72,8 @@ class RandomForest(FigureCanvas):
                 dataToBeSplit = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
                 # Input parameters that are going to train
                 dataToBeSplit.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
-                training_columns = list(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns != 'GoodOrBad'].columns)
+                
+                training_columns = training_columns = list(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns[UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns != 'GoodOrBad'])
                 # Output parameter train against input parameters
                 response_column = 'GoodOrBad'
                 # Split data into train and testing
@@ -118,6 +119,7 @@ class RandomForest(FigureCanvas):
         global badset
         badset = pd.DataFrame()
         badset["B"] = results["B"]
+        badset["predict"] = results["predict"]
         badset["X"] = 0
         badset.index = results.index
         # Trying to create a beeswarm plot that is semi impossible in matplotlib:
@@ -141,7 +143,7 @@ class RandomForest(FigureCanvas):
         global annot
         ax = fig.add_subplot(1,1,1)
         for i in range(0,len(badset.index)):
-            if badset["B"].iloc[i]<0.5:
+            if badset["predict"].iloc[i]=='G':
                 ax.plot(0+ badset["X"].iloc[i], badset["B"].iloc[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
             else:
                 ax.plot(0+ badset["X"].iloc[i], badset["B"].iloc[i],  marker='o', markerfacecolor='red', markeredgecolor='r')

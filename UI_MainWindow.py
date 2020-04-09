@@ -801,15 +801,14 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
         Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Random Forest Results:")
-        Ui_MainWindow.TrainingOrTestSet.setStyleSheet("background-color: gainsboro; margin:5px;")
+        Ui_MainWindow.TrainingOrTestSet.setStyleSheet("background-color: gainsboro; ")
         
         # -------------------------Metrics Frame Layout ------------------------------------
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.setStyleSheet("background-color: rgb(245,245,245); margin:2px;")
-        Ui_MainWindow.TrainingOrTestSet.MetricsFrame.resize(600,150)
-        
+
         
         #Labels declare:
         Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MainLabel = QtWidgets.QLabel()
@@ -908,27 +907,78 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.TrainingOrTestSet.ResultsFrame.MainLabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
         Ui_MainWindow.TrainingOrTestSet.ResultsFrame.MainLabel.setText("Random Forest results:")
         Ui_MainWindow.TrainingOrTestSet.ResultsFrame.MainLabel.setFont(Ui_MainWindow.boldfont)        
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.predictedLabel = QtWidgets.QLabel()
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.predictedLabel.setGeometry(QtCore.QRect(90, 120, 300, 10)) 
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.predictedLabel.setText("The following samples were predicted by Random Forest to resemble the group labelled 'bad' quality:")
+        Ui_MainWindow.TrainingOrTestSet.ResultsFrame.predictedLabel.setFont(Ui_MainWindow.boldfont)        
         
         
         
-        # Scatterplot with a line in the middle.
-        RFPlot = RandomForest.RandomForest( results)
+
+
+        
+        #Bad samples grid:
+        badsamplesgrid = QtWidgets.QGridLayout()
+        badsamplesgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame.predictedLabel,0,0)
+        badlist = results[results['predict']=='B'].index
+        for i in range(0,len(badlist)):
+            label = QtWidgets.QLabel()
+            #label.setGeometry(QtCore.QRect(90, 120, 300, 10))
+            label.setText(badlist[i])
+            currentrow = math.floor(i/4)
+            currentcolumn = i-currentrow*4
+            badsamplesgrid.addWidget(label,currentrow,currentcolumn)
+
+                            
+        
+        
+        
         
         #Layout within Frame:
         rvbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
         rhbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
         rhbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame.MainLabel)
-        rvbox.addLayout(rhbox1)
+        rvbox.addLayout(rhbox1)        
         rhbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
-        rhbox2.addWidget(RFPlot)
+        rhbox2.addLayout(badsamplesgrid)
         rvbox.addLayout(rhbox2)
+        #rhbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)        
+        #rhbox3.addWidget(RFPlot)
+        #rvbox.addLayout(rhbox3)
+        #--------------------------beeswarm plot ------------------------------------------
+         
+        Ui_MainWindow.TrainingOrTestSet.Plot1Frame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
+        Ui_MainWindow.TrainingOrTestSet.Plot1Frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.TrainingOrTestSet.Plot1Frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        Ui_MainWindow.TrainingOrTestSet.Plot1Frame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
+
+
+        # Scatterplot with a line in the middle.
+        RFPlot = RandomForest.RandomForest(results)
+        ovbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.Plot1Frame)
+        ovbox.addWidget(RFPlot)
         
         # -------------------------Complete Tab Layout ------------------------------------
         # Tab Layout
-        grid = QtWidgets.QGridLayout(Ui_MainWindow.TrainingOrTestSet)
+        scroll = QtWidgets.QScrollArea()
+        placementwidget = QtWidgets.QWidget()
+        placementwidget.setFixedWidth(750)
+        grid = QtWidgets.QGridLayout()
         grid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame,0,0,1,1)   
-        grid.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame,1,0,3,1)  
+        grid.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame,1,0,3,1) 
+        grid.addWidget(Ui_MainWindow.TrainingOrTestSet.Plot1Frame,1,0,3,1)
+        placementwidget.setLayout(grid) 
+        scroll.setWidget(placementwidget)
+        scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        #scroll.setMinimumHeight(1800)
 
+        scroll.setWidgetResizable(True)
+
+        vLayout = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet)
+        vLayout.addWidget(scroll)
+        #vLayout.setGeometry()
+     
         RandomForest.fig.canvas.mpl_connect("motion_notify_event",
                                                         Ui_MainWindow.RFonhover)                        
         self.setCurrentIndex(Ui_MainWindow.sIndex)
