@@ -30,6 +30,7 @@ import pandas as pd
 import SwaMe
 import pepXMLReader
 import RFSelectionPlots
+import FeatureImportancePlot
 from scipy.spatial import distance_matrix
 
 
@@ -794,7 +795,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             # Create full training set
         Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTrainingSamplesFromArea(self))
         
-    def printModelResults(self, performance, results):
+    def printModelResults(self, performance, results, model):
         Ui_MainWindow.removeTab(self, Ui_MainWindow.sIndex)
         print(Ui_MainWindow.currentIndex(self))
         Ui_MainWindow.setCurrentIndex(self,0)
@@ -940,21 +941,35 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.TrainingOrTestSet.Plot1Frame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
 
 
-        # Scatterplot with a line in the middle.
+        # Scatterplot
         RFPlot = RandomForest.RandomForest(results)
         ovbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.Plot1Frame)
         ovbox.addWidget(RFPlot)
+        
+        #-------------------------feature importance plot---------------------------------
+        Ui_MainWindow.TrainingOrTestSet.Plot2Frame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
+        Ui_MainWindow.TrainingOrTestSet.Plot2Frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.TrainingOrTestSet.Plot2Frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        Ui_MainWindow.TrainingOrTestSet.Plot2Frame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
+
+
+        # plot
+        FeaturePlot = FeatureImportancePlot.FeaturePlot(model)
+        fvbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.Plot2Frame)
+        fvbox.addWidget(FeaturePlot)
+        
         
         # -------------------------Complete Tab Layout ------------------------------------
         # Tab Layout
         scroll = QtWidgets.QScrollArea()
         placementwidget = QtWidgets.QWidget()
         placementwidget.setFixedWidth(750)
-        placementwidget.setFixedHeight(1800)
+        placementwidget.setFixedHeight(3000)
         grid = QtWidgets.QGridLayout()
         grid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame,0,0,1,1)   
         grid.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame,1,0,1,1) 
         grid.addWidget(Ui_MainWindow.TrainingOrTestSet.Plot1Frame,2,0,3,1)
+        grid.addWidget(Ui_MainWindow.TrainingOrTestSet.Plot2Frame,3,0,3,1)
         placementwidget.setLayout(grid)
         scroll.setWidget(placementwidget)
         scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
