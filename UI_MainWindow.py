@@ -76,6 +76,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.AnalysisFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         Ui_MainWindow.tab.AnalysisFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
 
+        Ui_MainWindow.tab.OutputFrame = QtWidgets.QFrame(self)
+        Ui_MainWindow.tab.OutputFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.tab.OutputFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        Ui_MainWindow.tab.OutputFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
+
 
         #-------------------------------------------------QuaMeterLayout--------------------------------------------------------
         
@@ -225,6 +230,16 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMehbox7.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.SRUNButton)
         SwaMehbox7.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.textedit)
         SwaMevbox.addLayout(SwaMehbox7)
+        #------------------------------------------------OutputFrame--------------------------------------------------------
+        pdf = QtWidgets.QPushButton(self.tab)
+        pdf.setStyleSheet("background-color: rgb(240,240,240);")
+        pdf.setText("Export to PDF")
+        
+        outputHBOX = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.OutputFrame)
+        outputHBOX.addStretch()
+        outputHBOX.addWidget(pdf)
+        outputHBOX.addStretch()
+        
 
         #-------------------------------------------------MainLayout--------------------------------------------------------
           #All the buttons MainWindow:
@@ -323,6 +338,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         hbox1 = QtWidgets.QHBoxLayout()
         hbox1.addWidget(Ui_MainWindow.tab.AnalysisFrame)
         vbox.addLayout(hbox1)
+        hbox2 = QtWidgets.QHBoxLayout()
+        hbox2.addWidget(Ui_MainWindow.tab.OutputFrame)
+        vbox.addLayout(hbox2)
         
         vbox.setAlignment(QtCore.Qt.AlignLeft)
         self.retranslateUi()
