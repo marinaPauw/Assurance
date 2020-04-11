@@ -933,43 +933,32 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         rhbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
         rhbox2.addLayout(badsamplesgrid)
         rvbox.addLayout(rhbox2)
-        #--------------------------beeswarm plot ------------------------------------------
-         
-        Ui_MainWindow.TrainingOrTestSet.Plot1Frame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
-        Ui_MainWindow.TrainingOrTestSet.Plot1Frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        Ui_MainWindow.TrainingOrTestSet.Plot1Frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        Ui_MainWindow.TrainingOrTestSet.Plot1Frame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
 
-
-        # Scatterplot
-        RFPlot = RandomForest.RandomForest(results)
-        ovbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.Plot1Frame)
-        ovbox.addWidget(RFPlot)
-        
-        #-------------------------feature importance plot---------------------------------
-        Ui_MainWindow.TrainingOrTestSet.Plot2Frame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
-        Ui_MainWindow.TrainingOrTestSet.Plot2Frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        Ui_MainWindow.TrainingOrTestSet.Plot2Frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        Ui_MainWindow.TrainingOrTestSet.Plot2Frame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
+               
+        #-------------------------plots---------------------------------
+        Ui_MainWindow.TrainingOrTestSet.PlotFrame = QtWidgets.QFrame(Ui_MainWindow.TrainingOrTestSet)
+        Ui_MainWindow.TrainingOrTestSet.PlotFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        Ui_MainWindow.TrainingOrTestSet.PlotFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        Ui_MainWindow.TrainingOrTestSet.PlotFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
 
 
         # plot
+        RFPlot = RandomForest.RandomForest(results)
         FeaturePlot = FeatureImportancePlot.FeaturePlot(model)
-        fvbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.Plot2Frame)
-        fvbox.addWidget(FeaturePlot)
-        
+        fgrid = QtWidgets.QGridLayout(Ui_MainWindow.TrainingOrTestSet.PlotFrame)
+        fgrid.addWidget(FeaturePlot,0,0,1,1)          
+        fgrid.addWidget(RFPlot,1,0,1,1)
         
         # -------------------------Complete Tab Layout ------------------------------------
         # Tab Layout
         scroll = QtWidgets.QScrollArea()
         placementwidget = QtWidgets.QWidget()
         placementwidget.setFixedWidth(750)
-        placementwidget.setFixedHeight(3000)
+        placementwidget.setFixedHeight(2000)
         grid = QtWidgets.QGridLayout()
         grid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame,0,0,1,1)   
-        grid.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame,1,0,1,1) 
-        grid.addWidget(Ui_MainWindow.TrainingOrTestSet.Plot1Frame,2,0,3,1)
-        grid.addWidget(Ui_MainWindow.TrainingOrTestSet.Plot2Frame,3,0,3,1)
+        grid.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame,1,0,2,1) 
+        grid.addWidget(Ui_MainWindow.TrainingOrTestSet.PlotFrame,3,0,9,1)
         placementwidget.setLayout(grid)
         scroll.setWidget(placementwidget)
         scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)

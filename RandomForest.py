@@ -120,8 +120,6 @@ class RandomForest(FigureCanvas):
                 results = rf.as_data_frame()
                 results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
                 UI_MainWindow.Ui_MainWindow.printModelResults(self, performance, results, model)
-        
-       
                 
     def AllocateGoodOrBad(self, table):              
 

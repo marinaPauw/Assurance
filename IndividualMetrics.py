@@ -43,7 +43,7 @@ class MyIndMetricsCanvas(FigureCanvas):
 
         return unique_list
 
-    def __init__(self, tableContainingRownames, table,element, parent=None, width=25, height=8, dpi=100):
+    def __init__(self, tableContainingRownames, table,element, parent=None, width=25, height=15, dpi=100):
         try:
             if element == "StartTimeStamp":
                 table = UI_MainWindow.Ui_MainWindow.metrics[0]

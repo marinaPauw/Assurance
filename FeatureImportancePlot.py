@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class FeaturePlot(FigureCanvas):
-    def  __init__(self, model):
+    def  __init__(self, model,width=25, height=40, dpi=100):
         global fig
         fig, ax = plt.subplots()
         variables = model._model_json['output']['variable_importances']['variable']
@@ -18,6 +18,7 @@ class FeaturePlot(FigureCanvas):
         ax.barh(y_pos, scaled_importance, align='center', color='green', ecolor='black')
         ax.set_yticks(y_pos)
         ax.set_yticklabels(variables)
+        ax.tick_params(axis="y", labelsize=7)
         ax.invert_yaxis()
         ax.set_xlabel('Scaled Importance')
         ax.set_title('Variable Importance')
@@ -30,7 +31,6 @@ class FeaturePlot(FigureCanvas):
         FigureCanvas.updateGeometry(self)
         fig.suptitle("Feature importance", fontsize=10)
         self.compute_initial_figure()
-        annot = ax.annotate("", xy=(0,0.5),color='green') 
    
     def compute_initial_figure(self):
         pass
