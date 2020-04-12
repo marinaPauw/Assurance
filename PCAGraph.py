@@ -18,6 +18,7 @@ import UI_MainWindow
 import PCA
 import FileInput
 import re
+import os
 
 class PCAGraph(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -25,7 +26,7 @@ class PCAGraph(FigureCanvas):
     global annot
     global plotdata
 
-    def __init__(self, parent=None, width=25, height=10, dpi=80):
+    def __init__(self,  now, parent=None, width=25, height=10, dpi=80):
         UI_MainWindow.Ui_MainWindow.tab.showMaximized()
         loadings = UI_MainWindow.Ui_MainWindow.loadings 
         global fig
@@ -59,7 +60,8 @@ class PCAGraph(FigureCanvas):
         
         self.compute_initial_figure()
         annot = ax.annotate("", xy=(0,0),color='green')
-
+        print(os.getcwd())
+        fig.savefig("outlierDetection.png")
    
         
     def compute_initial_figure(self):

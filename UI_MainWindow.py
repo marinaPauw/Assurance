@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import math
-import sys
 import statistics
 import scipy
 from sklearn import decomposition as sd
@@ -32,6 +31,9 @@ import pepXMLReader
 import RFSelectionPlots
 import FeatureImportancePlot
 from scipy.spatial import distance_matrix
+import PDFWriter
+import tempfile
+import datetime
 
 
 class Ui_MainWindow(QtWidgets.QTabWidget):
@@ -40,7 +42,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
         self.setWindowTitle("Assurance")
         self.resize(800,650)
-
+        global now
+        global tempDir
+        
+        now = datetime.datetime.today()
+        tempDir = tempfile.TemporaryDirectory()
         # fonts and style:
         Ui_MainWindow.boldfont = QtGui.QFont()
         Ui_MainWindow.boldfont.setBold(True)
@@ -231,13 +237,13 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMehbox7.addWidget(Ui_MainWindow.tab.UploadFrame.rightFrame.textedit)
         SwaMevbox.addLayout(SwaMehbox7)
         #------------------------------------------------OutputFrame--------------------------------------------------------
-        pdf = QtWidgets.QPushButton(self.tab)
-        pdf.setStyleSheet("background-color: rgb(240,240,240);")
-        pdf.setText("Export to PDF")
+        Ui_MainWindow.tab.OutputFrame.pdf = QtWidgets.QPushButton(self.tab)
+        Ui_MainWindow.tab.OutputFrame.pdf.setStyleSheet("background-color: rgb(240,240,240);")
+        Ui_MainWindow.tab.OutputFrame.pdf.setText("Export to PDF")
         
         outputHBOX = QtWidgets.QHBoxLayout(Ui_MainWindow.tab.OutputFrame)
         outputHBOX.addStretch()
-        outputHBOX.addWidget(pdf)
+        outputHBOX.addWidget(Ui_MainWindow.tab.OutputFrame.pdf)
         outputHBOX.addStretch()
         
 
@@ -260,6 +266,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.tab.AnalysisFrame.IndMetrics.clicked.connect(self.onIndMetricsClicked)
         Ui_MainWindow.tab.AnalysisFrame.Longitudinal.clicked.connect(self.onLongitudinalClicked)
         Ui_MainWindow.tab.UploadFrame.rightFrame.iRT.toggled.connect(self.onIRTClicked)
+        Ui_MainWindow.tab.OutputFrame.pdf.clicked.connect(self.onPDFClicked)
+
 
         # Labels and progressbars
         self.tab.UploadFrame.InstructionLabel = QtWidgets.QLabel()
@@ -414,8 +422,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         Ui_MainWindow.PCA = QtWidgets.QTabWidget()
                         Ui_MainWindow.PCA.plotlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
                         Ui_MainWindow.PCA.plotlabel.setGeometry(10, 500, 1000, 300)
-                        Ui_MainWindow.PCA.PCAplot = PCAGraph.PCAGraph(self.metrics,
-                                                                      PCA.plotdata)
+                        Ui_MainWindow.PCA.PCAplot = PCAGraph.PCAGraph( now)
+                        
 
                         Ui_MainWindow.outlierlistLabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
                         Ui_MainWindow.OutlierSamples = QtWidgets.QLabel(Ui_MainWindow.PCA)
@@ -1090,6 +1098,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.RandomForest.items = \
             self.RandomForest.sourceList.selectedItems()
         Ui_MainWindow.RandomForest.predictionbtn.setEnabled(True)
+        
+    def onPDFClicked(self):
+        PDFWriter.OutputWriter.producePDF(self,now)
 
     def retranslateUi2(self):
         _translate = QtCore.QCoreApplication.translate
