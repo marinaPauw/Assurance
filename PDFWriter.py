@@ -8,6 +8,9 @@ import matplotlib
 from matplotlib.backends.backend_pdf import PdfPages
 from PyPDF2 import PdfFileMerger
 import glob
+import PCAGraph
+import RandomForest
+import FeatureImportancePlot
 
 class OutputWriter(object):
     def producePDF(self, now, ):
@@ -15,7 +18,7 @@ class OutputWriter(object):
         #-----------------------Cover page-------------------------
         pdf.add_page(orientation='P')
         pdf.set_font('helvetica', 'B',size=12)
-        pdf.cell(200, 12, txt="Assurance results", ln=1, align="C")
+        pdf.cell(200, 12, txt="Assurance Results", ln=1, align="C")
         pdf.set_font('helvetica', size=10)
         reportDate = "Date Assurance analysis started: " + str(now)
         pdf.cell(200, 10, txt=reportDate, ln=1, align="L")
@@ -40,20 +43,36 @@ class OutputWriter(object):
             #Heading:
             pdf.set_font('helvetica', size=10)
             pdf.cell(200, 10, txt="Outlier detection with PCA", ln=1, align="C")
+            
+            #Outliers:
+            if len(UI_MainWindow.Ui_MainWindow.outlierlist)>0:
+                pdf.cell(200, 10, txt="The following samples were identified as possible outliers:", ln=1, align="C")
+                for element in UI_MainWindow.Ui_MainWindow.outlierlist:
+                    pdf.cell(50, 10, txt=str(element), ln=1, align="L")
+            else:
+               pdf.cell(200, 10, txt="No samples were identified as possible outliers:", ln=1, align="C")
+                 
+            #Create images:
+            PCAGraph.PCAGraph.printForReport(self)
                         
-            image_path = os.path.join(os.getcwd(),"outlierDetection.png")
+            image_path = os.path.join(os.getcwd(),"outlierDetection1.png")
             pdf.image(image_path, w=200)
-            if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False:
-                pdfName = "00AssuranceReport.pdf"
-                pdf.output(pdfName) 
-                
-        else:
+            UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(10)
+            image_path = os.path.join(os.getcwd(),"outlierDetection2.png")
+            pdf.image(image_path, w=200)
+            UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(20)
             if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
                 pdfName = "00AssuranceReport.pdf"
                 pdf.output(pdfName) 
             elif UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == False:
                 pdfName = "AssuranceReport.pdf"
                 pdf.output(pdfName) 
+                    
+        else:
+            if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
+                pdfName = "00AssuranceReport.pdf"
+                pdf.output(pdfName) 
+            
         UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(33)
         
             
@@ -66,6 +85,102 @@ class OutputWriter(object):
             paths = glob.glob('*.pdf')
             paths.sort()
             OutputWriter.merger('AssuranceReport.pdf', paths)
+            
+        #---------------------------Random Forest----------------------
+            
+        if(UI_MainWindow.Ui_MainWindow.RandomForestPerformed):
+            pdf.add_page(orientation='P')
+            #Heading:
+            pdf.set_font('helvetica', size=10)
+            pdf.cell(200, 10, txt="Supervised classification with Random Forest", ln=1, align="C")
+            pdf.cell(200, 10, txt="The training set consisted of the following samples:", ln=1, align="C")
+            
+            pdf.set_text_color(105,105,105)
+            counter = 0
+            for filename in RandomForest.RandomForest.train.index:
+                if counter ==2:
+                    pdf.cell(50, 10, txt=str(filename), ln=1, align="C")
+                else:
+                    pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                counter= counter+1
+                if counter ==3:
+                    counter = 0
+            pdf.set_text_color(0, 0, 0)
+            
+            pdf.cell(200, 10, txt="The test set consisted of the following samples:", ln=1, align="C")
+            
+            pdf.set_text_color(105,105,105)
+            counter = 0
+            for filename in RandomForest.RandomForest.test.index:
+                if counter ==2:
+                    pdf.cell(50, 10, txt=str(filename), ln=1, align="C")
+                else:
+                    pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                counter= counter+1
+                if counter ==3:
+                    counter = 0
+            pdf.set_text_color(0, 0, 0)
+            
+            pdf.set_font('helvetica','B', size=14)
+            pdf.cell(200, 10, txt="Performance metrics:", ln=1, align="C")
+            pdf.set_font('helvetica', size=10)
+            pdf.cell(50, 10, txt="MSE:", ln=0, align="C")
+            pdf.set_text_color(105,105,105)
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["MSE"],4)), ln=0, align="C")
+            pdf.set_text_color(0, 0, 0)
+            pdf.cell(50, 10, txt="RMSE:", ln=0, align="C")
+            pdf.set_text_color(105,105,105)
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["RMSE"],4)), ln=0, align="C")
+            pdf.set_text_color(0, 0, 0)
+            pdf.cell(50, 10, txt="R2:", ln=0, align="C")
+            pdf.set_text_color(105,105,105)
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["r2"],4)), ln=1, align="C")
+            pdf.set_text_color(0, 0, 0)
+            pdf.cell(50, 10, txt="logloss:", ln=0, align="C")
+            pdf.set_text_color(105,105,105)
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["logloss"],4)), ln=0, align="C")
+            pdf.set_text_color(0, 0, 0)
+            pdf.cell(50, 10, txt="AUC:", ln=0, align="C")
+            pdf.set_text_color(105,105,105)
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["AUC"],4)), ln=0, align="C")
+            pdf.set_text_color(0, 0, 0)
+            pdf.cell(50, 10, txt="GINI:", ln=0, align="C")
+            pdf.set_text_color(105,105,105)
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["Gini"],4)), ln=1, align="C")
+            pdf.set_text_color(0, 0, 0)
+            pdf.cell(50, 10, txt="Mean per class error:", ln=0, align="C")
+            pdf.set_text_color(105,105,105)
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["mean_per_class_error"],4)), ln=1, align="C")        
+            pdf.set_text_color(0, 0, 0)    
+            
+            pdf.cell(200, 10, txt="The following samples were predicted by Random Forest to resemble the group labelled 'bad' quality:", ln=1, align="C")
+            
+            counter = 0
+            for filename in UI_MainWindow.Ui_MainWindow.badlist:
+                if counter ==2:
+                    pdf.cell(50, 10, txt=str(filename), ln=1, align="C")
+                else:
+                    pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                counter= counter+1
+                if counter ==3:
+                    counter = 0
+                    
+            #Print Graphs:
+            FeatureImportancePlot.FeaturePlot.printForReport(self)
+            RandomForest.RandomForest.printForReport(self)
+            
+            #Read in Graphs:
+            image_path = os.path.join(os.getcwd(),"RFPlot.png")
+            pdf.image(image_path, w=200)
+            image_path = os.path.join(os.getcwd(),"FIPlot.png")
+            pdf.image(image_path, w=200)              
+           
+            if UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
+                pdfName = "00AssuranceReport.pdf"
+                pdf.output(pdfName) 
+            elif UI_MainWindow.Ui_MainWindow.indMetricsGraphed == False:
+                pdfName = "AssuranceReport.pdf"
+                pdf.output(pdfName) 
            
         UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(100)
 

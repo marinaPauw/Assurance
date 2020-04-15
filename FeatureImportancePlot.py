@@ -35,6 +35,9 @@ class FeaturePlot(FigureCanvas):
     def compute_initial_figure(self):
         pass
     
+    def printForReport(self):
+        fig.savefig("FIPlot.png")
+    
          
 
         

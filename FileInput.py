@@ -129,32 +129,31 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 
                 elif justTSVFiles:
                     inputFiles = possibleinputFiles
-                    
-                    if trainingortest == "training":          
-                        trainingmetrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)          
-                        UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
-                        for i in range(0,len(trainingmetrics)):
+                    trainingmetrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)          
+                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
+                    for i in range(0,len(trainingmetrics)):
                         #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
                             #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
                             NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, trainingmetrics[i])
                             UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
                             NMColumnsonly))
-                    elif trainingortest == "test":
-                        testmetrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)
-                        for i in range(0,len(testmetrics)):
-                            NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, testmetrics[i])
-                            UI_MainWindow.Ui_MainWindow.Numerictestmetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
-                            NMColumnsonly))
-                
                 else: 
                       QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,
                                       "Error:" ,"Something went wrong, please try again.")
                        
                      
-            elif len(possibleinputFiles ==1):
-                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics=DataPreparation.DataPrep.ExtractNumericColumns(self, possibleinputFiles[0])
-                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
-                            UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics)
+            else:
+                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
+                    df = pd.read_csv(possibleinputFiles[0], sep="\t")
+                    if "Filename" in df.columns:
+                            if ".mzML" in df["Filename"].iloc[0]:
+                                for file in range(0,len(df.index)):
+                                    df["Filename"].iloc[file] =   os.path.splitext(df["Filename"].iloc[file])[0]
+                
+                            df.index = df["Filename"]   
+                    NMColumnsonly=DataPreparation.DataPrep.ExtractNumericColumns(self, df)
+                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
+                            NMColumnsonly))
                        
                      
     
