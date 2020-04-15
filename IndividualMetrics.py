@@ -105,6 +105,7 @@ class MyIndMetricsCanvas(FigureCanvas):
                 
             else:
                 lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table[element], linestyle="-",marker='o', markerfacecolor = "dimgrey",color = "black")
+            MyIndMetricsCanvas.ax.grid(True)
             MyIndMetricsCanvas.ax.set_facecolor('gainsboro')
             sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
             MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
