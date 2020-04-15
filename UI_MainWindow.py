@@ -689,6 +689,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.iIndex = self.addTab(Ui_MainWindow.indMetrics,
                                  "Individual metrics")
         Ui_MainWindow.createGraph(self, whichds)
+        Ui_MainWindow.progress2.setValue(100)
 
     def sample_change(self, text):
         Ui_MainWindow.sampleSelected = text
@@ -702,6 +703,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.iIndex = self.addTab(Ui_MainWindow.indMetrics,
                                  "Individual metrics")
         Ui_MainWindow.createGraph(self, whichds)
+        Ui_MainWindow.progress2.setValue(100)
 
     def checkColumnNumberForPCA(self):
         if(len(Ui_MainWindow.NumericMetrics[0].columns) < 3):
