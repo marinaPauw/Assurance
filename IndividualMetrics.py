@@ -24,13 +24,10 @@ import FileInput
 import pylab
 from matplotlib.colors import hsv_to_rgb
 from cycler import cycler
+import os
 
 class MyIndMetricsCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
-
-
-
-    
     def unique(list1): 
         # intilize a null list 
         unique_list = [] 
@@ -57,8 +54,9 @@ class MyIndMetricsCanvas(FigureCanvas):
                     table = table.sort_values("runDate")
                     element = "runDate"
             MyIndMetricsCanvas.fig = Figure(figsize=(width, height), dpi=dpi)
+            MyIndMetricsCanvas.fig.suptitle(element, fontsize=16)
             #self.axes = MyIndMetricsCanvas.fig.add_subplot(111)
-            MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
+            #MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
             sampleSize = range(0,len(table))
             MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
             if type(table[element][0]) == int or type(table[element][0]) == float or type(table[element][0]) == np.float64:
@@ -110,21 +108,7 @@ class MyIndMetricsCanvas(FigureCanvas):
             MyIndMetricsCanvas.ax.set_facecolor('gainsboro')
             sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
             MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
-           # if(len(MyIndMetricsCanvas.samplenames)<=32 or len(MyIndMetricsCanvas.samplenames) == len(set(MyIndMetricsCanvas.samplenames))):
-             #   MyIndMetricsCanvas.ax.legend(loc="upper left", ncol = 1)
-            #else:
-            #    figlegend = pylab.figure(figsize = (30,40))
-             #   handles, labels = MyIndMetricsCanvas.ax.get_legend_handles_labels()
-             #   if(len(MyIndMetricsCanvas.samplenames)>32 and len(MyIndMetricsCanvas.samplenames)<=64):
-             #       figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 2, borderaxespad=0.1 )
-             #   elif(len(MyIndMetricsCanvas.samplenames)>64 and len(MyIndMetricsCanvas.samplenames)<=96):
-              #      figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 3, borderaxespad=0.1 )
-              #  elif(len(MyIndMetricsCanvas.samplenames)>96 and len(MyIndMetricsCanvas.samplenames)<=128):
-             #       figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 4, borderaxespad=0.1 )
-            #    else:
-             #       figlegend.legend(lines,handles = handles, labels = labels,loc = 'center',bbox_to_anchor=[0.5, 0.5],ncol = 5, borderaxespad=0.1 )
-             #   MyIndMetricsCanvas.canvas = FigureCanvas(figlegend)
-            #    Legend.Legend.setupUI(UI_MainWindow.Ui_MainWindow, MyIndMetricsCanvas.canvas)
+           
             
             MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
             if element == "runDate":
@@ -132,7 +116,7 @@ class MyIndMetricsCanvas(FigureCanvas):
                 MyIndMetricsCanvas.ax.yaxis_date()
             for tick in MyIndMetricsCanvas.ax.get_xticklabels():
                 tick.set_rotation(90)
-                tick.set_size(8)
+                tick.set_size(10)
             for tick in MyIndMetricsCanvas.ax.get_yticklabels():
                 tick.set_rotation(360)
             FigureCanvas.__init__(self, MyIndMetricsCanvas.fig)
@@ -143,6 +127,10 @@ class MyIndMetricsCanvas(FigureCanvas):
                                     QtWidgets.QSizePolicy.Expanding)
             FigureCanvas.updateGeometry(self)
             self.compute_initial_figure()
+            image_path = os.path.join(os.getcwd(), element +".pdf")
+            #with PdfPages(image_path) as export_pdf:
+            #    export_pdf.savefig()
+            MyIndMetricsCanvas.fig.savefig(image_path)
         except:
             if UI_MainWindow.Ui_MainWindow.metrics[0].columns.tolist().index(element) < len(UI_MainWindow.Ui_MainWindow.metrics[0].columns):
                 UI_MainWindow.Ui_MainWindow.element = UI_MainWindow.Ui_MainWindow.metrics[0].columns[ UI_MainWindow.Ui_MainWindow.metrics[0].columns.tolist().index(element)+1]
@@ -151,6 +139,7 @@ class MyIndMetricsCanvas(FigureCanvas):
       
     def compute_initial_figure(self):
         pass    
+
 
 
 
