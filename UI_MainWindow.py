@@ -742,7 +742,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                           "For this supervised approach you will need to provide training and test set data that contains both good and bad quality data. It is imperitive that you have high confidence in the training set and we recommend that you run PCA on the set to ascertain that there are no outliers. \n You will be asked to select a folder which contains corresponding pepxml Ui_MainWindow.files and QuaMeter/SwaMe output Ui_MainWindow.files for training set selection. Then you will be presented with a graph on which you should separate good from bad. Next you will do the same for the test set after which you will be presented with the model fit results.")
         
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
-        TrainingSetfiles = FileInput.BrowseWindow.GetTrainingSetfiles(self)
+        TrainingSetfiles = FileInput.BrowseWindow.GetTrainingSetFiles(self)
         Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Number of Distinct peptides","Number of spectra identified"])
         
         if TrainingSetfiles:
