@@ -40,7 +40,7 @@ class MyIndMetricsCanvas(FigureCanvas):
 
         return unique_list
 
-    def __init__(self, tableContainingRownames, table,element, parent=None, width=25, height=15, dpi=100):
+    def __init__(self, tableContainingRownames, table,element, forReport, parent=None, width=25, height=15, dpi=100):
         try:
             if element == "StartTimeStamp":
                 table = UI_MainWindow.Ui_MainWindow.metrics[0]
@@ -54,7 +54,10 @@ class MyIndMetricsCanvas(FigureCanvas):
                     table = table.sort_values("runDate")
                     element = "runDate"
             MyIndMetricsCanvas.fig = Figure(figsize=(width, height), dpi=dpi)
-            MyIndMetricsCanvas.fig.suptitle(element, fontsize=16)
+            if forReport:
+                MyIndMetricsCanvas.fig.suptitle(element, fontsize=20)
+            else:
+                MyIndMetricsCanvas.fig.suptitle(element, fontsize=16)
             #self.axes = MyIndMetricsCanvas.fig.add_subplot(111)
             #MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
             sampleSize = range(0,len(table))
@@ -62,9 +65,7 @@ class MyIndMetricsCanvas(FigureCanvas):
             if type(table[element][0]) == int or type(table[element][0]) == float or type(table[element][0]) == np.float64:
                 tableContainingRownames = tableContainingRownames.sort_values(element)
                 table = table.sort_values(element)
-            plt.grid(color ="ghostwhite")
-            colors = [hsv_to_rgb([(i * 0.618033988749895) % 1.0, (i * 0.32) % 1.0, (i * 0.112) % 1.0]) for i in range(1000)]
-            plt.rc("axes", prop_cycle=(cycler('color', colors)))
+            
             MyIndMetricsCanvas.samplenames = []
             if isinstance( tableContainingRownames.index[0], str) and "." in tableContainingRownames.index[0] :
                 counter = tableContainingRownames.index[0].count('.') 
@@ -117,8 +118,13 @@ class MyIndMetricsCanvas(FigureCanvas):
                 MyIndMetricsCanvas.ax.yaxis_date()
             for tick in MyIndMetricsCanvas.ax.get_xticklabels():
                 tick.set_rotation(90)
-                tick.set_size(10)
+                if forReport:
+                    tick.set_size(10)
+                else:
+                    tick.set_size(8)
             for tick in MyIndMetricsCanvas.ax.get_yticklabels():
+                if forReport:
+                    tick.set_size(12)
                 tick.set_rotation(360)
             FigureCanvas.__init__(self, MyIndMetricsCanvas.fig)
         #  MyIndMetricsCanvas.setParent(parent)
@@ -129,9 +135,8 @@ class MyIndMetricsCanvas(FigureCanvas):
             FigureCanvas.updateGeometry(self)
             self.compute_initial_figure()
             image_path = os.path.join(os.getcwd(), element +".pdf")
-            #with PdfPages(image_path) as export_pdf:
-            #    export_pdf.savefig()
             MyIndMetricsCanvas.fig.savefig(image_path)
+            
         except:
             if UI_MainWindow.Ui_MainWindow.metrics[0].columns.tolist().index(element) < len(UI_MainWindow.Ui_MainWindow.metrics[0].columns):
                 UI_MainWindow.Ui_MainWindow.element = UI_MainWindow.Ui_MainWindow.metrics[0].columns[ UI_MainWindow.Ui_MainWindow.metrics[0].columns.tolist().index(element)+1]
