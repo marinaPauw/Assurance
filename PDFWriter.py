@@ -93,10 +93,7 @@ class OutputWriter(object):
                     whichds = dataset
                     break
             graph = IndividualMetrics.MyIndMetricsCanvas(UI_MainWindow.Ui_MainWindow.metrics[whichds],
-                            UI_MainWindow.Ui_MainWindow.metrics[whichds], metric)
-            #image_path = os.path.join(os.getcwd(), metric +".pdf")
-            #with PdfPages(image_path) as export_pdf:
-            #    export_pdf.savefig()
+                            UI_MainWindow.Ui_MainWindow.metrics[whichds], metric, True)
             
             del graph
             progressCounter2= progressCounter2+(10/len(UI_MainWindow.Ui_MainWindow.listOfMetrics))
