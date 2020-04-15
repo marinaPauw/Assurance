@@ -438,8 +438,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         # --------------------------------------Widgets-------------------------------------------
                         Ui_MainWindow.PCA = QtWidgets.QTabWidget()
                         Ui_MainWindow.PCA.plotlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-                        Ui_MainWindow.PCA.plotlabel.setGeometry(10, 500, 1000, 300)
-                        Ui_MainWindow.PCA.PCAplot = PCAGraph.PCAGraph( now)
+                        #Ui_MainWindow.PCA.plotlabel.setGeometry(10, 500, 1000, 300)
+                        Ui_MainWindow.PCA.PCAplot = PCAGraph.PCAGraph(now)
                         
 
                         Ui_MainWindow.outlierlistLabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
@@ -457,7 +457,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                             lambda x: Ui_MainWindow.enable_slot(self)
                             if x else Ui_MainWindow.disable_slot(self))
                         Ui_MainWindow.PCA.LoadingsProgressBar = QtWidgets.QProgressBar()
-                        Ui_MainWindow.PCA.LoadingsProgressBar.setGeometry(200, 80, 250, 20)
+                        Ui_MainWindow.PCA.LoadingsProgressBar.setGeometry(200, 80, 50, 20)
 
                         
                         Ui_MainWindow.PCA.Redolabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
@@ -502,7 +502,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
 
                         hbox.addWidget(Ui_MainWindow.PCA.PCAplot)
-                        Ui_MainWindow.PCA.PCAplot.setGeometry(400, 200, 500, 100)
+                        
                         hbox2.setAlignment(QtCore.Qt.AlignCenter)
                         vbox2.addLayout(hbox2)
                         Ui_MainWindow.retranslateUi2(Ui_MainWindow.PCA)
@@ -1118,7 +1118,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         _translate = QtCore.QCoreApplication.translate
         array = range(1, len(Ui_MainWindow.outlierlist), 1)
         Ui_MainWindow.outlierlistLabel.setText(
-            "The following runs are suggested as candidates for being possible outliers: ")
+            "Suggested outlier candidates: ")
         Ui_MainWindow.PCA.plotlabel.setText(
             "Principal components analysis of quality metrics for outlier detection:")
         font = QtGui.QFont()

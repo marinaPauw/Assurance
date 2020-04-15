@@ -26,11 +26,11 @@ class PCAGraph(FigureCanvas):
     global annot
     global plotdata
 
-    def __init__(self,  now, parent=None, width=25, height=10, dpi=80):
+    def __init__(self,  now, parent=None):
         UI_MainWindow.Ui_MainWindow.tab.showMaximized()
         loadings = UI_MainWindow.Ui_MainWindow.loadings 
         global fig
-        fig = Figure()#figsize=(width, height), dpi=dpi)
+        fig = Figure()
         self.axes = fig.add_subplot(111)
         aaa = range(0,(len(FileInput.BrowseWindow.currentDataset.index)))
         global ax
@@ -60,8 +60,6 @@ class PCAGraph(FigureCanvas):
         
         self.compute_initial_figure()
         annot = ax.annotate("", xy=(0,0),color='green')
-        print(os.getcwd())
-        fig.savefig("outlierDetection.png", dpi=500)
    
         
     def compute_initial_figure(self):
@@ -118,11 +116,17 @@ class PCAGraph(FigureCanvas):
          loadingsTextAnnot.append(ax.text(xvalue,yvalue , dataset.columns[i], color = 'b', ha = 'center', va = 'center'))
         for ii in loadingsTextAnnot:
          ii.set_visible(True)
+        
 
     def loadingsToggledOff(self):
          UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.hide() 
          loadingsAnnot.set_visible(False)
          for ii in loadingsTextAnnot:
             ii.set_visible(False)
-
-   
+            
+    def printForReport(self):
+        fig.savefig("outlierDetection1.png", dpi=500)
+        PCAGraph.loadingsToggledOn(self)
+        fig.savefig("outlierDetection2.png", dpi=500)
+        PCAGraph.loadingsToggledOff(self)
+        
