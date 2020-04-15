@@ -94,6 +94,7 @@ class RandomForest(FigureCanvas):
                 
                 train = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
                 train.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
+                RandomForest.train = train #For the report writing
                 
                 test = test.as_data_frame()
                 WithoutClassTest = np.array(test.ix[:, test.columns != 'GoodOrBad'])
@@ -108,13 +109,14 @@ class RandomForest(FigureCanvas):
                 
                 test = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
                 test.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
+                RandomForest.test = test
                 
                 model = H2ORandomForestEstimator(ntrees=50, max_depth=20, nfolds=round(minSamples/2), seed=1234)
                 # Train model
                 model.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train))
                 # Model performance
                 performance = model.model_performance(test_data=h2o.H2OFrame(test))
-                
+                RandomForest.performance = performance
                 #Run the random Forest on the original data:
                 rf = model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
                 results = rf.as_data_frame()
@@ -134,7 +136,7 @@ class RandomForest(FigureCanvas):
                     found = True
                     continue
             if not found:
-                table["GoodOrBad"].iloc[ii] = 1
+                table["GoodOrBad"].iloc[ii] = "Not Found"
         return table
 
     def createguideSet(self):
@@ -188,4 +190,7 @@ class RandomForest(FigureCanvas):
    
     def compute_initial_figure(self):
         pass
+    
+    def printForReport(self):
+        fig.savefig("RFPlot.png")
 

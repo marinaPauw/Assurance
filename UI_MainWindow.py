@@ -753,7 +753,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             
             Ui_MainWindow.CreateTrainingTab(self)
             self.setCurrentIndex(Ui_MainWindow.sIndex)
-            RandomForestPerformed = True
+            Ui_MainWindow.RandomForestPerformed = True
         
 
     def onhover(event):
@@ -961,7 +961,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             currentrow = math.floor(i/5)
             currentcolumn = i-currentrow*5
             badsamplesgrid.addWidget(label,currentrow,currentcolumn)
-
+        Ui_MainWindow.badlist = badlist
                         
         #Layout within Frame:
         rvbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
