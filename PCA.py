@@ -48,7 +48,7 @@ class PCA(object):
             if fff > maxDerivative:
                Elbow = element
                maxDerivative = max(maxDerivative,fff)
-        UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(12)
+        UI_MainWindow.Ui_MainWindow.progress1.setValue(12)
         plotPCA = sd.PCA(n_components=2)
         global plotdata
         plotdata = plotPCA.fit_transform(NormalisedData)
@@ -56,7 +56,7 @@ class PCA(object):
         loadingspca = sd.PCA().fit(NormalisedData)
         UI_MainWindow.Ui_MainWindow.loadings = loadingspca.components_
         data = UI_MainWindow.Ui_MainWindow.pca.fit_transform(NormalisedData)
-        UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.progress1.setValue(28)
+        UI_MainWindow.Ui_MainWindow.progress1.setValue(28)
         global finalDf
         finalDf = pd.DataFrame(data)
         global Distances
