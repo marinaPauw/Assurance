@@ -61,7 +61,7 @@ class PCAGraph(FigureCanvas):
         self.compute_initial_figure()
         annot = ax.annotate("", xy=(0,0),color='green')
         print(os.getcwd())
-        fig.savefig("outlierDetection.png")
+        fig.savefig("outlierDetection.png", dpi=500)
    
         
     def compute_initial_figure(self):
@@ -119,7 +119,7 @@ class PCAGraph(FigureCanvas):
         for ii in loadingsTextAnnot:
          ii.set_visible(True)
 
-    def loadingsToggledOff():
+    def loadingsToggledOff(self):
          UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.hide() 
          loadingsAnnot.set_visible(False)
          for ii in loadingsTextAnnot:

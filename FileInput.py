@@ -54,7 +54,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                            UI_MainWindow.Ui_MainWindow, BrowseWindow.currentDataset)
                        UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
                     str1 = " " 
-                    UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText(str1.join(inputFiles))
+                    UI_MainWindow.Ui_MainWindow.filename.setText(str1.join(inputFiles))
                     UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
             else:
                 possibleinputFile = possibleinputFiles[0]
@@ -69,7 +69,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                          BrowseWindow.datasetname,throw,throw,throw = inputFile.split('.')
                     else:
                          BrowseWindow.datasetname = inputFile
-                    UI_MainWindow.Ui_MainWindow.tab.UploadFrame.filename.setText("   " + inputFile + "  ")
+                    UI_MainWindow.Ui_MainWindow.filename.setText("   " + inputFile + "  ")
                     return inputFile
    
     def GetTrainingSetFiles(self):
@@ -280,7 +280,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     fileIndexInFiles = i+1
                 i=i+1
             
-            UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.UploadProgress.setValue(fileIndexInFiles/(len(inputFiles)+1)*100)
+            UI_MainWindow.Ui_MainWindow.UploadProgress.setValue(fileIndexInFiles/(len(inputFiles)+1)*100)
 
             for ii in metricsDf["mzQC"]["runQuality"]:
                # NumofTotalTransitions = []
@@ -505,7 +505,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                 AllMetricSizesDf[dfIndex]["Name"].loc[filename] = iii["name"]
                                 AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii['value']
         
-        UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.UploadProgress.setValue(100)
+        UI_MainWindow.Ui_MainWindow.UploadProgress.setValue(100)
         return AllMetricSizesDf
 
     def CombineTSVs(self, inputFiles):
