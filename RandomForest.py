@@ -37,6 +37,8 @@ class RandomForest(FigureCanvas):
 
         table = UI_MainWindow.Ui_MainWindow.TrainingSetTable
         area = UI_MainWindow.Ui_MainWindow.predictionArea
+        if area[1]>len(table.index)-1:
+            area[1] = len(table.index)-1
         badset = range(area[0], area[1])
         for i in badset:
                 UI_MainWindow.Ui_MainWindow.badpredictionList.append(table["Filename"].iloc[i])
