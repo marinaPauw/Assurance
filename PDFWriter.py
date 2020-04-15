@@ -16,15 +16,22 @@ class OutputWriter(object):
         pdf.add_page(orientation='P')
         pdf.set_font('helvetica', size=12)
         pdf.cell(200, 12, txt="Assurance results", ln=1, align="C")
-        #pdf.set_font('helvetica', size=10)
-        #reportDate = "Date Assurance analysis started: " + str(now)
-        #pdf.cell(200, 10, txt=reportDate, ln=1, align="C")
-        #pdf.cell(200, 10, txt="Files analysed: ", ln=1, align="C")
-        #if "Filename" in UI_MainWindow.Ui_MainWindow.NumericMetrics[0].columns:
-        #    for filename in UI_MainWindow.Ui_MainWindow.NumericMetrics[0]['Filename']:
-        #        pdf.cell(200, 10, txt=str(filename), ln=1, align="C")
-        #pdf.cell(200, 10, txt='Assurance version: Development', ln=1, align="C")
-              
+        pdf.set_font('helvetica', size=10)
+        reportDate = "Date Assurance analysis started: " + str(now)
+        pdf.cell(200, 10, txt=reportDate, ln=1, align="L")
+        pdf.cell(200, 10, txt="Files analysed: ", ln=1, align="L")
+        if "Filename" in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
+            counter = 0
+            for filename in UI_MainWindow.Ui_MainWindow.metrics[0]['Filename']:
+                if counter ==2:
+                    pdf.cell(50, 10, txt=str(filename), ln=1, align="C")
+                else:
+                    pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                counter= counter+1
+                if counter ==3:
+                    counter = 0
+        pdf.cell(200, 10, txt='Assurance version: Development', ln=1, align="L")
+        
         #---------------------------PCA-----------------------------
         if UI_MainWindow.Ui_MainWindow.outliersDetected:
             
@@ -36,7 +43,12 @@ class OutputWriter(object):
             pdf.image(image_path, w=200)
             pdf.ln(0.15)
             if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False:
-                pdfName = "AssuranceReport.pdf"
+                pdfName = "00AssuranceReport.pdf"
+                pdf.output(pdfName) 
+                
+        else:
+            if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False:
+                pdfName = "00AssuranceReport.pdf"
                 pdf.output(pdfName) 
         UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(33)
         
@@ -55,24 +67,7 @@ class OutputWriter(object):
             paths = glob.glob('*.pdf')
             paths.sort()
             OutputWriter.merger('AssuranceReport.pdf', paths)
-            
-            
-            
-            #for metric in UI_MainWindow.Ui_MainWindow.listOfMetrics:            
-            #    if first == False:
-            #      pdf.add_page(orientation="L")
-            #    if metric == "StartTimeStamp":
-            #        metric = "runDate"
-            #    picturename = str(metric)+".png"
-            #    image_path = os.path.join(os.getcwd(), picturename)
-            #    try:
-            #        pdf.image(image_path, w=300)
-                    
-            #    except:
-            #        QtWidgets.QMessageBox.warning(self, "Warning:", image_path + " could not be added to the report.")
-            #    first = False
-            #    progressCounter= progressCounter+(10/len(UI_MainWindow.Ui_MainWindow.listOfMetrics))
-            #    UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(55+progressCounter)
+           
         UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(100)
 
         
