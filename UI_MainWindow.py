@@ -652,16 +652,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.indMetrics.sampleBox.activated[str].connect(self.sample_change)
         Ui_MainWindow.progress2.setValue(80)
         vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.indMetrics)
-        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
-        hbox1.addStretch()
-        Ui_MainWindow.indMetrics.indPlotLabel = QtWidgets.QLabel(
-                        Ui_MainWindow.indMetrics)
-        Ui_MainWindow.indMetrics.indPlotLabel.setText(Ui_MainWindow.element)
-        Ui_MainWindow.indMetrics.indPlotLabel.setFont(
-                            Ui_MainWindow.boldfont)
-        hbox1.addWidget(Ui_MainWindow.indMetrics.indPlotLabel)
-        hbox1.addStretch()
-        vbox.addLayout(hbox1)
         hbox15 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
         hbox15.addStretch()
         hbox15.addWidget(Ui_MainWindow.indMetrics.sampleBox)
