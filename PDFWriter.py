@@ -14,12 +14,13 @@ class OutputWriter(object):
         pdf = FPDF()  
         #-----------------------Cover page-------------------------
         pdf.add_page(orientation='P')
-        pdf.set_font('helvetica', size=12)
+        pdf.set_font('helvetica', 'B',size=12)
         pdf.cell(200, 12, txt="Assurance results", ln=1, align="C")
         pdf.set_font('helvetica', size=10)
         reportDate = "Date Assurance analysis started: " + str(now)
         pdf.cell(200, 10, txt=reportDate, ln=1, align="L")
         pdf.cell(200, 10, txt="Files analysed: ", ln=1, align="L")
+        pdf.set_text_color(105,105,105)
         if "Filename" in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
             counter = 0
             for filename in UI_MainWindow.Ui_MainWindow.metrics[0]['Filename']:
@@ -30,32 +31,30 @@ class OutputWriter(object):
                 counter= counter+1
                 if counter ==3:
                     counter = 0
+        pdf.set_text_color(0, 0, 0)
         pdf.cell(200, 10, txt='Assurance version: Development', ln=1, align="L")
         
         #---------------------------PCA-----------------------------
         if UI_MainWindow.Ui_MainWindow.outliersDetected:
-            
+            pdf.add_page(orientation='P')
             #Heading:
             pdf.set_font('helvetica', size=10)
             pdf.cell(200, 10, txt="Outlier detection with PCA", ln=1, align="C")
                         
             image_path = os.path.join(os.getcwd(),"outlierDetection.png")
             pdf.image(image_path, w=200)
-            pdf.ln(0.15)
             if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False:
                 pdfName = "00AssuranceReport.pdf"
                 pdf.output(pdfName) 
                 
         else:
-            if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False:
+            if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
                 pdfName = "00AssuranceReport.pdf"
                 pdf.output(pdfName) 
+            elif UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == False:
+                pdfName = "AssuranceReport.pdf"
+                pdf.output(pdfName) 
         UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(33)
-        
-        #-----------Output---------------------------------
-        #We have to output before we get to individual metrics, so we can join the pdfs
-        
-        
         
             
         #---------------------------Individual metrics----------------
