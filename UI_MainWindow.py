@@ -96,6 +96,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         #Widget declaring:
         Ui_MainWindow.QuaMeterbutton = QtWidgets.QPushButton(leftFrame)
         Ui_MainWindow.QuaMeterbutton.setStyleSheet("background-color: rgb(240,240,240);")
+        Ui_MainWindow.QuaMeterbutton.setSizePolicy(QtWidgets.QSizePolicy.Preferred,QtWidgets.QSizePolicy.Expanding)
         Ui_MainWindow.BrowseButton = QtWidgets.QPushButton(leftFrame)
         Ui_MainWindow.files = QtWidgets.QLabel(leftFrame)
         Ui_MainWindow.fileList= QtWidgets.QLabel(leftFrame)
@@ -123,21 +124,40 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
         #QuaMeterGrid:
         #Layout:
-        QuaMeterGrid = QtWidgets.QGridLayout(leftFrame)
-        QuaMeterGrid.addWidget(Ui_MainWindow.QuaMeterbutton,0,0,1,4)
-        QuaMeterGrid.addWidget(Ui_MainWindow.BrowseButton,1,0)
-        QuaMeterGrid.addWidget(Ui_MainWindow.files,1,1)
-        QuaMeterGrid.addWidget(Ui_MainWindow.fileList,1,2)
-        QuaMeterGrid.addWidget(Ui_MainWindow.cpusLabel,2,0)
-        QuaMeterGrid.addWidget(Ui_MainWindow.cpusTextBox,2,1)
-        QuaMeterGrid.addWidget(Ui_MainWindow.CLOLabel,3,0)
-        QuaMeterGrid.addWidget(Ui_MainWindow.CLOTextBox,3,1)
-        QuaMeterGrid.addWidget(Ui_MainWindow.CUOLabel,3,2)
-        QuaMeterGrid.addWidget(Ui_MainWindow.CUOTextBox,3,3)
-        QuaMeterGrid.addWidget(Ui_MainWindow.RUNButton,4,0)
-        QuaMeterGrid.addWidget(textedit,4,1,1,2)
         
+        QuaMetervbox = QtWidgets.QVBoxLayout(leftFrame)
+        QuaMetervbox.addStretch(1)
+        hbox0 = QtWidgets.QHBoxLayout(leftFrame)
+        hbox0.addWidget(Ui_MainWindow.QuaMeterbutton, 5)
+        QuaMetervbox.addStretch(1)
+        Ui_MainWindow.QuaMeterbutton.setMinimumHeight(50)
+        QuaMetervbox.addLayout(hbox0)
+        hbox1 = QtWidgets.QHBoxLayout(leftFrame)
+        Qvbox2 = QtWidgets.QVBoxLayout(leftFrame)
+        QhboxFiles = QtWidgets.QHBoxLayout(leftFrame)
+        QhboxFiles.addWidget( Ui_MainWindow.BrowseButton)
+        QhboxFiles.addWidget(Ui_MainWindow.files)     
+        QhboxFiles.addWidget(Ui_MainWindow.fileList)
+        Qvbox2.addLayout(QhboxFiles)
+        hbox1.addLayout(Qvbox2)
+        hbox1.addStretch()
+        QuaMetervbox.addLayout(hbox1)
 
+        hbox2 = QtWidgets.QHBoxLayout(leftFrame)
+        hbox2.addWidget(Ui_MainWindow.cpusLabel)
+        hbox2.addWidget(Ui_MainWindow.cpusTextBox)
+        QuaMetervbox.addLayout(hbox2)
+        hbox3 = QtWidgets.QHBoxLayout()
+        hbox3.addWidget(Ui_MainWindow.CLOLabel)
+        hbox3.addWidget(Ui_MainWindow.CLOTextBox)
+        hbox3.addWidget(Ui_MainWindow.CUOLabel)
+        hbox3.addWidget(Ui_MainWindow.CUOTextBox)
+        QuaMetervbox.addLayout(hbox3)
+        hbox4 = QtWidgets.QHBoxLayout()
+        hbox4.addWidget(Ui_MainWindow.RUNButton)
+        hbox4.addWidget(textedit)
+        QuaMetervbox.addLayout(hbox4)
+        
         #-------------------------------------------------SwaMeLayout--------------------------------------------------------
 
         #Widget declaring:
@@ -283,7 +303,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.IndMetrics.setText("Individual Metrics")
         Ui_MainWindow.Longitudinal.setText("Longitudinal Analysis")
         Ui_MainWindow.browse.setText("Browse...")
-        Ui_MainWindow.QuaMeterbutton.setText("Generate quality metrics with QuaMeter ID-Free")
+        Ui_MainWindow.QuaMeterbutton.setText("DDA analysis (QuaMeter ID-Free)")
         Ui_MainWindow.SwaMebutton.setText("Generate quality metrics with SwaMe")
         Ui_MainWindow.filename.setText("   File...                  ")
         Ui_MainWindow.filename.setStyleSheet("background-color: white;")
@@ -372,11 +392,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         QtCore.QMetaObject.connectSlotsByName(self)
 
     def enable_slot(self):
-        PCAGraph.PCAGraph.loadingsToggledOn(Ui_MainWindow)
+        PCAGraph.PCAGraph.loadingsToggledOn(self)
         Ui_MainWindow.PCA.LoadingsProgressBar.setValue(100)
 
     def disable_slot(self):
-        PCAGraph.PCAGraph.loadingsToggledOff()
+        PCAGraph.PCAGraph.loadingsToggledOff(self)
 
     @pyqtSlot()
     def onQuaMeterClicked(self):
