@@ -32,13 +32,9 @@ class RFSelectionPlots(FigureCanvas):
             RFSelectionPlots.ax.set_facecolor("gainsboro")
             RFSelectionPlots.ax.grid(True)
             RFSelectionPlots.ax.set_ylabel("Number of peptides identified")
-            if trainingortest == "training":
-                colour1 = "maroon"
-                colour2 = "coral"
-            elif trainingortest =="test":
-                colour1 = "blue"
-                colour2 = "cyan"
-            RFSelectionPlots.fig.suptitle("Graph of input data - Please draw a rectangle over the samples you would like to select for the guide set:", fontsize=10)
+            colour1 = "maroon"
+            colour2 = "blue"
+            RFSelectionPlots.fig.suptitle("Please draw a rectangle over your selection for suboptimal quality data:", fontsize=10)
             
             p1 = RFSelectionPlots.ax.plot(table["Filename"], table["Number of Distinct peptides"], marker='o', color = colour1)
             p2 = RFSelectionPlots.ax.plot(table["Filename"], table["Number of spectra identified"], marker = 'o', color = colour2)
