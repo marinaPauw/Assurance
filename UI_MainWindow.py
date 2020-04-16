@@ -801,35 +801,20 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         except:
                 Ui_MainWindow.TrainingSetPlot  = None
         Ui_MainWindow.TrainingSetPlot = RFSelectionPlots.RFSelectionPlots( Ui_MainWindow.TrainingSetTable, "training") # element = column index used for the y-value
-        vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet)
-        hbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
-        hbox1.addStretch()
-        Ui_MainWindow.TrainingOrTestSet.PlotLabel = QtWidgets.QLabel(Ui_MainWindow.TrainingOrTestSet)
-        Ui_MainWindow.TrainingOrTestSet.PlotLabel.setText(
-                "Graph of input data - Please draw a rectangle over the samples you would like to select for the guide set:")
-        font = QtGui.QFont()
-        font.setPointSize(18)
-        hbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.PlotLabel)
-        hbox1.addStretch()
-        vbox.addLayout(hbox1)
-        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
-        hbox2.addStretch()
-        hbox2.addWidget(Ui_MainWindow.TrainingSetPlot)
-        hbox2.addStretch()
-        vbox.addLayout(hbox2)
-        hbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
-        hbox3.addStretch()
+        
+        #Button:
         Ui_MainWindow.TrainingOrTestSet.badbtn = QtWidgets.QPushButton(
                 'This is my selection for suboptimal quality.',
                 Ui_MainWindow.TrainingOrTestSet)
         Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
-        hbox3.addWidget(Ui_MainWindow.TrainingOrTestSet.badbtn)
-        hbox3.addStretch()
-        vbox.addLayout(hbox3)
-        hbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet)
-        vbox.addLayout(hbox4)
-        vbox.addStretch()
-
+        
+        
+        
+        RFSelectionGrid = QtWidgets.QGridLayout(Ui_MainWindow.TrainingOrTestSet)
+        RFSelectionGrid.addWidget(Ui_MainWindow.TrainingSetPlot,0,0,1,3)
+        RFSelectionGrid.addWidget(Ui_MainWindow.TrainingOrTestSet.badbtn,2,1,2,1)
+        
+        
             # Create full training set
         Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTrainingSamplesFromArea(self))
         
@@ -980,7 +965,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.TrainingOrTestSet.PlotFrame.setStyleSheet("background-color: rgb(245,245,245); margin:5px;")
 
 
-        # plot
+        # plot        
         RFPlot = RandomForest.RandomForest(results)
         FeaturePlot = FeatureImportancePlot.FeaturePlot(model)
         fgrid = QtWidgets.QGridLayout(Ui_MainWindow.TrainingOrTestSet.PlotFrame)
