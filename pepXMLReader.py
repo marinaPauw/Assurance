@@ -16,7 +16,7 @@ class pepXMLReader():
         for file in files:
             filenames.append(os.path.splitext(os.path.basename(file))[0])
         
-        pepTable = pd.DataFrame(index = filenames , columns = ["Filename","Number of Distinct peptides","Number of spectra identified"])
+        pepTable = pd.DataFrame(index = filenames , columns = ["Filename","Number of distinct peptides","Number of spectra identified"])
         for file in files:
             filename = os.path.splitext(os.path.basename(file))[0]
             with open(file) as thisFile:

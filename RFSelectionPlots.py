@@ -42,7 +42,7 @@ class RFSelectionPlots(FigureCanvas):
                 tick.set_rotation(90)
                 tick.set_size(8)
             throw, RFSelectionPlots.Ymax =  RFSelectionPlots.ax.get_ylim()
-            RFSelectionPlots.ax.legend((p1[0], p2[0]), ("Number of Distinct peptides", "Number of spectra identified"))
+            RFSelectionPlots.ax.legend((p1[0], p2[0]), ("Number of distinct peptides", "Number of spectra identified"))
             FigureCanvas.__init__(self, RFSelectionPlots.fig)
             RFSelectionPlots.toggle_selector.RS = RectangleSelector( RFSelectionPlots.ax,  RFSelectionPlots.line_select_callback, drawtype='box', useblit=True, button=[1, 3], minspanx=5, minspany=5,spancoords='pixels',
                                             interactive=True)
