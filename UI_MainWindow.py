@@ -511,6 +511,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         PCAGraph.fig.canvas.mpl_connect("motion_notify_event",
                                                         Ui_MainWindow.onhover)
                         self.setCurrentIndex(oIndex)
+                        Ui_MainWindow.pdf.setEnabled(True)
 
     def DisableBrowseButtons(self):
         Ui_MainWindow.browse.setEnabled(False)
@@ -599,6 +600,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.Outliers.setEnabled(False)
         Ui_MainWindow.IndMetrics.setEnabled(False)
         Ui_MainWindow.Longitudinal.setEnabled(False)
+        Ui_MainWindow.pdf.setEnabled(False)
 
     @pyqtSlot()
     def enable_reanalysis(self):
@@ -640,6 +642,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.sampleSelected = Ui_MainWindow.NumericMetrics[0].index[0]
         Ui_MainWindow.createGraph(self, whichds)
         Ui_MainWindow.progress2.setValue(100)
+        Ui_MainWindow.pdf.setEnabled(True)
 
     def createGraph(self, whichds):
         Ui_MainWindow.indMetrics.comboBox = QtWidgets.QComboBox(Ui_MainWindow.indMetrics)
@@ -754,6 +757,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.CreateTrainingTab(self)
             self.setCurrentIndex(Ui_MainWindow.sIndex)
             Ui_MainWindow.RandomForestPerformed = True
+            Ui_MainWindow.pdf.setEnabled(True)
         
 
     def onhover(event):
@@ -815,7 +819,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         RFSelectionGrid.addWidget(Ui_MainWindow.TrainingOrTestSet.badbtn,2,1,2,1)
         
         
-            # Create full training set
+        # Create full training set
         Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTrainingSamplesFromArea(self))
         
     def printModelResults(self, performance, results, model):
@@ -912,8 +916,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.AUCresults,1,13,1,1)
         pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINILabel,1,15,1,1)
         pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.GINIresults,1,16,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel,1,18,1,1)
-        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults,1,19,1,1)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCELabel,2,0,2,2)
+        pgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.MetricsFrame.MPCEresults,2,2,2,1)
         phbox2.addLayout(pgrid)
         phbox2.addStretch()
         pvbox.addLayout(phbox2)
@@ -940,19 +944,31 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         badsamplesgrid = QtWidgets.QGridLayout()
         badsamplesgrid.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame.predictedLabel,0,0)
         badlist = results[results['predict']=='B'].index
+        currentrow = 0
+        currentcolumn = 0
         for i in range(0,len(badlist)):
             label = QtWidgets.QLabel()
             label.setText(badlist[i])
-            currentrow = math.floor(i/5)
-            currentcolumn = i-currentrow*5
-            badsamplesgrid.addWidget(label,currentrow,currentcolumn)
+            if len(badlist[i])>20:
+                 badsamplesgrid.addWidget(label,currentrow,0)
+                 currentrow = currentrow+1
+                 currentcolumn = 0
+            else:
+                if currentcolumn>4:
+                    currentrow = currentrow +1
+                badsamplesgrid.addWidget(label,currentrow,currentcolumn)
+                currentcolumn = currentcolumn+1
+            
         Ui_MainWindow.badlist = badlist
                         
         #Layout within Frame:
         rvbox = QtWidgets.QVBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
         rhbox1 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
         rhbox1.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame.MainLabel)
-        rvbox.addLayout(rhbox1)        
+        rvbox.addLayout(rhbox1) 
+        rhbox15 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
+        rhbox15.addWidget(Ui_MainWindow.TrainingOrTestSet.ResultsFrame.predictedLabel)
+        rvbox.addLayout(rhbox15)       
         rhbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.TrainingOrTestSet.ResultsFrame)
         rhbox2.addLayout(badsamplesgrid)
         rvbox.addLayout(rhbox2)
