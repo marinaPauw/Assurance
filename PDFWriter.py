@@ -105,9 +105,29 @@ class OutputWriter(object):
             pdf.set_font('helvetica', size=10)
             pdf.cell(200, 10, txt="The training set consisted of the following samples:", ln=1, align="C")
             
+            #Find the names of training samples:
+            trainingSampleNames = []
+            for element in RandomForest.RandomForest.train["XIC-WideFrac"]:
+                for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["XIC-WideFrac"])):
+                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["XIC-WideFrac"][item]:
+                        match = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item]
+                        if match not in trainingSampleNames:
+                            trainingSampleNames.append(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item])
+                
+            
+            testSampleNames = []
+            for element in RandomForest.RandomForest.test["XIC-WideFrac"]:
+                for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["XIC-WideFrac"])):
+                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["XIC-WideFrac"][item]:
+                        match = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item]
+                        if match not in testSampleNames:
+                            testSampleNames.append(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item])
+                
+            
+            
             pdf.set_text_color(105,105,105)
             counter = 0
-            for filename in RandomForest.RandomForest.train.index:
+            for filename in trainingSampleNames:
                 if counter ==2:
                     pdf.cell(50, 10, txt=str(filename), ln=1, align="C")
                 else:
@@ -121,7 +141,7 @@ class OutputWriter(object):
             
             pdf.set_text_color(105,105,105)
             counter = 0
-            for filename in RandomForest.RandomForest.test.index:
+            for filename in testSampleNames:
                 if counter ==2:
                     pdf.cell(50, 10, txt=str(filename), ln=1, align="C")
                 else:
