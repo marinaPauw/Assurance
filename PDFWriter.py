@@ -75,12 +75,15 @@ class OutputWriter(object):
             image_path = os.path.join(os.getcwd(),"outlierDetection2.png")
             pdf.image(image_path, w=200)
             UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(20)
-            if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
-                pdfName = "00AssuranceReport.pdf"
-                pdf.output(pdfName) 
-            elif UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == False:
-                pdfName = "AssuranceReport.pdf"
-                pdf.output(pdfName) 
+            try:
+                if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
+                    pdfName = "00AssuranceReport.pdf"
+                    pdf.output(pdfName) 
+                elif UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == False:
+                    pdfName = "AssuranceReport.pdf"
+                    pdf.output(pdfName) 
+            except:
+                pdfName = dirName + ".pdf"
                     
         else:
             if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
@@ -210,12 +213,15 @@ class OutputWriter(object):
             image_path = os.path.join(os.getcwd(),"FIPlot.png")
             pdf.image(image_path, w=200)              
            
-            if UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
-                pdfName = "00AssuranceReport.pdf"
-                pdf.output(pdfName) 
-            elif UI_MainWindow.Ui_MainWindow.indMetricsGraphed == False:
-                pdfName = "AssuranceReport.pdf"
-                pdf.output(pdfName) 
+            try:
+                if UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
+                    pdfName = "00AssuranceReport.pdf"
+                    pdf.output(pdfName) 
+                elif UI_MainWindow.Ui_MainWindow.indMetricsGraphed == False:
+                    pdfName = "AssuranceReport.pdf"
+                    pdf.output(pdfName) 
+            except:
+                pdfName = dirName + ".pdf"
                   
 
         #---------------------------Individual metrics----------------
