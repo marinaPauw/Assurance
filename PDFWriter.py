@@ -136,7 +136,7 @@ class OutputWriter(object):
                 if counter ==3:
                     counter = 0
             pdf.set_text_color(0, 0, 0)
-            ln = 1
+            pdf.ln()
             pdf.cell(200, 10, txt="The test set consisted of the following samples:", ln=1, align="C")
             
             pdf.set_text_color(105,105,105)
@@ -150,7 +150,7 @@ class OutputWriter(object):
                 if counter ==3:
                     counter = 0
             pdf.set_text_color(0, 0, 0)
-            ln = 1
+            pdf.ln()
             pdf.set_font('helvetica','B', size=14)
             pdf.cell(200, 10, txt="Performance metrics:", ln=1, align="C")
             pdf.set_font('helvetica', size=10)
@@ -185,15 +185,23 @@ class OutputWriter(object):
             
             pdf.cell(200, 10, txt="The following samples were predicted by Random Forest to resemble the group labelled 'bad' quality:", ln=1, align="C")
             
-            counter = 0
             for filename in UI_MainWindow.Ui_MainWindow.badlist:
-                if counter ==2:
-                    pdf.cell(50, 10, txt=str(filename), ln=1, align="C")
+                          
+                if len(filename)>20:
+                    if currentcolumn >0:
+                        ln=1
+                    pdf.cell(200, 10, txt=str(filename), ln=1, align="C")
+                    currentcolumn =0
                 else:
-                    pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
-                counter= counter+1
-                if counter ==3:
-                    counter = 0
+                    if currentcolumn>4:
+                        ln = 1
+                        pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                        currentcolumn = 1
+                    else:
+                        pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                        currentcolumn = currentcolumn+1            
+                    
+            
                     
             #Print Graphs:
             FeatureImportancePlot.FeaturePlot.printForReport(self)
@@ -201,7 +209,7 @@ class OutputWriter(object):
             
             #Read in Graphs:
             image_path = os.path.join(os.getcwd(),"RFPlot.png")
-            pdf.image(image_path, w=200)
+            pdf.image(image_path, w = 200)
             image_path = os.path.join(os.getcwd(),"FIPlot.png")
             pdf.image(image_path, w=200)              
            
