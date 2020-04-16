@@ -25,15 +25,24 @@ class OutputWriter(object):
         pdf.cell(200, 10, txt="Files analysed: ", ln=1, align="L")
         pdf.set_text_color(105,105,105)
         if "Filename" in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
-            counter = 0
+            currentcolumn = 0  
             for filename in UI_MainWindow.Ui_MainWindow.metrics[0]['Filename']:
-                if counter ==2:
-                    pdf.cell(50, 10, txt=str(filename), ln=1, align="C")
+                          
+                if len(filename)>20:
+                    if currentcolumn >0:
+                        ln=1
+                    pdf.cell(200, 10, txt=str(filename), ln=1, align="C")
+                    currentcolumn =0
                 else:
-                    pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
-                counter= counter+1
-                if counter ==3:
-                    counter = 0
+                    if currentcolumn>4:
+                        ln = 1
+                        pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                        currentcolumn = 1
+                    else:
+                        pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                        currentcolumn = currentcolumn+1    
+            
+            
         pdf.set_text_color(0, 0, 0)
         pdf.cell(200, 10, txt='Assurance version: Development', ln=1, align="L")
         
@@ -91,8 +100,9 @@ class OutputWriter(object):
         if(UI_MainWindow.Ui_MainWindow.RandomForestPerformed):
             pdf.add_page(orientation='P')
             #Heading:
-            pdf.set_font('helvetica', size=10)
+            pdf.set_font('helvetica', size=16)
             pdf.cell(200, 10, txt="Supervised classification with Random Forest", ln=1, align="C")
+            pdf.set_font('helvetica', size=10)
             pdf.cell(200, 10, txt="The training set consisted of the following samples:", ln=1, align="C")
             
             pdf.set_text_color(105,105,105)
@@ -106,7 +116,7 @@ class OutputWriter(object):
                 if counter ==3:
                     counter = 0
             pdf.set_text_color(0, 0, 0)
-            
+            ln = 1
             pdf.cell(200, 10, txt="The test set consisted of the following samples:", ln=1, align="C")
             
             pdf.set_text_color(105,105,105)
@@ -120,7 +130,7 @@ class OutputWriter(object):
                 if counter ==3:
                     counter = 0
             pdf.set_text_color(0, 0, 0)
-            
+            ln = 1
             pdf.set_font('helvetica','B', size=14)
             pdf.cell(200, 10, txt="Performance metrics:", ln=1, align="C")
             pdf.set_font('helvetica', size=10)
