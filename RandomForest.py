@@ -178,7 +178,7 @@ class RandomForest(FigureCanvas):
                 ax.plot(0+ badset["X"].iloc[i], badset["B"].iloc[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
             else:
                 ax.plot(0+ badset["X"].iloc[i], badset["B"].iloc[i],  marker='o', markerfacecolor='red', markeredgecolor='r')
-        ax.set_ylabel("Proportion of votes")
+        ax.set_ylabel("Proportion of trees that voted each sample as 'bad'")
         FigureCanvas.__init__(self, fig)
         #self.setParent(parent)
 
@@ -186,7 +186,9 @@ class RandomForest(FigureCanvas):
                                    QtWidgets.QSizePolicy.Expanding,
                                    QtWidgets.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
+        ax.set_title("Red samples were classified as 'bad' by the model", fontsize=9)
         fig.suptitle("Proportion of trees that voted each sample into the same category as the 'bad' training data", fontsize=10)
+        
         self.compute_initial_figure()
         annot = ax.annotate("", xy=(0,0.5),color='green') 
    
