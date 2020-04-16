@@ -36,7 +36,7 @@ class FeaturePlot(FigureCanvas):
         pass
     
     def printForReport(self):
-        fig.savefig("FIPlot.png")
+        fig.savefig("FIPlot.png", dpi = 500)
     
          
 
