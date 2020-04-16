@@ -13,7 +13,12 @@ import RandomForest
 import FeatureImportancePlot
 
 class OutputWriter(object):
-    def producePDF(self, now, ):
+    def producePDF(self, now ):
+        dirName = str(now) +"_AssuranceReport"
+        dirName = dirName.replace(" ", "_")
+        dirName = dirName.replace(":", "-")
+        OutputWriter.createDir(self,dirName)
+        OutputWriter.changeDir(self,dirName)
         pdf = FPDF()  
         #-----------------------Cover page-------------------------
         pdf.add_page(orientation='P')
@@ -85,15 +90,7 @@ class OutputWriter(object):
         UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(33)
         
             
-        #---------------------------Individual metrics----------------
-            
-        if(UI_MainWindow.Ui_MainWindow.indMetricsGraphed):
-            OutputWriter.saveGraphPDFs(self)
-            UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(55)
-            #import all the pdfs:
-            paths = glob.glob('*.pdf')
-            paths.sort()
-            OutputWriter.merger('AssuranceReport.pdf', paths)
+        
             
         #---------------------------Random Forest----------------------
             
@@ -219,7 +216,19 @@ class OutputWriter(object):
             elif UI_MainWindow.Ui_MainWindow.indMetricsGraphed == False:
                 pdfName = "AssuranceReport.pdf"
                 pdf.output(pdfName) 
-           
+                  
+
+        #---------------------------Individual metrics----------------
+                            
+        if(UI_MainWindow.Ui_MainWindow.indMetricsGraphed):
+            OutputWriter.saveGraphPDFs(self)
+            UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(55)
+            #import all the pdfs:
+            paths = glob.glob('*.pdf')
+            paths.sort()
+            OutputWriter.merger('AssuranceReport.pdf', paths)
+            
+    
         UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(100)
 
         
@@ -250,3 +259,19 @@ class OutputWriter(object):
             del graph
             progressCounter2= progressCounter2+(10/len(UI_MainWindow.Ui_MainWindow.listOfMetrics))
             UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(33+progressCounter2)
+            
+    def createDir(self, dirName):
+        
+        try:
+            # Create target Directory
+            os.mkdir(dirName)
+        except:
+                print("Directory creation " , dirName ,  " failed") 
+                
+    def changeDir(self, dirName):
+        try:
+            # Change to target Directory
+            os.chdir(dirName)
+        except:
+            print("Directory couldn't be changed to " , dirName) 
+    
