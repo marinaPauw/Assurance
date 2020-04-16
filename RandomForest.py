@@ -34,7 +34,6 @@ class RandomForest(FigureCanvas):
 
     def computeTrainingSamplesFromArea(self):
         #The format is x1, y1, x2, y2: left, bottom, right, top
-
         table = UI_MainWindow.Ui_MainWindow.TrainingSetTable
         area = UI_MainWindow.Ui_MainWindow.predictionArea
         if area[1]>len(table.index)-1:
@@ -50,81 +49,82 @@ class RandomForest(FigureCanvas):
         # Load in the quality data for training set:
         FileInput.BrowseWindow.__init__(UI_MainWindow.Ui_MainWindow)
         FileInput.BrowseWindow.GetTrainingQualityFiles(UI_MainWindow.Ui_MainWindow, "training")
-        if(UI_MainWindow.Ui_MainWindow.badPredicted):
-                # Test that Filenames in the quality side and the pepXML's are the same:
-                for filename in  UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index:
-                            if filename not in table["Filename"]:
-                                QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" , "A sample has been identified for which the raw file name was not found in the pepXML's: "+filename )
-    
-                
-                
-                RandomForest.createguideSet(RandomForest)
-                
-                WithoutClass = np.array(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns != 'GoodOrBad'])
-                Classy = np.array(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns == 'GoodOrBad'])
-                minSamples = min(len(Classy[Classy=="G"]), len(Classy[Classy=="B"]))
-                #try:
-                
-                oversample = imblearn.over_sampling.SMOTE(k_neighbors=minSamples-1)
-                try:
-                    X, Y = oversample.fit_resample(WithoutClass, Classy.ravel())
-                except ValueError:
-                    QtWidgets.QMessageBox.warning("ValueError", "Perhaps the number of samples of one of the classes was not enough?")
-                
-                dataToBeSplit = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
-                # Input parameters that are going to train
-                dataToBeSplit.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
-                
-                training_columns = list(dataToBeSplit.columns[dataToBeSplit.columns != 'GoodOrBad'])
-                # Output parameter train against input parameters
-                response_column = 'GoodOrBad'
-                # Split data into train and testing
-                h2o.init()
-                dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
-                train, test = dataToBeSplit.split_frame(ratios=[0.6])
-                
-                train = train.as_data_frame()
-                WithoutClassTrain = np.array(train.ix[:, train.columns != 'GoodOrBad'])
-                ClassyTrain = np.array(train['GoodOrBad'])
-                minTrainSamples = min(len(ClassyTrain[ClassyTrain=="G"]), len(ClassyTrain[ClassyTrain=="B"]))
-                
-                oversample = imblearn.over_sampling.SMOTE(k_neighbors=minTrainSamples-1)
-                #try:
-                X, Y = oversample.fit_resample(WithoutClassTrain, ClassyTrain)
-                #except ValueError:
-                #    QtWidgets.QMessageBox.warning("ValueError", "Perhaps the number of samples of one of the classes was not enough?")
-                
-                train = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
-                train.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
-                RandomForest.train = train #For the report writing
-                
-                test = test.as_data_frame()
-                WithoutClassTest = np.array(test.ix[:, test.columns != 'GoodOrBad'])
-                ClassyTest = np.array(test['GoodOrBad'])
-                minTestSamples = min(len(ClassyTest[ClassyTest=="G"]), len(ClassyTest[ClassyTest=="B"]))
-                
-                oversample = imblearn.over_sampling.SMOTE(k_neighbors=minTestSamples-1)
-                try:
-                    X, Y = oversample.fit_resample(WithoutClassTest, ClassyTest)
-                except ValueError:
-                    QtWidgets.QMessageBox.warning(self,"ValueError", "Perhaps the number of samples of one of the classes was not enough?")
-                
-                test = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
-                test.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
-                RandomForest.test = test
-                
-                model = H2ORandomForestEstimator(ntrees=100, max_depth=20, nfolds=0, seed=1234)
-                # Train model
-                model.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train))
-                # Model performance
-                performance = model.model_performance(test_data=h2o.H2OFrame(test))
-                RandomForest.performance = performance
-                #Run the random Forest on the original data:
-                rf = model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
-                results = rf.as_data_frame()
-                results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
-                UI_MainWindow.Ui_MainWindow.printModelResults(self, performance, results, model)
-                
+        if hasattr(UI_MainWindow.Ui_MainWindow, "Numerictrainingmetrics"):
+            if(UI_MainWindow.Ui_MainWindow.badPredicted):
+                    # Test that Filenames in the quality side and the pepXML's are the same:
+                    for filename in  UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index:
+                                if filename not in table["Filename"]:
+                                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" , "A sample has been identified for which the raw file name was not found in the pepXML's: "+filename )
+        
+                    
+                    
+                    RandomForest.createguideSet(RandomForest)
+                    
+                    WithoutClass = np.array(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns != 'GoodOrBad'])
+                    Classy = np.array(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns == 'GoodOrBad'])
+                    minSamples = min(len(Classy[Classy=="G"]), len(Classy[Classy=="B"]))
+                    #try:
+                    
+                    oversample = imblearn.over_sampling.SMOTE(k_neighbors=minSamples-1)
+                    try:
+                        X, Y = oversample.fit_resample(WithoutClass, Classy.ravel())
+                    except ValueError:
+                        QtWidgets.QMessageBox.warning("ValueError", "Perhaps the number of samples of one of the classes was not enough?")
+                    
+                    dataToBeSplit = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
+                    # Input parameters that are going to train
+                    dataToBeSplit.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
+                    
+                    training_columns = list(dataToBeSplit.columns[dataToBeSplit.columns != 'GoodOrBad'])
+                    # Output parameter train against input parameters
+                    response_column = 'GoodOrBad'
+                    # Split data into train and testing
+                    h2o.init()
+                    dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
+                    train, test = dataToBeSplit.split_frame(ratios=[0.6])
+                    
+                    train = train.as_data_frame()
+                    WithoutClassTrain = np.array(train.ix[:, train.columns != 'GoodOrBad'])
+                    ClassyTrain = np.array(train['GoodOrBad'])
+                    minTrainSamples = min(len(ClassyTrain[ClassyTrain=="G"]), len(ClassyTrain[ClassyTrain=="B"]))
+                    
+                    oversample = imblearn.over_sampling.SMOTE(k_neighbors=minTrainSamples-1)
+                    #try:
+                    X, Y = oversample.fit_resample(WithoutClassTrain, ClassyTrain)
+                    #except ValueError:
+                    #    QtWidgets.QMessageBox.warning("ValueError", "Perhaps the number of samples of one of the classes was not enough?")
+                    
+                    train = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
+                    train.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
+                    RandomForest.train = train #For the report writing
+                    
+                    test = test.as_data_frame()
+                    WithoutClassTest = np.array(test.ix[:, test.columns != 'GoodOrBad'])
+                    ClassyTest = np.array(test['GoodOrBad'])
+                    minTestSamples = min(len(ClassyTest[ClassyTest=="G"]), len(ClassyTest[ClassyTest=="B"]))
+                    
+                    oversample = imblearn.over_sampling.SMOTE(k_neighbors=minTestSamples-1)
+                    try:
+                        X, Y = oversample.fit_resample(WithoutClassTest, ClassyTest)
+                    except ValueError:
+                        QtWidgets.QMessageBox.warning(self,"ValueError", "Perhaps the number of samples of one of the classes was not enough?")
+                    
+                    test = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
+                    test.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
+                    RandomForest.test = test
+                    
+                    model = H2ORandomForestEstimator(ntrees=100, max_depth=20, nfolds=0, seed=1234)
+                    # Train model
+                    model.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train))
+                    # Model performance
+                    performance = model.model_performance(test_data=h2o.H2OFrame(test))
+                    RandomForest.performance = performance
+                    #Run the random Forest on the original data:
+                    rf = model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
+                    results = rf.as_data_frame()
+                    results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
+                    UI_MainWindow.Ui_MainWindow.printModelResults(self, performance, results, model)
+                    
     def AllocateGoodOrBad(self, table):              
 
         #Now we have to create a column and add to it whether the sample was in the desired or suboptimal group. 
