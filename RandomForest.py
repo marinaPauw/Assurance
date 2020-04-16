@@ -196,5 +196,5 @@ class RandomForest(FigureCanvas):
         pass
     
     def printForReport(self):
-        fig.savefig("RFPlot.png")
+        fig.savefig("RFPlot.png", dpi = 500)
 
