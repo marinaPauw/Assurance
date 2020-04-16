@@ -228,7 +228,7 @@ class OutputWriter(object):
             paths.sort()
             OutputWriter.merger('AssuranceReport.pdf', paths)
             
-    
+        OutputWriter.deleteExtraFiles(self, dirName)
         UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(100)
 
         
@@ -274,4 +274,15 @@ class OutputWriter(object):
             os.chdir(dirName)
         except:
             print("Directory couldn't be changed to " , dirName) 
+            
+    def deleteExtraFiles(self,dirName):
+        if dirName in os.getcwd():
+            pdfs = glob.glob("*.pdf")
+            for f in pdfs:
+                if f != "AssuranceReport.pdf":
+                    os.remove(f)
+                    
+            pngs = glob.glob("*.png")
+            for f in pngs:
+                os.remove(f)
     
