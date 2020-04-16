@@ -113,7 +113,7 @@ class RandomForest(FigureCanvas):
                 test.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
                 RandomForest.test = test
                 
-                model = H2ORandomForestEstimator(ntrees=100, max_depth=20, nfolds=round(minSamples/2), seed=1234)
+                model = H2ORandomForestEstimator(ntrees=100, max_depth=20, nfolds=0, seed=1234)
                 # Train model
                 model.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train))
                 # Model performance
