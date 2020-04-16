@@ -42,6 +42,8 @@ class PCAGraph(FigureCanvas):
         for element in UI_MainWindow.Ui_MainWindow.outlierlist:
             outlierIndex = np.where([FileInput.BrowseWindow.currentDataset.index==element])
             ax.plot(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1], linestyle="none",linewidth=0, marker='o', markerfacecolor='r', markeredgecolor='k')
+            #if forReport:
+            #    ax.annotate(element, xy=(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1]),color='green')
         ax.set_xlabel("PC1")
         ax.set_ylabel("PC2")
         FigureCanvas.__init__(self, fig)
@@ -60,7 +62,6 @@ class PCAGraph(FigureCanvas):
         
         self.compute_initial_figure()
         annot = ax.annotate("", xy=(0,0),color='green')
-   
         
     def compute_initial_figure(self):
         pass
@@ -125,6 +126,10 @@ class PCAGraph(FigureCanvas):
             ii.set_visible(False)
             
     def printForReport(self):
+        for element in UI_MainWindow.Ui_MainWindow.outlierlist:
+            outlierIndex = np.where([FileInput.BrowseWindow.currentDataset.index==element])
+            ax.annotate(element, xy=(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1]),color='green')
+       
         fig.savefig("outlierDetection1.png", dpi=500)
         PCAGraph.loadingsToggledOn(self)
         fig.savefig("outlierDetection2.png", dpi=500)
