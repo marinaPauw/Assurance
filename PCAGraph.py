@@ -17,6 +17,7 @@ import numpy as np
 import UI_MainWindow
 import PCA
 import FileInput
+import OutlierTab
 import re
 import os
 
@@ -68,8 +69,8 @@ class PCAGraph(FigureCanvas):
 
     def loadingsToggledOn(self):
         dataset = FileInput.BrowseWindow.currentDataset
-        UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.show()
-        UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.setValue(10)
+        OutlierTab.OutlierTab.LoadingsProgressBar.show()
+        OutlierTab.OutlierTab.LoadingsProgressBar.setValue(10)
         minx = min(a for (a,c) in PCA.plotdata)
         miny = min(c for (a,c) in PCA.plotdata)
         maxx = max(a for (a,c) in PCA.plotdata)
@@ -93,10 +94,10 @@ class PCAGraph(FigureCanvas):
         loadingsAnnot.set_visible(True)
         # Add labels based on feature names (here just numbers)
         global loadingsTextAnnot
-        UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.setValue(30)
+        OutlierTab.OutlierTab.LoadingsProgressBar.setValue(30)
         loadingsTextAnnot = list()
-        for i in range(UI_MainWindow.Ui_MainWindow.loadings.shape[0]):
-         xvalue = (middlex+UI_MainWindow.Ui_MainWindow.loadings[0,i]*20)
+        for i in range(PCA.loadings.shape[0]):
+         xvalue = (middlex+PCA.loadings[0,i]*20)
          #If the loadings fall outside the plot, bring it to the max/min
 
          if(xvalue <min(a for (a,c) in PCA.plotdata)):
@@ -104,7 +105,7 @@ class PCAGraph(FigureCanvas):
          elif(xvalue > max(a for (a,c) in PCA.plotdata)):
              xvalue = max(a for (a,c) in PCA.plotdata)
          
-         yvalue = (middley + UI_MainWindow.Ui_MainWindow.loadings[1,i]*20)
+         yvalue = (middley + PCA.loadings[1,i]*20)
          #If the loadings fall outside the plot, bring it to the max/min
          
          if ( yvalue>max(c for (a,c) in PCA.plotdata)):
@@ -113,14 +114,14 @@ class PCAGraph(FigureCanvas):
              yvalue = min(c for (a,c) in PCA.plotdata)
          
              
-         UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.setValue(60)
+         OutlierTab.OutlierTab.LoadingsProgressBar.setValue(60)
          loadingsTextAnnot.append(ax.text(xvalue,yvalue , dataset.columns[i], color = 'b', ha = 'center', va = 'center'))
         for ii in loadingsTextAnnot:
          ii.set_visible(True)
         
 
     def loadingsToggledOff(self):
-         UI_MainWindow.Ui_MainWindow.PCA.LoadingsProgressBar.hide() 
+         OutlierTab.OutlierTab.LoadingsProgressBar.hide() 
          loadingsAnnot.set_visible(False)
          for ii in loadingsTextAnnot:
             ii.set_visible(False)

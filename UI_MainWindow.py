@@ -30,10 +30,10 @@ import SwaMe
 import pepXMLReader
 import RFSelectionPlots
 import FeatureImportancePlot
-from scipy.spatial import distance_matrix
 import PDFWriter
 import tempfile
 import datetime
+import OutlierTab
 
 
 class Ui_MainWindow(QtWidgets.QTabWidget):
@@ -388,7 +388,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         vbox.addLayout(hbox2)
         
         vbox.setAlignment(QtCore.Qt.AlignLeft)
-        self.retranslateUi()
         Ui_MainWindow.browse.setEnabled(True)
 
         QtCore.QMetaObject.connectSlotsByName(self)
@@ -405,7 +404,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def enable_slot(self):
         PCAGraph.PCAGraph.loadingsToggledOn(self)
-        Ui_MainWindow.PCA.LoadingsProgressBar.setValue(100)
+        OutlierTab.OutlierTab.LoadingsProgressBar.setValue(100)
 
     def disable_slot(self):
         PCAGraph.PCAGraph.loadingsToggledOff(self)
@@ -459,91 +458,14 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                     if len(FileInput.BrowseWindow.currentDataset.columns)>1:
 
                         #sampleToVariableRatio = PCA.PCA.calculateSampleToVariableRatio(self, FileInput.BrowseWindow.currentDataset)
-        
-       
                         PCA.PCA.CreatePCAGraph(FileInput.BrowseWindow.currentDataset)
                         Ui_MainWindow.progress1.setValue(51)
                         # Need to correctly calculate euc distance in N dimension
-                        outliers = Ui_MainWindow.CalculateOutliers(self)
+                        outliers = PCA.PCA.CalculateOutliers(self)
                         Ui_MainWindow.outlierlist = outliers["Filename"]
-
-                        # --------------------------------------Widgets-------------------------------------------
-                        Ui_MainWindow.PCA = QtWidgets.QTabWidget()
-                        Ui_MainWindow.PCA.plotlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-                        #Ui_MainWindow.PCA.plotlabel.setGeometry(10, 500, 1000, 300)
-                        Ui_MainWindow.PCA.PCAplot = PCAGraph.PCAGraph(now)
-                        
-
-                        Ui_MainWindow.outlierlistLabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-                        Ui_MainWindow.OutlierSamples = QtWidgets.QLabel(Ui_MainWindow.PCA)
-                        Ui_MainWindow.OutlierSamples.setAlignment(QtCore.Qt.AlignLeft)
-
-                        oIndex = self.addTab(Ui_MainWindow.PCA, "Outlier detection results")
-                        Ui_MainWindow.PCA.layout = QtWidgets.QVBoxLayout()
-                        Ui_MainWindow.PCA.Checkboxlabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-                        Ui_MainWindow.PCA.Checkboxlabel.setText("Toggle loadings on/off:")
-                        Ui_MainWindow.PCA.Checkbox = QtWidgets.QCheckBox("Loadings",
-                                                                         Ui_MainWindow.PCA)
-                        Ui_MainWindow.PCA.Checkbox.setChecked(False)
-                        Ui_MainWindow.PCA.Checkbox.stateChanged.connect(
-                            lambda x: Ui_MainWindow.enable_slot(self)
-                            if x else Ui_MainWindow.disable_slot(self))
-                        Ui_MainWindow.PCA.LoadingsProgressBar = QtWidgets.QProgressBar()
-                        Ui_MainWindow.PCA.LoadingsProgressBar.setGeometry(200, 80, 50, 20)
+                        OutlierTab.OutlierTab.createTabWidget(self,now)
 
                         
-                        Ui_MainWindow.PCA.Redolabel = QtWidgets.QLabel(Ui_MainWindow.PCA)
-                        Ui_MainWindow.PCA.Redolabel.setText("Redo analysis without the outliers:")
-                        Ui_MainWindow.PCA.Redobox = QtWidgets.QCheckBox("Redo",
-                                                                         Ui_MainWindow.PCA)
-                        Ui_MainWindow.PCA.Redobox.setChecked(False)
-                        Ui_MainWindow.PCA.Redobox.stateChanged.connect(
-                            lambda x: Ui_MainWindow.enable_reanalysis(self))
-
-                    # --------------------------------------Layout-------------------------------------------
-
-                        vbox2 = QtWidgets.QVBoxLayout(Ui_MainWindow.PCA)
-                        hbox = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
-                        vbox3 = QtWidgets.QVBoxLayout(Ui_MainWindow.PCA)
-                        vbox3.addStretch()
-                        vbox3.addWidget(Ui_MainWindow.outlierlistLabel)
-                        vbox3.addWidget(Ui_MainWindow.OutlierSamples)
-                        vbox3.addWidget(Ui_MainWindow.PCA.Checkboxlabel)
-                        vbox3.addWidget(Ui_MainWindow.PCA.Checkbox)
-                        vbox3.addWidget(Ui_MainWindow.PCA.LoadingsProgressBar)
-                        vbox3.addWidget(Ui_MainWindow.PCA.Redolabel)
-                        vbox3.addWidget(Ui_MainWindow.PCA.Redobox)
-                        vbox3.addStretch()
-                        vbox3.setAlignment(QtCore.Qt.AlignLeft)
-
-                        hbox.addLayout(vbox3)
-                        vbox4 = QtWidgets.QVBoxLayout(Ui_MainWindow.PCA)
-                        Ui_MainWindow.PCA.Emptyspace = QtWidgets.QLabel(Ui_MainWindow.PCA)
-                        Ui_MainWindow.PCA.Emptyspace.setText(" ")
-                        vbox4.addWidget(Ui_MainWindow.PCA.Emptyspace)
-                        hbox.addLayout(vbox4)
-                        hboxPlot = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
-                        hboxPlot.addStretch()
-
-                        hboxPlot.addWidget(Ui_MainWindow.PCA.plotlabel)
-                        hboxPlot.addStretch()
-                        vbox2.addLayout(hboxPlot)
-                        vbox2.setAlignment(QtCore.Qt.AlignCenter)
-                        hbox.setAlignment(QtCore.Qt.AlignCenter)
-                        vbox2.addLayout(hbox)
-                        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.PCA)
-
-                        hbox.addWidget(Ui_MainWindow.PCA.PCAplot)
-                        
-                        hbox2.setAlignment(QtCore.Qt.AlignCenter)
-                        vbox2.addLayout(hbox2)
-                        Ui_MainWindow.retranslateUi2(Ui_MainWindow.PCA)
-                        Ui_MainWindow.EnableAnalysisButtons(self)
-                        Ui_MainWindow.progress1.setValue(100)
-                        PCAGraph.fig.canvas.mpl_connect("motion_notify_event",
-                                                        Ui_MainWindow.onhover)
-                        self.setCurrentIndex(oIndex)
-                        Ui_MainWindow.pdf.setEnabled(True)
 
     def DisableBrowseButtons(self):
         Ui_MainWindow.browse.setEnabled(False)
@@ -790,41 +712,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.pdf.setEnabled(True)
         
 
-    def onhover(event):
-        vis = PCAGraph.annot.get_visible()
-        if event.inaxes == PCAGraph.ax:
-            cont, ind = PCAGraph.fig.contains(event)
-            if cont:
-                Ui_MainWindow.update_annot(event)
-                PCAGraph.annot.set_visible(True)
-                PCAGraph.fig.canvas.draw_idle()
-                return
-        if vis:
-            PCAGraph.annot.set_visible(False)
-            PCAGraph.fig.canvas.draw_idle()
+   
 
-    def update_annot(event):
-        pos = {event.xdata, event.ydata}
-        closestx = np.unravel_index((np.abs(PCA.plotdata - event.xdata))
-                                    .argmin(), PCA.plotdata.shape)
-        PCAGraph.annot.xyann = (PCA.plotdata[closestx[0], 0],
-                                PCA.plotdata[closestx[0], 1])
-        samplenames = DataPreparation.DataPrep.FindRealSampleNames(
-            Ui_MainWindow, FileInput.BrowseWindow.currentDataset.index)
-        if(len(samplenames) != len(set(samplenames))):
-            # if there are duplicates in the Ui_MainWindow.filenames column like RTsegments
-            # or per swath metrics
-            sampleNameColumn1Combination = samplenames[closestx[0]] + "-" \
-                + str(FileInput.BrowseWindow.currentDataset.iloc[closestx[0], 1])
-            text = sampleNameColumn1Combination.format(PCA.plotdata[
-                                                       closestx[0], 0],
-                                                       PCA.plotdata[
-                                                       closestx[0], 1])
-        else:
-            text = samplenames[closestx[0]].format(
-                PCA.plotdata[closestx[0], 0],
-                PCA.plotdata[closestx[0], 1])
-        PCAGraph.annot.set_text(text)
+   
 
     def CreateTrainingTab(self):
         # Create the tab which will contain the graph:
@@ -1065,84 +955,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         RandomForest.annot.xyann = (closestx , closesty)
         RandomForest.annot.set_text(closestxIndex)
         
-    def CalculateOutliers(self):
-        sampleSize = range(len(FileInput.BrowseWindow.currentDataset.index))
-        PCA.Distances = self.calculateDistanceMatrix(PCA.finalDf)
-        Ui_MainWindow.progress1.setValue(60)
-        #self.metrics.index = self.metrics.iloc[:,0]
-        medianDistances = Ui_MainWindow.createMedianDistances(self, sampleSize)
-        outlierDistance = Ui_MainWindow.calculateOutLierDistances(self, medianDistances)
-        Ui_MainWindow.progress1.setValue(65)
-
-        for iterator in sampleSize:
-            medianDistances["MedianDistance"][iterator] = np.percentile(PCA.Distances[iterator], 50)
-        print(medianDistances)      
-        Q1 = np.percentile(medianDistances["MedianDistance"], 25)
-        Q3 =np.percentile(medianDistances["MedianDistance"], 75)
-        IQR = Q3-Q1
-        outlierDistance = Q3 + 1.5*IQR
-        Ui_MainWindow.progress1.setValue(65)
-       #Zscores:
-        from scipy.stats import zscore
-        medianDistances["zScore"] = zscore(medianDistances["MedianDistance"])
-        medianDistances["outlier"]= medianDistances["zScore"].apply(
-        lambda x: x <= -3.5 or x >= 3.5
-        )
-        print("The following runs were identified as candidates for possible outliers based on their z-scores:")
-        Q3 = np.percentile(medianDistances["MedianDistance"], 75)  # Q3
-
-        Ui_MainWindow.progress1.setValue(75)
-        Outliers = medianDistances[medianDistances["outlier"]]
-        return Outliers
-
-    def createMedianDistances(self, sampleSize):
-        medianDistances = pd.DataFrame()
-        if FileInput.BrowseWindow.currentDataset.index[0] != 1:
-            medianDistances["Filename"] = FileInput.BrowseWindow.currentDataset.index
-        else:
-            medianDistances["Filename"] = FileInput.BrowseWindow.currentDataset["Filename"]
-        medianDistances["MedianDistance"] = 'default value'
-        for iterator in sampleSize:
-            medianDistances["MedianDistance"][iterator] = np.percentile(
-                PCA.Distances[iterator], 50)
-        return medianDistances
-
-    def calculateOutLierDistances(self, medianDistances):
-        Q1 = np.percentile(medianDistances["MedianDistance"], 25)
-        Q3 = np.percentile(medianDistances["MedianDistance"], 75)
-        IQR = Q3 - Q1
-        outlierDistance = Q3 + 1.5*IQR
-        return outlierDistance
-
-
-    def calculateDistanceMatrix(self, df):
-        PCA.Distances = pd.DataFrame(distance_matrix(
-            df.values, df.values, p=2),
-            index=df.index, columns=df.index)
-        return PCA.Distances
-
+   
          
     def onPDFClicked(self):
         PDFWriter.OutputWriter.producePDF(self,now)
 
-    def retranslateUi2(self):
-        _translate = QtCore.QCoreApplication.translate
-        array = range(1, len(Ui_MainWindow.outlierlist), 1)
-        Ui_MainWindow.outlierlistLabel.setText(
-            "Suggested outlier candidates: ")
-        Ui_MainWindow.PCA.plotlabel.setText(
-            "Principal components analysis of quality metrics for outlier detection:")
-        font = QtGui.QFont()
-        font.setPointSize(18)
-        if(len(Ui_MainWindow.outlierlist) > 0):
-            outlierstring = Ui_MainWindow.outlierlist.array[0]
-            for element in array:
-                outlierstring = str(outlierstring) + "\n" + str(Ui_MainWindow.outlierlist.array[element])
-        else:
-            outlierstring = "No outliers found."
-        Ui_MainWindow.OutlierSamples.setText(outlierstring)
 
-    def retranslateUi(self):
-        _translate = QtCore.QCoreApplication.translate
-
+    
         
