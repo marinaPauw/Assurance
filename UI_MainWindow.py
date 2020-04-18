@@ -34,6 +34,7 @@ import PDFWriter
 import tempfile
 import datetime
 import OutlierTab
+import indMetricsTab
 
 
 class Ui_MainWindow(QtWidgets.QTabWidget):
@@ -572,9 +573,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.progress2.setValue(10)
         Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
         Ui_MainWindow.progress2.setValue(33)
-        Ui_MainWindow.iIndex = self.addTab(Ui_MainWindow.indMetrics,
-                                 "Individual metrics")
-         
+        
        
         Ui_MainWindow.listOfMetrics = list()
         if "StartTimeStamp" in Ui_MainWindow.metrics[0].columns:
@@ -592,74 +591,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                     whichds = dataset
                     break
         Ui_MainWindow.sampleSelected = Ui_MainWindow.NumericMetrics[0].index[0]
-        Ui_MainWindow.createGraph(self, whichds)
+        indMetricsTab.IndMetricsTab.createTab(self, whichds)
         Ui_MainWindow.progress2.setValue(100)
         Ui_MainWindow.pdf.setEnabled(True)
 
-    def createGraph(self, whichds):
-        Ui_MainWindow.indMetrics.comboBox = QtWidgets.QComboBox(Ui_MainWindow.indMetrics)
-        for metric in Ui_MainWindow.listOfMetrics:
-            Ui_MainWindow.indMetrics.comboBox.addItem(metric)
-        Ui_MainWindow.indMetrics.comboBox.activated[str].connect(self.metric_change)
-        Ui_MainWindow.indMetrics.sampleBox = QtWidgets.QComboBox(Ui_MainWindow.indMetrics)
-        for sample in Ui_MainWindow.metrics[0].index:
-            Ui_MainWindow.indMetrics.sampleBox.addItem(sample)
-        Ui_MainWindow.indMetrics.sampleBox.activated[str].connect(self.sample_change)
-        Ui_MainWindow.progress2.setValue(80)
-        vbox = QtWidgets.QVBoxLayout(Ui_MainWindow.indMetrics)
-        hbox15 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
-        hbox15.addStretch()
-        hbox15.addWidget(Ui_MainWindow.indMetrics.sampleBox)
-        vbox.addLayout(hbox15)
-        hbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
-        hbox2.addStretch()
-        try:
-            indMetPlot
-            indMetPlot.clear()
-        except NameError:
-            indMetPlot = None
-        indMetPlot = IndividualMetrics.MyIndMetricsCanvas(Ui_MainWindow.NumericMetrics[whichds],
-                            Ui_MainWindow.NumericMetrics[whichds], Ui_MainWindow.element, False)
-        hbox2.addWidget(indMetPlot)
-        hbox2.addStretch()
-        vbox.addLayout(hbox2)
-        hbox3 =  QtWidgets.QHBoxLayout(Ui_MainWindow.indMetrics)
-        hbox3.addStretch()
-        hbox3.addWidget(Ui_MainWindow.indMetrics.comboBox)
-        hbox3.addStretch()
-        vbox.addLayout(hbox3)
-        vbox.setContentsMargins(30, 20, 30, 100)
-        self.setCurrentIndex(Ui_MainWindow.iIndex)
-        Ui_MainWindow.EnableAnalysisButtons(self)
-
-    def metric_change(self, text):
-        Ui_MainWindow.element = text
-        whichds = 0
-        for dataset in range(len(Ui_MainWindow.NumericMetrics)):
-                if Ui_MainWindow.element in Ui_MainWindow.NumericMetrics[dataset].columns:
-                    whichds = dataset
-                    break
-        Ui_MainWindow.removeTab(self, Ui_MainWindow.iIndex)
-        Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
-        Ui_MainWindow.iIndex = self.addTab(Ui_MainWindow.indMetrics,
-                                 "Individual metrics")
-        Ui_MainWindow.createGraph(self, whichds)
-        Ui_MainWindow.progress2.setValue(100)
-
-    def sample_change(self, text):
-        Ui_MainWindow.sampleSelected = text
-        for dataset in range(len(Ui_MainWindow.NumericMetrics)):
-                if Ui_MainWindow.element in Ui_MainWindow.metrics[dataset].columns:
-                    whichds = dataset
-                    break
-
-        Ui_MainWindow.removeTab(self, Ui_MainWindow.iIndex)
-        Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
-        Ui_MainWindow.iIndex = self.addTab(Ui_MainWindow.indMetrics,
-                                 "Individual metrics")
-        Ui_MainWindow.createGraph(self, whichds)
-        Ui_MainWindow.progress2.setValue(100)
-
+    
     def checkColumnNumberForPCA(self):
         if(len(Ui_MainWindow.NumericMetrics[0].columns) < 3):
             QtWidgets.QMessageBox.warning(self, "Warning:", "There are less than three \
