@@ -317,6 +317,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         #UploadFrame:
         uploadvbox = QtWidgets.QVBoxLayout(UploadFrame)
         actionComboBox = QtWidgets.QComboBox()
+        actionComboBox.setStyleSheet('selection-background-color: rgb(168,168,168)')
+        actionComboBox.setMinimumHeight(40)
         listOfActions = ["Upload a file","DDA analysis with QuaMeter","DIA analysis with SwaMe"]
         for action in listOfActions:
             actionComboBox.addItem(action)
