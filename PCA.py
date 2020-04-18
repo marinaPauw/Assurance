@@ -6,6 +6,7 @@ from PyQt5.QtGui import *
 import math, sys
 import statistics
 import scipy
+from scipy.spatial import distance_matrix
 from sklearn import decomposition as sd
 from sklearn import preprocessing
 from sklearn.cluster import KMeans
@@ -57,8 +58,7 @@ class PCA(object):
         UI_MainWindow.Ui_MainWindow.loadings = loadingspca.components_
         data = UI_MainWindow.Ui_MainWindow.pca.fit_transform(NormalisedData)
         UI_MainWindow.Ui_MainWindow.progress1.setValue(28)
-        global finalDf
-        finalDf = pd.DataFrame(data)
+        PCA.finalDf = pd.DataFrame(data)
         global Distances
         Distances = pd.DataFrame()
         plt.rcParams['axes.facecolor'] = 'lightgray'
@@ -70,6 +70,63 @@ class PCA(object):
     def calculateSampleToVariableRatio(self, data):
         ratio = len(data.iloc[:,0])/len(data.columns)
         return ratio
+    
+    def CalculateOutliers(self):
+        sampleSize = range(len(FileInput.BrowseWindow.currentDataset.index))
+        PCA.Distances = PCA.calculateDistanceMatrix(self, PCA.finalDf)
+        UI_MainWindow.Ui_MainWindow.progress1.setValue(60)
+        #self.metrics.index = self.metrics.iloc[:,0]
+        medianDistances = PCA.createMedianDistances(self, sampleSize)
+        outlierDistance = PCA.calculateOutLierDistances(self, medianDistances)
+        UI_MainWindow.Ui_MainWindow.progress1.setValue(65)
+
+        for iterator in sampleSize:
+            medianDistances["MedianDistance"][iterator] = np.percentile(PCA.Distances[iterator], 50)
+        print(medianDistances)      
+        Q1 = np.percentile(medianDistances["MedianDistance"], 25)
+        Q3 =np.percentile(medianDistances["MedianDistance"], 75)
+        IQR = Q3-Q1
+        outlierDistance = Q3 + 1.5*IQR
+        UI_MainWindow.Ui_MainWindow.progress1.setValue(65)
+       #Zscores:
+        from scipy.stats import zscore
+        medianDistances["zScore"] = zscore(medianDistances["MedianDistance"])
+        medianDistances["outlier"]= medianDistances["zScore"].apply(
+        lambda x: x <= -3.5 or x >= 3.5
+        )
+        print("The following runs were identified as candidates for possible outliers based on their z-scores:")
+        Q3 = np.percentile(medianDistances["MedianDistance"], 75)  # Q3
+
+        UI_MainWindow.Ui_MainWindow.progress1.setValue(75)
+        Outliers = medianDistances[medianDistances["outlier"]]
+        return Outliers
+
+    def createMedianDistances(self, sampleSize):
+        medianDistances = pd.DataFrame()
+        if FileInput.BrowseWindow.currentDataset.index[0] != 1:
+            medianDistances["Filename"] = FileInput.BrowseWindow.currentDataset.index
+        else:
+            medianDistances["Filename"] = FileInput.BrowseWindow.currentDataset["Filename"]
+        medianDistances["MedianDistance"] = 'default value'
+        for iterator in sampleSize:
+            medianDistances["MedianDistance"][iterator] = np.percentile(
+                PCA.Distances[iterator], 50)
+        return medianDistances
+
+    def calculateOutLierDistances(self, medianDistances):
+        Q1 = np.percentile(medianDistances["MedianDistance"], 25)
+        Q3 = np.percentile(medianDistances["MedianDistance"], 75)
+        IQR = Q3 - Q1
+        outlierDistance = Q3 + 1.5*IQR
+        return outlierDistance
+
+
+    def calculateDistanceMatrix(self, df):
+        PCA.Distances = pd.DataFrame(distance_matrix(
+            df.values, df.values, p=2),
+            index=df.index, columns=df.index)
+        return PCA.Distances
+
 
     
 
