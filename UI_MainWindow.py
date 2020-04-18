@@ -1121,27 +1121,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             index=df.index, columns=df.index)
         return PCA.Distances
 
-    def moveToPrediction(self):
-        items = self.RandomForest.items
-        for element in range(0, len(items)):
-            QtWidgets.QListWidgetItem(items[element].text(),
-                                      self.
-                                      RandomForest.predictionList)
-        self.RandomForest.backbtn.setEnabled(True)
-        self.RandomForest.sourceList.setEnabled(True)
-        if(len(items) > 0):
-            self.RandomForest.badbtn.setEnabled(True)
-        return
-
-    def moveToSource(self):
-        Ui_MainWindow.RandomForest.predictionList.clear()
-        Ui_MainWindow.RandomForest.badbtn.setEnabled(False)
-
-    def sourceSelectionChanged(self):
-        Ui_MainWindow.RandomForest.items = \
-            self.RandomForest.sourceList.selectedItems()
-        Ui_MainWindow.RandomForest.predictionbtn.setEnabled(True)
-        
+         
     def onPDFClicked(self):
         PDFWriter.OutputWriter.producePDF(self,now)
 
