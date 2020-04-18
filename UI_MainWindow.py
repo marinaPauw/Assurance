@@ -389,6 +389,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         vbox.setAlignment(QtCore.Qt.AlignLeft)
         self.retranslateUi()
+        Ui_MainWindow.browse.setEnabled(True)
 
         QtCore.QMetaObject.connectSlotsByName(self)
 
