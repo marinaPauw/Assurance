@@ -53,13 +53,15 @@ class MyIndMetricsCanvas(FigureCanvas):
                     tableContainingRownames = tableContainingRownames.sort_values("runDate")
                     table = table.sort_values("runDate")
                     element = "runDate"
+                    
+            MyIndMetricsCanvas.fig, MyIndMetricsCanvas.ax = plt.subplots(constrained_layout=True)
             MyIndMetricsCanvas.fig = Figure(figsize=(width, height), dpi=dpi)
             if forReport:
                 MyIndMetricsCanvas.fig.suptitle(element, fontsize=20)
             else:
                 MyIndMetricsCanvas.fig.suptitle(element, fontsize=16)
             #self.axes = MyIndMetricsCanvas.fig.add_subplot(111)
-            #MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
+            MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.2)
             sampleSize = range(0,len(table))
             MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
             if type(table[element][0]) == int or type(table[element][0]) == float or type(table[element][0]) == np.float64:
@@ -109,7 +111,8 @@ class MyIndMetricsCanvas(FigureCanvas):
             MyIndMetricsCanvas.ax.grid(True)
             MyIndMetricsCanvas.ax.set_facecolor('gainsboro')
             sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
-            MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
+            if not forReport:
+                MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
            
             
             MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
@@ -135,6 +138,7 @@ class MyIndMetricsCanvas(FigureCanvas):
             FigureCanvas.updateGeometry(self)
             self.compute_initial_figure()
             image_path = os.path.join(os.getcwd(), element +".pdf")
+            MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
             MyIndMetricsCanvas.fig.savefig(image_path)
             
         except:
