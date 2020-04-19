@@ -35,7 +35,9 @@ class RFSelectionPlots(FigureCanvas):
             colour1 = "maroon"
             colour2 = "blue"
             RFSelectionPlots.fig.suptitle("Please draw a rectangle over your selection for suboptimal quality data:", fontsize=10)
-            
+            if len(table["Filename"][0]) >20:
+                RFSelectionPlots.fig.subplots_adjust(bottom=0.2)
+                
             p1 = RFSelectionPlots.ax.plot(table["Filename"], table["Number of distinct peptides"], marker='o', color = colour1)
             p2 = RFSelectionPlots.ax.plot(table["Filename"], table["Number of spectra identified"], marker = 'o', color = colour2)
             for tick in RFSelectionPlots.ax.get_xticklabels():
