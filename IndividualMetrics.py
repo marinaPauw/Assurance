@@ -41,7 +41,7 @@ class MyIndMetricsCanvas(FigureCanvas):
         return unique_list
 
     def __init__(self, tableContainingRownames, table,element, forReport, parent=None, width=25, height=15, dpi=100):
-        try:
+        #try:
             if element == "StartTimeStamp":
                 table = UI_MainWindow.Ui_MainWindow.metrics[0]
                 tableContainingRownames = UI_MainWindow.Ui_MainWindow.metrics[0]
@@ -53,8 +53,14 @@ class MyIndMetricsCanvas(FigureCanvas):
                     tableContainingRownames = tableContainingRownames.sort_values("runDate")
                     table = table.sort_values("runDate")
                     element = "runDate"
-                    
-            MyIndMetricsCanvas.fig, MyIndMetricsCanvas.ax = plt.subplots(constrained_layout=True)
+            if isinstance(tableContainingRownames.index[0], str):
+                MyIndMetricsCanvas.fig, MyIndMetricsCanvas.ax = plt.subplots(constrained_layout=True)
+            else:
+                tableContainingRownames["sampleNames"] = "sample0"
+                for this in range(0,len(tableContainingRownames.index)):
+                        tableContainingRownames["sampleNames"][this] = "sample"+str(tableContainingRownames.index[this])
+                
+                tableContainingRownames.set_index("sampleNames", inplace=True, drop = True)
             MyIndMetricsCanvas.fig = Figure(figsize=(width, height), dpi=dpi)
             if forReport:
                 MyIndMetricsCanvas.fig.suptitle(element, fontsize=20)
@@ -64,27 +70,29 @@ class MyIndMetricsCanvas(FigureCanvas):
             MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.2)
             sampleSize = range(0,len(table))
             MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
-            if type(table[element][0]) == int or type(table[element][0]) == float or type(table[element][0]) == np.float64:
+            MyIndMetricsCanvas.samplenames = []
+            
+            if isinstance(table[element][0], int) or isinstance(table[element][0], float)  or isinstance(table[element][0], np.float64):
                 tableContainingRownames = tableContainingRownames.sort_values(element)
                 table = table.sort_values(element)
             
-            MyIndMetricsCanvas.samplenames = []
-            if isinstance( tableContainingRownames.index[0], str) and "." in tableContainingRownames.index[0] :
-                counter = tableContainingRownames.index[0].count('.') 
-                if(counter==1):# .mzML
-                    for iii in sampleSize:
-                                temp,throw = tableContainingRownames.index[iii].split('.')
-                                MyIndMetricsCanvas.samplenames.append(temp)
-                elif(counter==2):#For example .wiff.scan
-                    for iii in sampleSize:
-                                temp,throw,throw = tableContainingRownames.index[iii].split('.')
-                                MyIndMetricsCanvas.samplenames.append(temp)
-                elif(counter==3):
-                    for iii in sampleSize:
-                                temp,throw,throw = tableContainingRownames.index[iii].split('.')
-                                MyIndMetricsCanvas.samplenames.append(temp)
-            else:
-                MyIndMetricsCanvas.samplenames = tableContainingRownames.index
+            if isinstance( tableContainingRownames.index[0], str):
+                if "." in tableContainingRownames.index[0] :
+                    counter = tableContainingRownames.index[0].count('.') 
+                    if(counter==1):# .mzML
+                        for iii in sampleSize:
+                                    temp,throw = tableContainingRownames.index[iii].split('.')
+                                    MyIndMetricsCanvas.samplenames.append(temp)
+                    elif(counter==2):#For example .wiff.scan
+                        for iii in sampleSize:
+                                    temp,throw,throw = tableContainingRownames.index[iii].split('.')
+                                    MyIndMetricsCanvas.samplenames.append(temp)
+                    elif(counter==3):
+                        for iii in sampleSize:
+                                    temp,throw,throw = tableContainingRownames.index[iii].split('.')
+                                    MyIndMetricsCanvas.samplenames.append(temp)
+                else:
+                    MyIndMetricsCanvas.samplenames = tableContainingRownames.index
             MyIndMetricsCanvas.ax.get_yaxis().get_major_formatter().set_scientific(False)
             if type(element) =="int" or type(element) == "float" :
                 Ymax = table[element].max()
@@ -110,10 +118,17 @@ class MyIndMetricsCanvas(FigureCanvas):
                 lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table[element], linestyle="-",marker='o', markerfacecolor = "dimgrey",color = "black")
             MyIndMetricsCanvas.ax.grid(True)
             MyIndMetricsCanvas.ax.set_facecolor('gainsboro')
-            sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
+            if UI_MainWindow.Ui_MainWindow.sampleSelected in tableContainingRownames.index:
+                sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
+            else:
+                sIndex = int(UI_MainWindow.Ui_MainWindow.sampleSelected)
+                
             if not forReport:
-                MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
-           
+                if sIndex in MyIndMetricsCanvas.samplenames:
+                    MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
+                elif isinstance(sIndex, int):
+                    MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].iloc[sIndex], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
+                
             
             MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
             if element == "runDate":
@@ -141,10 +156,10 @@ class MyIndMetricsCanvas(FigureCanvas):
             MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
             MyIndMetricsCanvas.fig.savefig(image_path)
             
-        except:
-            if UI_MainWindow.Ui_MainWindow.metrics[0].columns.tolist().index(element) < len(UI_MainWindow.Ui_MainWindow.metrics[0].columns):
-                UI_MainWindow.Ui_MainWindow.element = UI_MainWindow.Ui_MainWindow.metrics[0].columns[ UI_MainWindow.Ui_MainWindow.metrics[0].columns.tolist().index(element)+1]
-            MyIndMetricsCanvas(tableContainingRownames, table, element, False)
+        ##except:
+            #if UI_MainWindow.Ui_MainWindow.metrics[0].columns.tolist().index(element) < len(UI_MainWindow.Ui_MainWindow.metrics[0].columns):
+                #UI_MainWindow.Ui_MainWindow.element = UI_MainWindow.Ui_MainWindow.metrics[0].columns[ UI_MainWindow.Ui_MainWindow.metrics[0].columns.tolist().index(element)]
+            #MyIndMetricsCanvas(tableContainingRownames, table, element, False)
 
       
     def compute_initial_figure(self):

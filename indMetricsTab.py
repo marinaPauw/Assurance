@@ -27,7 +27,7 @@ class IndMetricsTab(QtWidgets.QWidget):
         IndMetricsTab.comboBox.activated[str].connect(lambda x: IndMetricsTab.metric_change(self, text=IndMetricsTab.comboBox.currentText()))
         IndMetricsTab.sampleBox = QtWidgets.QComboBox()
         for sample in UI_MainWindow.Ui_MainWindow.metrics[0].index:
-            IndMetricsTab.sampleBox.addItem(sample)
+            IndMetricsTab.sampleBox.addItem(str(sample))
         IndMetricsTab.sampleBox.activated[str].connect(lambda x: IndMetricsTab.sample_change(self, text=IndMetricsTab.sampleBox.currentText()))
         UI_MainWindow.Ui_MainWindow.progress2.setValue(80)
         
