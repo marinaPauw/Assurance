@@ -18,12 +18,14 @@ import FileInput
 import DataPreparation
 import pepXMLReader
 import UI_MainWindow
+import RandomForestResultsTab
 import re
 import pandas as pd
 import numpy as np
 import imblearn
 import h2o
 from h2o.estimators import H2ORandomForestEstimator
+from h2o.grid.grid_search import H2OGridSearch
 
 class RandomForest(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -63,7 +65,6 @@ class RandomForest(FigureCanvas):
                     WithoutClass = np.array(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns != 'GoodOrBad'])
                     Classy = np.array(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns == 'GoodOrBad'])
                     minSamples = min(len(Classy[Classy=="G"]), len(Classy[Classy=="B"]))
-                    #try:
                     
                     oversample = imblearn.over_sampling.SMOTE(k_neighbors=minSamples-1)
                     try:
@@ -73,8 +74,9 @@ class RandomForest(FigureCanvas):
                     
                     dataToBeSplit = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
                     # Input parameters that are going to train
-                    dataToBeSplit.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
+                    dataToBeSplit.columns= UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
                     
+                    dataToBeSplit["GoodOrBad"] = dataToBeSplit["GoodOrBad"].astype('category')
                     training_columns = list(dataToBeSplit.columns[dataToBeSplit.columns != 'GoodOrBad'])
                     # Output parameter train against input parameters
                     response_column = 'GoodOrBad'
@@ -83,47 +85,49 @@ class RandomForest(FigureCanvas):
                     dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
                     train, test = dataToBeSplit.split_frame(ratios=[0.6])
                     
+                    #Check that the training set contains both groups else error is thrown:
+                    while len(train["GoodOrBad"].unique())<2:
+                        train, test = dataToBeSplit.split_frame(ratios=[0.6])
+                    
                     train = train.as_data_frame()
-                    WithoutClassTrain = np.array(train.ix[:, train.columns != 'GoodOrBad'])
-                    ClassyTrain = np.array(train['GoodOrBad'])
-                    minTrainSamples = min(len(ClassyTrain[ClassyTrain=="G"]), len(ClassyTrain[ClassyTrain=="B"]))
-                    
-                    oversample = imblearn.over_sampling.SMOTE(k_neighbors=minTrainSamples-1)
-                    #try:
-                    X, Y = oversample.fit_resample(WithoutClassTrain, ClassyTrain)
-                    #except ValueError:
-                    #    QtWidgets.QMessageBox.warning("ValueError", "Perhaps the number of samples of one of the classes was not enough?")
-                    
-                    train = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
-                    train.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
+                    train["GoodOrBad"] = train["GoodOrBad"].astype('category')
                     RandomForest.train = train #For the report writing
                     
                     test = test.as_data_frame()
-                    WithoutClassTest = np.array(test.ix[:, test.columns != 'GoodOrBad'])
-                    ClassyTest = np.array(test['GoodOrBad'])
-                    minTestSamples = min(len(ClassyTest[ClassyTest=="G"]), len(ClassyTest[ClassyTest=="B"]))
-                    
-                    oversample = imblearn.over_sampling.SMOTE(k_neighbors=minTestSamples-1)
-                    try:
-                        X, Y = oversample.fit_resample(WithoutClassTest, ClassyTest)
-                    except ValueError:
-                        QtWidgets.QMessageBox.warning(self,"ValueError", "Perhaps the number of samples of one of the classes was not enough?")
-                    
-                    test = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
-                    test.columns = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
+                   
                     RandomForest.test = test
                     
-                    model = H2ORandomForestEstimator(ntrees=100, max_depth=20, nfolds=0, seed=1234)
+                    hyper_parameters = {'ntrees':[50,200], 'max_depth':[20,44], 'mtries':-1}
+                    models = H2OGridSearch(H2ORandomForestEstimator, hyper_params=hyper_parameters)
+                    
+                                     
+                    
+                    
+                    #model = H2ORandomForestEstimator(ntrees=50, max_depth=20, seed=1234, balance_classes= True, class_sampling_factors =[0.6,0.4],  score_each_iteration = True)
                     # Train model
-                    model.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train))
+                    models.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train))
+                    
+                    
+                    
                     # Model performance
-                    performance = model.model_performance(test_data=h2o.H2OFrame(test))
+                    sortedModels= models.get_grid(sort_by='auc', decreasing=True)
+                    
+                   
+                    best_model = sortedModels.models[0]
+
+                    # Now let's evaluate the model performance on a test set
+                    # so we get an honest estimate of top model performance
+                    performance = best_model.model_performance(h2o.H2OFrame(test))
+
+                    #best_gbm_perf1.auc()
+                    
+                    #performance = model.model_performance(train=True)
                     RandomForest.performance = performance
                     #Run the random Forest on the original data:
-                    rf = model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
+                    rf = best_model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
                     results = rf.as_data_frame()
                     results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
-                    UI_MainWindow.Ui_MainWindow.printModelResults(self, performance, results, model)
+                    RandomForestResultsTab.LongitudinalTab.printModelResults(self, performance, results, best_model)
                     
     def AllocateGoodOrBad(self, table):              
 
