@@ -28,12 +28,15 @@ class BrowseWindow(QtWidgets.QMainWindow):
         if(possibleinputFiles):
             if(len(possibleinputFiles) > 1):
                 justJSONFiles = True
+                justTSVFiles = True
                 for possiblefile in possibleinputFiles:
-                   if(".json" not in possiblefile):
+                    if(".json" not in possiblefile):
                        justJSONFiles = False
-                if not justJSONFiles :
+                    if(".tsv" not in possiblefile):
+                           justTSVFiles = False
+                if not justJSONFiles and not justTSVFiles:
                     QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,
-                                      "Error:" ,"You may select multiple mzQC files to combine into one table, but you may not select multiple files of any other type.")
+                                      "Error:" ,"You may select multiple mzQC files or multiple tsv files to combine into one table, but you may not select multiple files of any other type or a mixture of the two.")
                     UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
 
                 if(justJSONFiles==True):
@@ -56,6 +59,21 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     str1 = " " 
                     UI_MainWindow.Ui_MainWindow.filename.setText(str1.join(inputFiles))
                     UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
+            
+                elif(justTSVFiles == True):
+                    inputFiles = possibleinputFiles
+                    metrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)          
+                    UI_MainWindow.Ui_MainWindow.NumericMetrics = []
+                    for i in range(0,len(metrics)):
+                        #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
+                            #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
+                            NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, metrics[i])
+                            UI_MainWindow.Ui_MainWindow.NumericMetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
+                            NMColumnsonly))
+                    
+                    str1 = "  "        
+                    UI_MainWindow.Ui_MainWindow.filename.setText(str1.join(inputFiles))    
+            
             else:
                 possibleinputFile = possibleinputFiles[0]
                 inputFile = BrowseWindow.fileTypeCheck(self, possibleinputFile)
@@ -88,7 +106,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
         files = QtWidgets. QFileDialog()
         files.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
         possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(UI_MainWindow.Ui_MainWindow.tab, 
-                                                               "Locate the folder with training set quality files:", "",
+                                                               "Locate the training set quality file(s):", "",
                                                                "All Files (*)", 
                                                                options=
                                                                QtWidgets.QFileDialog.\
