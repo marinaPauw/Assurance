@@ -282,13 +282,16 @@ class OutputWriter(object):
             print("Directory couldn't be changed to " , dirName) 
             
     def deleteExtraFiles(self,dirName):
-        if dirName in os.getcwd():
-            pdfs = glob.glob("*.pdf")
-            for f in pdfs:
-                if f != "AssuranceReport.pdf":
+        try:
+            if dirName in os.getcwd():
+                pdfs = glob.glob("*.pdf")
+                for f in pdfs:
+                    if f != "AssuranceReport.pdf":
+                        os.remove(f)
+                        
+                pngs = glob.glob("*.png")
+                for f in pngs:
                     os.remove(f)
-                    
-            pngs = glob.glob("*.png")
-            for f in pngs:
-                os.remove(f)
+        except:
+            print("Could not delete extra pdfs..")
     
