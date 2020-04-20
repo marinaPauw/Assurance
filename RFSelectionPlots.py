@@ -38,8 +38,8 @@ class RFSelectionPlots(FigureCanvas):
             if len(table["Filename"][0]) >20:
                 RFSelectionPlots.fig.subplots_adjust(bottom=0.2)
                 
-            p1 = RFSelectionPlots.ax.plot(table["Filename"], table["Number of distinct peptides"], marker='o', color = colour1)
-            p2 = RFSelectionPlots.ax.plot(table["Filename"], table["Number of spectra identified"], marker = 'o', color = colour2)
+            p1 = RFSelectionPlots.ax.plot(table["Filename"], table["Number of distinct peptides"], linestyle = 'None' , marker='o', color = colour1)
+            p2 = RFSelectionPlots.ax.plot(table["Filename"], table["Number of spectra identified"], linestyle = 'None', marker = 'o', color = colour2)
             for tick in RFSelectionPlots.ax.get_xticklabels():
                 tick.set_rotation(90)
                 tick.set_size(8)
