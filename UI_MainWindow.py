@@ -677,30 +677,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTrainingSamplesFromArea(self))
         
     
-    def RFonhover(event):
-        vis = RandomForest.annot.get_visible()
-        if event.inaxes == RandomForest.ax:
-            cont, ind = RandomForest.fig.contains(event)
-            if cont:
-                Ui_MainWindow.RFupdate_annot(event)
-                RandomForest.annot.set_visible(True)
-                RandomForest.fig.canvas.draw_idle()
-                return
-        if vis:
-            RandomForest.annot.set_visible(False)
-            RandomForest.fig.canvas.draw_idle()
-            
-    def RFupdate_annot(event):
-        closestyIndex = np.abs(RandomForest.badset["B"] - event.ydata).argmin()
-        closesty = RandomForest.badset["B"].loc[closestyIndex]
-        badsetclosey = RandomForest.badset[RandomForest.badset['B']==closesty]
-        closestxIndex = np.abs(badsetclosey['X'] - event.xdata).argmin()        
-        closestx = RandomForest.badset["X"].loc[closestxIndex]
-        RandomForest.annot.xyann = (closestx , closesty)
-        RandomForest.annot.set_text(closestxIndex)
-        
-   
-         
     def onPDFClicked(self):
         PDFWriter.OutputWriter.producePDF(self,now)
 
