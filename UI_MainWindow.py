@@ -109,7 +109,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.CUOLabel= QtWidgets.QLabel(self.leftFrame)
         Ui_MainWindow.CUOTextBox = QtWidgets.QLineEdit(self.leftFrame) 
         Ui_MainWindow.RUNButton = QtWidgets.QPushButton(self.leftFrame)
-        textedit =QtWidgets.QTextEdit(readOnly=True)
+        Ui_MainWindow.textedit =QtWidgets.QTextEdit(readOnly=True)
         
 
         #Widget stylesheets:
@@ -123,7 +123,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.CUOLabel.setText("m/z Upper Offset:")
         Ui_MainWindow.RUNButton.setText("RUN")
 
-
+        #Clicked.connect
+        Ui_MainWindow.BrowseButton.clicked.connect(QuaMeter.QuaMeter.onQuaMeterBrowseClicked)
+        Ui_MainWindow.RUNButton.clicked.connect(QuaMeter.QuaMeter.onQuaMeterRUNClicked)
         #QuaMeterGrid:
         #Layout:
         
@@ -151,7 +153,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         QuaMetervbox.addLayout(hbox3)
         hbox4 = QtWidgets.QHBoxLayout()
         hbox4.addWidget(Ui_MainWindow.RUNButton)
-        hbox4.addWidget(textedit)
+        hbox4.addWidget(Ui_MainWindow.textedit)
         QuaMetervbox.addLayout(hbox4)
         
         #-------------------------------------------------SwaMeLayout--------------------------------------------------------
@@ -174,7 +176,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.iRTtoleranceTB =QtWidgets.QLineEdit(Ui_MainWindow.rightFrame)
         Ui_MainWindow.iRTminintensityTB =QtWidgets.QLineEdit(Ui_MainWindow.rightFrame)
         Ui_MainWindow.iRTminpeptidesTB =QtWidgets.QLineEdit(Ui_MainWindow.rightFrame)
-        Ui_MainWindow.rightFrame.textedit =QtWidgets.QTextEdit(readOnly=True)
+        Ui_MainWindow.Stextedit =QtWidgets.QTextEdit(readOnly=True)
         Ui_MainWindow.IRTinputFile = None
 
 
@@ -231,7 +233,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMevbox.addLayout(SwaMehbox6)
         SwaMehbox7 = QtWidgets.QHBoxLayout(Ui_MainWindow.rightFrame)
         SwaMehbox7.addWidget(Ui_MainWindow.SRUNButton)
-        SwaMehbox7.addWidget(Ui_MainWindow.rightFrame.textedit)
+        SwaMehbox7.addWidget(Ui_MainWindow.Stextedit)
         SwaMevbox.addLayout(SwaMehbox7)
         #------------------------------------------------OutputFrame--------------------------------------------------------
         Ui_MainWindow.pdf = QtWidgets.QPushButton(OutputFrame)

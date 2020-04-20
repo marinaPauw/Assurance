@@ -11,32 +11,22 @@ import os
 
 
 class QuaMeter():
-    """description of class"""
-    def setupUI(self, parent=None): 
-        #Setting up the window:
-        UI_MainWindow.Ui_MainWindow.EnableQuaMeterArguments(self)
- #Arguments:
-        if(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.text()):
-            QuaMeter.CLO = UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.text()
-        if(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.text()):
-            QuaMeter.CUO = UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.text()
-        if(UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text()):
-            QuaMeter.CPU = UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text()
-
-        #Actions for when buttons are clicked:
-        UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.BrowseButton.clicked.connect(QuaMeter.onQuaMeterBrowseClicked)
-        UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.RUNButton.clicked.connect(QuaMeter.onQuaMeterRUNClicked)
-
-
+   
     def onQuaMeterBrowseClicked(self):
         #FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, self)
-        UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.files.show()
+        UI_MainWindow.Ui_MainWindow.files.show()
         QuaMeter.Dir = FileInput.BrowseWindow.GetQuaMeterInputFiles(QuaMeter)
         if(QuaMeter.Dir):
-            UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.fileList.setText(QuaMeter.Dir)
+            UI_MainWindow.Ui_MainWindow.fileList.setText(QuaMeter.Dir)
     
     def onQuaMeterRUNClicked(self):
-        
+        if(UI_MainWindow.Ui_MainWindow.CLOTextBox.text()):
+            QuaMeter.CLO = UI_MainWindow.Ui_MainWindow.CLOTextBox.text()
+        if(UI_MainWindow.Ui_MainWindow.CUOTextBox.text()):
+            QuaMeter.CUO = UI_MainWindow.Ui_MainWindow.CLOTextBox.text()
+        if(UI_MainWindow.Ui_MainWindow.cpusTextBox.text()):
+            QuaMeter.CPU = UI_MainWindow.Ui_MainWindow.cpusTextBox.text()
+            
         argument1 = "cd/d " + QuaMeter.Dir 
         
         QuaMeterPath = FileInput.BrowseWindow.GetQuaMeterPath(QuaMeter)
@@ -51,14 +41,14 @@ class QuaMeter():
         cpus = ""
         CUO = ''
         CLO = ""
-        if  UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text() and UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text()>0 and UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text()<6:
-            cpus = " -cpus "+UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.cpusTextBox.text()
+        if  UI_MainWindow.Ui_MainWindow.cpusTextBox.text() and UI_MainWindow.Ui_MainWindow.cpusTextBox.text()>0 and UI_MainWindow.Ui_MainWindow.cpusTextBox.text()<6:
+            cpus = " -cpus "+UI_MainWindow.Ui_MainWindow.cpusTextBox.text()
         
-        if UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.text():
-            CUO = " -ChromatogramMzUpperOffset " + UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CUOTextBox.text()
+        if UI_MainWindow.Ui_MainWindow.CUOTextBox.text():
+            CUO = " -ChromatogramMzUpperOffset " + UI_MainWindow.CUOTextBox.text()
         
-        if UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.text():
-            CLO = " -ChromatogramMzLowerOffset " + UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.CLOTextBox.text()
+        if UI_MainWindow.Ui_MainWindow.CLOTextBox.text():
+            CLO = " -ChromatogramMzLowerOffset " + UI_MainWindow.Ui_MainWindow.CLOTextBox.text()
             
         #QuaMeter.process.start(" cd/d " + os.path.dirname(QuaMeter.File))
         arguments2 = QuaMeterPath +" "+ QuaMeter.Dir +"/*.mzml " + cpus +  CUO + CLO +" -MetricsType idfree"
@@ -69,7 +59,7 @@ class QuaMeter():
     @QtCore.pyqtSlot()
     def on_readyReadStandardOutput(self):
         text = QuaMeter.process.readAllStandardOutput().data().decode()
-        UI_MainWindow.Ui_MainWindow.tab.UploadFrame.leftFrame.textedit.append(text)
+        UI_MainWindow.Ui_MainWindow.textedit.append(text)
 
     @QtCore.pyqtSlot()
     def on_Finished(self):
