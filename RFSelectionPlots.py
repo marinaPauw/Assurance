@@ -31,6 +31,7 @@ class RFSelectionPlots(FigureCanvas):
             RFSelectionPlots.fig.subplots_adjust(bottom=0.2)
             RFSelectionPlots.ax.set_facecolor("gainsboro")
             RFSelectionPlots.ax.grid(True)
+            RFSelectionPlots.ax.set_ylim(0, table.loc[:, table.columns != 'Filename'].max().max() + table.loc[:, table.columns != 'Filename'].max().max()/10)
             RFSelectionPlots.ax.set_ylabel("Number of peptides identified")
             table = table.sort_values("Number of spectra identified")
             colour1 = "maroon"
