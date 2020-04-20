@@ -287,8 +287,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         #setText:
         Ui_MainWindow.Outliers.setText("Detect Outliers")
-        Ui_MainWindow.IndMetrics.setText("Individual Metrics")
-        Ui_MainWindow.Longitudinal.setText("Longitudinal Analysis")
+        Ui_MainWindow.IndMetrics.setText("Plot Individual Metrics")
+        Ui_MainWindow.Longitudinal.setText("Analyze Longitudinal Data")
         Ui_MainWindow.browse.setText("Browse...")
         Ui_MainWindow.filename.setText("   File...                  ")
         Ui_MainWindow.filename.setStyleSheet("background-color: white;")
