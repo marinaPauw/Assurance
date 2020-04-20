@@ -219,14 +219,35 @@ class LongitudinalTab(QtWidgets.QTabWidget):
         scroll.setWidget(placementwidget)
         scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         scroll.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        #scroll.setMinimumHeight(2000)
 
         scroll.setWidgetResizable(True)
 
         vLayout = QtWidgets.QVBoxLayout(TrainingOrTestSet)
         vLayout.addWidget(scroll)
-        #vLayout.setGeometry()
      
-        RandomForest.fig.canvas.mpl_connect("motion_notify_event", UI_MainWindow.Ui_MainWindow.RFonhover)                        
+        RandomForest.fig.canvas.mpl_connect("motion_notify_event", LongitudinalTab.RFonhover)                        
         self.setCurrentIndex(UI_MainWindow.Ui_MainWindow.sIndex)
+        
+    
+    def RFonhover(event):
+        vis = RandomForest.annot.get_visible()
+        if event.inaxes == RandomForest.ax:
+            cont, ind = RandomForest.fig.contains(event)
+            if cont:
+                LongitudinalTab.RFupdate_annot(event)
+                RandomForest.annot.set_visible(True)
+                RandomForest.fig.canvas.draw_idle()
+                return
+        if vis:
+            RandomForest.annot.set_visible(False)
+            RandomForest.fig.canvas.draw_idle()
+            
+    def RFupdate_annot(event):
+        closestyIndex = np.abs(RandomForest.badset["B"] - event.ydata).argmin()
+        closesty = RandomForest.badset["B"].loc[closestyIndex]
+        badsetclosey = RandomForest.badset[RandomForest.badset['B']==closesty]
+        closestxIndex = np.abs(badsetclosey['X'] - event.xdata).argmin()        
+        closestx = RandomForest.badset["X"].loc[closestxIndex]
+        RandomForest.annot.xyann = (closestx , closesty)
+        RandomForest.annot.set_text(closestxIndex)
         
