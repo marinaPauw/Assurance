@@ -67,6 +67,7 @@ class IndMetricsTab(QtWidgets.QWidget):
                     break
         UI_MainWindow.Ui_MainWindow.removeTab(self, self.iIndex)
         IndMetricsTab.createTab(self, whichds)
+        IndMetricsTab.comboBox.setCurrentIndex( UI_MainWindow.Ui_MainWindow.listOfMetrics.index(text))
         UI_MainWindow.Ui_MainWindow.progress2.setValue(100)
 
     def sample_change(self, text):
@@ -78,4 +79,12 @@ class IndMetricsTab(QtWidgets.QWidget):
 
         UI_MainWindow.Ui_MainWindow.removeTab(self , self.iIndex)
         IndMetricsTab.createTab(self, whichds)
+        samples = list(UI_MainWindow.Ui_MainWindow.metrics[0].index)
+        if isinstance(samples[0], str):
+            IndMetricsTab.sampleBox.setCurrentIndex(samples.index(text))
+        else:
+            for sample in range(0, len(samples)):
+                samples[sample] = str(samples[sample] )
+            
+            IndMetricsTab.sampleBox.setCurrentIndex(samples.index(text))
         UI_MainWindow.Ui_MainWindow.progress2.setValue(100)
