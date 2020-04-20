@@ -56,8 +56,8 @@ class RandomForest(FigureCanvas):
                     # Test that Filenames in the quality side and the pepXML's are the same:
                     for filename in  UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index:
                                 if filename not in table["Filename"]:
-                                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" , "A sample has been identified for which the raw file name was not found in the pepXML's: "+filename )
-        
+                                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" , "A sample has been identified for which the raw file name was not found in the pepXML's: "+str(filename) + ". The sample was removed from further analysis. Make sure the files in Filename column correspond with file names of pepXML's." )
+                                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].drop([filename])
                     
                     
                     RandomForest.createguideSet(RandomForest)
