@@ -29,7 +29,7 @@ class IndMetricsTab(QtWidgets.QWidget):
         for sample in UI_MainWindow.Ui_MainWindow.metrics[0].index:
             IndMetricsTab.sampleBox.addItem(str(sample))
         IndMetricsTab.sampleBox.activated[str].connect(lambda x: IndMetricsTab.sample_change(self, text=IndMetricsTab.sampleBox.currentText()))
-        UI_MainWindow.Ui_MainWindow.progress2.setValue(80)
+        UI_MainWindow.Ui_MainWindow.progress1.setValue(80)
         
         #Create layout
         vbox = QtWidgets.QVBoxLayout(IndMetricsTab.itab)
@@ -68,7 +68,7 @@ class IndMetricsTab(QtWidgets.QWidget):
         UI_MainWindow.Ui_MainWindow.removeTab(self, self.iIndex)
         IndMetricsTab.createTab(self, whichds)
         IndMetricsTab.comboBox.setCurrentIndex( UI_MainWindow.Ui_MainWindow.listOfMetrics.index(text))
-        UI_MainWindow.Ui_MainWindow.progress2.setValue(100)
+        UI_MainWindow.Ui_MainWindow.progress1.setValue(100)
 
     def sample_change(self, text):
         UI_MainWindow.Ui_MainWindow.sampleSelected = text
@@ -87,4 +87,4 @@ class IndMetricsTab(QtWidgets.QWidget):
                 samples[sample] = str(samples[sample] )
             
             IndMetricsTab.sampleBox.setCurrentIndex(samples.index(text))
-        UI_MainWindow.Ui_MainWindow.progress2.setValue(100)
+        UI_MainWindow.Ui_MainWindow.progress1.setValue(100)

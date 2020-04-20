@@ -278,12 +278,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         InputLabel = QtWidgets.QLabel(UploadFrame)
         uploadLabel = QtWidgets.QLabel(UploadFrame)
         UploadProgress = QtWidgets.QProgressBar()
-        UploadProgress.setGeometry(200, 80, 250, 20)
+        UploadProgress.setGeometry(200, 80, 200, 20)
         Ui_MainWindow.progress1 = QtWidgets.QProgressBar(AnalysisFrame)
-        Ui_MainWindow.progress1.setGeometry(200, 80, 250, 20)
         analysisLabel = QtWidgets.QLabel(AnalysisFrame)
-        Ui_MainWindow.progress2 = QtWidgets.QProgressBar()
-        Ui_MainWindow.progress2.setGeometry(200, 80, 250, 20)
         
         #setText:
         Ui_MainWindow.Outliers.setText("Detect Outliers")
@@ -573,10 +570,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def onIndMetricsClicked(self):
         Ui_MainWindow.indMetricsGraphed = True
         Ui_MainWindow.DisableAnalysisButtons(self)
-        Ui_MainWindow.progress2.show()
-        Ui_MainWindow.progress2.setValue(10)
+        Ui_MainWindow.progress1.setValue(10)
         Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
-        Ui_MainWindow.progress2.setValue(33)
+        Ui_MainWindow.progress1.setValue(33)
         
        
         Ui_MainWindow.listOfMetrics = list()
@@ -596,7 +592,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                     break
         Ui_MainWindow.sampleSelected = Ui_MainWindow.NumericMetrics[0].index[0]
         indMetricsTab.IndMetricsTab.createTab(self, whichds)
-        Ui_MainWindow.progress2.setValue(100)
+        Ui_MainWindow.progress1.setValue(100)
         Ui_MainWindow.pdf.setEnabled(True)
 
     
