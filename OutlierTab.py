@@ -139,7 +139,7 @@ class OutlierTab(QtWidgets.QTabWidget):
         font = QtGui.QFont()
         font.setPointSize(18)
         if(len(UI_MainWindow.Ui_MainWindow.outlierlist) > 0):
-            outlierstring = UI_MainWindow.Ui_MainWindow.outlierlist.array[0]
+            outlierstring = ""
             for element in array:
                 outlierstring = str(outlierstring) + "\n" + str(UI_MainWindow.Ui_MainWindow.outlierlist.array[element])
         else:
