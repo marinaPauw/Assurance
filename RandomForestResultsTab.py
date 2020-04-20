@@ -156,6 +156,7 @@ class LongitudinalTab(QtWidgets.QTabWidget):
             else:
                 if currentcolumn>4:
                     currentrow = currentrow +1
+                    currentcolumn = 0
                 badsamplesgrid.addWidget(label,currentrow,currentcolumn)
                 currentcolumn = currentcolumn+1
             
