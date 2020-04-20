@@ -429,7 +429,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         if inputFile:
             #filepath = FileInput.BrowseWindow.FileCheck(self, inputFile)
             Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
-            if  "Filename" in Ui_MainWindow.metrics[0].columns:
+            if "Filename " in Ui_MainWindow.metrics[0].columns:
+                Ui_MainWindow.metrics[0] = Ui_MainWindow.metrics[0].rename(columns={"Filename ": 'Filename'})               
+            if  "filename" in  [x.lower() for x in Ui_MainWindow.metrics[0].columns]:
                 Ui_MainWindow.metrics[0].index = Ui_MainWindow.metrics[0]["Filename"]
             Ui_MainWindow.NumericMetrics =[]
             #Ui_MainWindow.checkColumnLength(self)
