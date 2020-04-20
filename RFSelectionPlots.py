@@ -28,7 +28,7 @@ class RFSelectionPlots(FigureCanvas):
         try:
             RFSelectionPlots.fig = Figure()
             RFSelectionPlots.ax = RFSelectionPlots.fig.add_subplot(1,1,1)
-            #RFSelectionPlots.fig.subplots_adjust(bottom=0.1)
+            RFSelectionPlots.fig.subplots_adjust(bottom=0.2)
             RFSelectionPlots.ax.set_facecolor("gainsboro")
             RFSelectionPlots.ax.grid(True)
             RFSelectionPlots.ax.set_ylabel("Number of peptides identified")
