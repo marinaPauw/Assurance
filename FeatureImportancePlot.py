@@ -21,7 +21,7 @@ class FeaturePlot(FigureCanvas):
         ax.tick_params(axis="y", labelsize=7)
         ax.invert_yaxis()
         ax.set_xlabel('Scaled Importance')
-        ax.set_title('Variable Importance')
+        ax.set_title('Metric Contribution')
         FigureCanvas.__init__(self, fig)
         #self.setParent(parent)
 
@@ -29,7 +29,6 @@ class FeaturePlot(FigureCanvas):
                                    QtWidgets.QSizePolicy.Expanding,
                                    QtWidgets.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
-        fig.suptitle("Feature importance", fontsize=10)
         self.compute_initial_figure()
    
     def compute_initial_figure(self):
