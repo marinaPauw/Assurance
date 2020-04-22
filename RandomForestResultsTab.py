@@ -127,7 +127,6 @@ class LongitudinalTab(QtWidgets.QTabWidget):
 
         #Bad samples grid:
         badsamplesgrid = QtWidgets.QGridLayout()
-        badsamplesgrid.addWidget(TrainingOrTestSet.ResultsFrame.predictedLabel,0,0)
         badlist = results[results['predict']=='B'].index
         currentrow = 0
         currentcolumn = 0
