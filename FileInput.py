@@ -92,7 +92,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
    
     def GetTrainingSetFiles(self):
         possibleInputFiles, _ =QtWidgets. QFileDialog.getOpenFileNames(
-            UI_MainWindow.Ui_MainWindow.tab,"Select the files from which to create the training set:", "","PepXML files (*.pepXML)", options = QtWidgets.QFileDialog.Options())
+            UI_MainWindow.Ui_MainWindow.tab,"Select the files from which to create the training set:", "","All files (*)", options = QtWidgets.QFileDialog.Options())
         TrainingSetFiles = []
         if(possibleInputFiles):
             for file in possibleInputFiles:
@@ -247,11 +247,11 @@ class BrowseWindow(QtWidgets.QMainWindow):
             return 0
     
     def TrainingSetFileTypeCheck(self, inputFile):
-          if inputFile.endswith('.pepXML'):
+          if inputFile.endswith('.pepXML') or inputFile.endswith('.txt') or inputFile.endswith('.mzid'):
             return inputFile
 
           else:
-            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message from Assurance: ", "Error: File type incorrect. Please load a .json, .tsv or .csv file. Also please ensure that the decimals are separated by '.'.")
+            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message from Assurance: ", "Error: File type incorrect. Please load a pepXML/ a summary.txt file from MaxQuant.")
             UI_MainWindow.Ui_MainWindow.onLongitudinalClicked(UI_MainWindow.Ui_MainWindow)
             
     def TrainingSetParse(self,inputFile):
