@@ -36,6 +36,7 @@ import datetime
 import OutlierTab
 import indMetricsTab
 import maxQuantTxTReader
+import mzIdentMLReader
 
 
 class Ui_MainWindow(QtWidgets.QTabWidget):
@@ -641,6 +642,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 Ui_MainWindow.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetfiles)
             elif ".txt" in TrainingSetfiles[0].lower():
                 Ui_MainWindow.TrainingSetTable =maxQuantTxTReader.maxQuantTxtReader.parseTxt(self, TrainingSetfiles[0])
+            elif ".mzid" in TrainingSetfiles[0].lower():
+                Ui_MainWindow.TrainingSetTable =mzIdentMLReader.mzIdentMLReader.parsemzID(self, TrainingSetfiles)
+            
             Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
             Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px")
             Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
