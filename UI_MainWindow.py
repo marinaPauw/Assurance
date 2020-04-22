@@ -35,6 +35,7 @@ import tempfile
 import datetime
 import OutlierTab
 import indMetricsTab
+import maxQuantTxTReader
 
 
 class Ui_MainWindow(QtWidgets.QTabWidget):
@@ -636,7 +637,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Number of distinct peptides","Number of spectra identified"])
         
         if TrainingSetfiles:
-            Ui_MainWindow.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetfiles)
+            if "pepxml" in TrainingSetfiles[0].lower():
+                Ui_MainWindow.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetfiles)
+            elif ".txt" in TrainingSetfiles[0].lower():
+                Ui_MainWindow.TrainingSetTable =maxQuantTxTReader.maxQuantTxtReader.parseTxt(self, TrainingSetfiles[0])
             Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
             Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px")
             Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
