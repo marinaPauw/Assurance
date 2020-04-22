@@ -36,7 +36,7 @@ class RFSelectionPlots(FigureCanvas):
             table = table.sort_values("Number of spectra identified")
             colour1 = "maroon"
             colour2 = "blue"
-            RFSelectionPlots.fig.suptitle("Please draw a rectangle over your selection for suboptimal quality data:", fontsize=10)
+            RFSelectionPlots.fig.suptitle("Please draw a rectangle over suboptimal quality data, the unselected samples are considered optimal:", fontsize=10)
             if len(table["Filename"][0]) >20:
                 RFSelectionPlots.fig.subplots_adjust(bottom=0.2)
                 
