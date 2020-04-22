@@ -24,7 +24,7 @@ class FeaturePlot(FigureCanvas):
         ax.set_title('Metric Contribution')
         FigureCanvas.__init__(self, fig)
         #self.setParent(parent)
-
+        fig.subplots_adjust(left = 0.2)
         FigureCanvas.setSizePolicy(self,
                                    QtWidgets.QSizePolicy.Expanding,
                                    QtWidgets.QSizePolicy.Expanding)
