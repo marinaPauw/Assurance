@@ -578,15 +578,9 @@ class BrowseWindow(QtWidgets.QMainWindow):
              UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
      
     def GetSwaMeInputFile(self):
-        possibleinputFile,_ = QtWidgets. QFileDialog.getOpenFileName(None, " Input File for SwaMe:", "", "mzML files (*.mzML)", 
-                                                               options=
-                                                               QtWidgets.QFileDialog.\
-                                                                   Options())
-        if(possibleinputFile):
-                inputFile= BrowseWindow.SwaMeFileTypeCheck(self, possibleinputFile)
-
-        if(inputFile):
-            return inputFile
+        FilesDir= QtWidgets.QFileDialog.getExistingDirectory(None, " Select the directory containing files for SwaMe input")
+        if(FilesDir):
+            return FilesDir
 
     def GetSwaMePath(self):
         SwaMePath,_ = QtWidgets. QFileDialog.getOpenFileNames(None, "Please locate the SwaMe exe on your system:", "", "exe files (*.exe)", 

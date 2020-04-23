@@ -187,6 +187,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.SBrowseButton.setFixedHeight(30)
         Ui_MainWindow.SBrowseButton.setFixedHeight(30)
 
+         #Clicked.connect
+        Ui_MainWindow.SBrowseButton.clicked.connect(SwaMe.SwaMe.onSwaMeBrowseClicked)
+        Ui_MainWindow.SRUNButton.clicked.connect(SwaMe.SwaMe.onSwaMeRUNClicked)
 
         #Widget texts:
         Ui_MainWindow.SBrowseButton.setText("Browse ")
@@ -226,13 +229,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMehbox4.addWidget(Ui_MainWindow.iRT)
         SwaMehbox4.addWidget(Ui_MainWindow.iRTtoleranceLabel)
         SwaMehbox4.addWidget(Ui_MainWindow.iRTtoleranceTB)
+        SwaMehbox4.addWidget(Ui_MainWindow.iRTminintensityLabel)
+        SwaMehbox4.addWidget(Ui_MainWindow.iRTminintensityTB)
+        SwaMehbox4.addWidget(Ui_MainWindow.iRTminpeptidesLabel)
+        SwaMehbox4.addWidget(Ui_MainWindow.iRTminpeptidesTB)
         SwaMevbox.addLayout(SwaMehbox4)
-        SwaMehbox6 = QtWidgets.QHBoxLayout(Ui_MainWindow.rightFrame)
-        SwaMehbox6.addWidget(Ui_MainWindow.iRTminintensityLabel)
-        SwaMehbox6.addWidget(Ui_MainWindow.iRTminintensityTB)
-        SwaMehbox6.addWidget(Ui_MainWindow.iRTminpeptidesLabel)
-        SwaMehbox6.addWidget(Ui_MainWindow.iRTminpeptidesTB)
-        SwaMevbox.addLayout(SwaMehbox6)
         SwaMehbox7 = QtWidgets.QHBoxLayout(Ui_MainWindow.rightFrame)
         SwaMehbox7.addWidget(Ui_MainWindow.SRUNButton)
         SwaMehbox7.addWidget(Ui_MainWindow.Stextedit)
@@ -279,8 +280,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.filename = QtWidgets.QLabel(UploadFrame)
         InputLabel = QtWidgets.QLabel(UploadFrame)
         uploadLabel = QtWidgets.QLabel(UploadFrame)
-        UploadProgress = QtWidgets.QProgressBar()
-        UploadProgress.setGeometry(200, 80, 200, 20)
+        Ui_MainWindow.UploadProgress = QtWidgets.QProgressBar()
+        Ui_MainWindow.UploadProgress.setGeometry(200, 80, 200, 20)
         Ui_MainWindow.progress1 = QtWidgets.QProgressBar(AnalysisFrame)
         analysisLabel = QtWidgets.QLabel(AnalysisFrame)
         
@@ -310,7 +311,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         hbox8.addWidget(Ui_MainWindow.filename)
         vbox.addLayout(hbox8)
         hbox9 = QtWidgets.QHBoxLayout()
-        hbox9.addWidget(UploadProgress)
+        hbox9.addWidget(Ui_MainWindow.UploadProgress)
         vbox.addLayout(hbox9)
         Ui_MainWindow.browse.setFixedHeight(30)
         Ui_MainWindow.filename.setFixedHeight(30)
@@ -640,7 +641,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.badpredictionList = []
         # InputtingFile:
         QtWidgets.QMessageBox.about(Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
-                          "For this supervised approach you will need to provide training and test set data that contains both good and bad quality data. It is imperitive that you have high confidence in the training set and we recommend that you run PCA on the set to ascertain that there are no outliers. \n You will be asked to select a folder which contains corresponding pepxml Ui_MainWindow.files and QuaMeter/SwaMe output Ui_MainWindow.files for training set selection. Then you will be presented with a graph on which you should separate good from bad. Next you will do the same for the test set after which you will be presented with the model fit results.")
+                          "For this supervised approach you will need to set aside files that have not been included in the main dataset which will be randomly divided into test and training sets. You first be asked to provide the idenification results (pepXML's, mzidentML's or summary.txt's) for. These results will be plotted and you will be asked to select a subgroup of 'bad' data. The left over files are automatically classified as good data. Next you will need to provide the corresponding quality files for this dataset. The model is built and the original dataset is classified into good or bad data.")
         
         FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
         TrainingSetfiles = FileInput.BrowseWindow.GetTrainingSetFiles(self)
