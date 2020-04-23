@@ -562,7 +562,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
             return FilesDir
 
     def GetQuaMeterPath(self):
-        QuaMeterPath,_ = QtWidgets. QFileDialog.getOpenFileName(None, "Please locate the QuaMeter exe on your system:", "", "exe files (*.exe)", 
+        QuaMeterPath,_ = QtWidgets.QFileDialog.getOpenFileName(None, "Please locate the QuaMeter exe on your system:", "", "exe files (*.exe)", 
                                                                options=
                                                                QtWidgets.QFileDialog.\
                                                                    Options())
