@@ -431,8 +431,15 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
             if "Filename " in Ui_MainWindow.metrics[0].columns:
                 Ui_MainWindow.metrics[0] = Ui_MainWindow.metrics[0].rename(columns={"Filename ": 'Filename'})               
-            if  "filename" in  [x.lower() for x in Ui_MainWindow.metrics[0].columns]:
-                Ui_MainWindow.metrics[0].index = Ui_MainWindow.metrics[0]["Filename"]
+            if  "Filename" in Ui_MainWindow.metrics[0].columns:
+                filenames = Ui_MainWindow.metrics[0]["Filename"]
+                if ".mzml" in filenames[0].lower():
+                       for item in range(0,len(filenames)):
+                            if ".mzml" in filenames[item].lower():
+                                filenames[item] = filenames[item].split('.')[0]
+                            
+                    
+                Ui_MainWindow.metrics[0].index = filenames
             Ui_MainWindow.NumericMetrics =[]
             #Ui_MainWindow.checkColumnLength(self)
             #Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics[0].index[0])
@@ -440,6 +447,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
             Ui_MainWindow.NumericMetrics[0]  = DataPreparation.DataPrep.RemoveLowVarianceColumns(self, self.NumericMetrics[0])
             Ui_MainWindow.NumericMetrics[0].index = Ui_MainWindow.metrics[0].index
+            
+            
         Ui_MainWindow.EnableAnalysisButtons(self)
 
     @pyqtSlot()
