@@ -155,22 +155,11 @@ class RandomForest(FigureCanvas):
         badset = pd.DataFrame()
         badset["B"] = results["B"]
         badset["predict"] = results["predict"]
-        badset["X"] = 0
-        badset.index = results.index
-        # Trying to create a beeswarm plot that is semi impossible in matplotlib:
-        badsetround = badset["B"].round(2)
-        bsrset = set(badsetround)
-        for ii in bsrset:   
-            counter = -1    
-            for i in range(0, len(badsetround)):
-                if badsetround[i] == ii:
-                    counter=counter+1
-                    if counter>0:
-                        if counter % 2 == 0:
-                            badset["X"].iloc[i] = 0 + counter * 0.1
-                        else:
-                            badset["X"].iloc[i] = 0 - counter * 0.1                        
         
+        
+        badset = badset.sort_values("B")
+        badset.index = results.index
+        badset["X"] = range(0,len(badset.index)) #Later the annotations get added to this column
         global fig
         fig = Figure()#figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
@@ -179,9 +168,9 @@ class RandomForest(FigureCanvas):
         ax = fig.add_subplot(1,1,1)
         for i in range(0,len(badset.index)):
             if badset["predict"].iloc[i]=='G':
-                ax.plot(0+ badset["X"].iloc[i], badset["B"].iloc[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
+                ax.plot(badset.index[i], badset["B"].iloc[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
             else:
-                ax.plot(0+ badset["X"].iloc[i], badset["B"].iloc[i],  marker='o', markerfacecolor='red', markeredgecolor='r')
+                ax.plot(badset.index[i], badset["B"].iloc[i],  marker='o', markerfacecolor='red', markeredgecolor='r')
         ax.set_ylabel("Proportion of trees that voted each sample as 'bad'")
         FigureCanvas.__init__(self, fig)
         #self.setParent(parent)
@@ -193,6 +182,9 @@ class RandomForest(FigureCanvas):
         ax.set_title("Red samples were classified as 'bad' by the model", fontsize=9)
         fig.suptitle("Proportion of trees that voted each sample into the same category as the 'bad' training data", fontsize=10)
         
+        for tick in ax.get_xticklabels():
+                tick.set_rotation(90)
+                
         self.compute_initial_figure()
         annot = ax.annotate("", xy=(0,0.5),color='green') 
    
