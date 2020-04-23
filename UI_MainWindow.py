@@ -291,7 +291,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.browse.setText("Browse...")
         Ui_MainWindow.filename.setText("   File...                  ")
         Ui_MainWindow.filename.setStyleSheet("background-color: white;")
-        InstructionLabel.setText( "Choose between uploading quality metrics or generating them by running QuaMeter or SwaMe directly:")
+        InstructionLabel.setText( "Choose between uploading quality metrics or generating them by running QuaMeter ID-Free or SwaMe directly:")
         InstructionLabel.setFont(Ui_MainWindow.boldfont)
         InputLabel.setText("File Input")
         InputLabel.setFont(Ui_MainWindow.boldfont)
