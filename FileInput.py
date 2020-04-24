@@ -496,7 +496,10 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
                                                 AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
                                         else:
-                                            AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'] 
+                                            if type(iii['value'])==list and len(iii['value'])==0:
+                                                continue
+                                            else:
+                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'] 
 
                                  else:# We first need to create the column:
 
@@ -516,7 +519,10 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                             if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
                                                 AllMetricSizesDf[dfIndex].loc[[filename], [metricname]]  = iii['value'][0]
                                             else:
-                                                AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value']
+                                                if type(iii['value'])==list and len(iii['value'])==0:
+                                                    continue
+                                                else:
+                                                    AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value']
                                         
 
                                     
