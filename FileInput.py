@@ -130,35 +130,12 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     inputFiles = possibleinputFiles
                     trainingmetrics =  BrowseWindow.CombineJSONs(UI_MainWindow.Ui_MainWindow, inputFiles)
                     #Check if both are DDA or both are DIA:
-                    if len(trainingmetrics[0].columns)==len(UI_MainWindow.Ui_MainWindow.metrics[0].columns)or len(trainingmetrics[0].columns)+1 ==len(UI_MainWindow.Ui_MainWindow.metrics[0].columns) and 'dates' in UI_MainWindow.Ui_MainWindow.metrics[0].columns:    
-                            if "Filename" in  trainingmetrics[0].columns:
-                                    trainingmetrics[0].index = trainingmetrics[0]["Filename"]
-                            UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
-                            for i in range(1,len(trainingmetrics)):
-                                    NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, trainingmetrics[i])
-                                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
-                                        NMColumnsonly))
-                        
-                    else:
-                            QtWidgets.QMessageBox.warning(self, "Warning","The column names between the training set quality files and the original files uploaded differ and the test cannot be performed.")
-
+                   
                         
                 elif justTSVFiles:
                     inputFiles = possibleinputFiles
                     trainingmetrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)          
-                    if len(trainingmetrics[0].columns)==len(UI_MainWindow.Ui_MainWindow.metrics[0].columns) or len(trainingmetrics[0].columns)+1 ==len(UI_MainWindow.Ui_MainWindow.metrics[0].columns) and 'dates' in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
-                          
-                            UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
-                            for i in range(0,len(trainingmetrics)):
-                                #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
-                                    #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-                                    NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, trainingmetrics[i])
-                                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
-                                    NMColumnsonly))
-                        
-                    else:
-                            QtWidgets.QMessageBox.warning(self, "Warning","The column names between the training set quality files and the original files uploaded differ and the test cannot be performed.")
-
+                   
                 else: 
                       QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,
                                       "Error:" ,"Something went wrong, please try again.")
@@ -167,21 +144,22 @@ class BrowseWindow(QtWidgets.QMainWindow):
             else:
                     UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
                     df = pd.read_csv(possibleinputFiles[0], sep="\t")
-                    if len(df.columns)==len(UI_MainWindow.Ui_MainWindow.metrics[0].columns) or len(df.columns)+1 ==len(UI_MainWindow.Ui_MainWindow.metrics[0].columns) and 'dates' in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
-                            if "Filename" in df.columns:
-                                    if ".mzML" in df["Filename"].iloc[0]:
-                                        for file in range(0,len(df.index)):
-                                            df["Filename"].iloc[file] =   os.path.splitext(df["Filename"].iloc[file])[0]
+                    if 'Filename' in df.columns:
+                        if ".mzML" in df['Filename'][0]:
+                            for item in range(0,len(df['Filename'])):
+                                df['Filename'].iloc[item] = df['Filename'].iloc[item].split('.')[0]
+                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(df)
+                   
+    def checkTrainingQualityColumns(self, trainingmetrics):
+                            UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
+                            for i in range(0,len(trainingmetrics)):
+                                #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
+                                    #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
+                                    NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, trainingmetrics[i])
+                                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
+                                    NMColumnsonly))
                         
-                                    df.index = df["Filename"]   
-                            NMColumnsonly=DataPreparation.DataPrep.ExtractNumericColumns(self, df)
-                            UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
-                                    NMColumnsonly))  
-                      
-                    else:
-                        QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Warning","The column names between the training set quality files and the original files uploaded differ and the test cannot be performed.")
         
-               
     
     def fileTypeCheck(self,inputFile):
         if inputFile.endswith('.json') or inputFile.endswith('.csv') or inputFile.endswith('.tsv'):
@@ -260,7 +238,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
           else:
             QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message from Assurance: ", "Error: File type incorrect. Please load a pepXML/ a summary.txt file from MaxQuant.")
-            UI_MainWindow.Ui_MainWindow.onLongitudinalClicked(UI_MainWindow.Ui_MainWindow)
+            UI_MainWindow.Ui_MainWindow.onLongitudinalClicked(self)
             
     def TrainingSetParse(self,inputFile):
         if inputFile.endswith('.csv'):
