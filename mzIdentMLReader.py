@@ -23,7 +23,7 @@ class mzIdentMLReader():
                 #lines = thisFile.readlines()
                 file = thisFile.read()
                 allpeptides = re.findall('Peptide id=', file)
-                spectrumIDs = re.findall("SpectrumIdentificationResult id=", file)
+                spectrumIDs = re.findall("<SpectrumIdentificationResult", file)
                 pepTable.loc[filename] =  [filename, len(allpeptides), len(spectrumIDs)]
         print("Parsing took " + str(time.perf_counter()-startParseTime) + "seconds.")
         return pepTable    
