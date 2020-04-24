@@ -46,7 +46,24 @@ class OutputWriter(object):
                     else:
                         pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
                         currentcolumn = currentcolumn+1    
-            
+        
+        elif "Filename" in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
+            currentcolumn = 0  
+            for filename in UI_MainWindow.Ui_MainWindow.metrics[0]['Filename']:
+                          
+                if len(filename)>20:
+                    if currentcolumn >0:
+                        ln=1
+                    pdf.cell(200, 10, txt=str(filename), ln=1, align="C")
+                    currentcolumn =0
+                else:
+                    if currentcolumn>4:
+                        ln = 1
+                        pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                        currentcolumn = 1
+                    else:
+                        pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                        currentcolumn = currentcolumn+1    
             
         pdf.set_text_color(0, 0, 0)
         pdf.cell(200, 10, txt='Assurance version: Development', ln=1, align="L")
@@ -89,6 +106,7 @@ class OutputWriter(object):
             if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
                 pdfName = "00AssuranceReport.pdf"
                 pdf.output(pdfName) 
+                pdf.close()
             
         UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(33)
         
