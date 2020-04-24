@@ -125,18 +125,18 @@ class OutputWriter(object):
             
             #Find the names of training samples:
             trainingSampleNames = []
-            for element in RandomForest.RandomForest.train["XIC-WideFrac"]:
-                for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["XIC-WideFrac"])):
-                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["XIC-WideFrac"][item]:
-                        match = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item]
+            for element in RandomForest.RandomForest.train[RandomForest.RandomForest.train.columns[1]]:
+                for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][1])):
+                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][1][item]:
+                        match = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][1].index[item]
                         if match not in trainingSampleNames:
                             trainingSampleNames.append(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item])
                 
             
             testSampleNames = []
-            for element in RandomForest.RandomForest.test["XIC-WideFrac"]:
-                for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["XIC-WideFrac"])):
-                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["XIC-WideFrac"][item]:
+            for element in RandomForest.RandomForest.test[0]:
+                for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][0])):
+                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][0][item]:
                         match = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item]
                         if match not in testSampleNames:
                             testSampleNames.append(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item])
@@ -172,34 +172,23 @@ class OutputWriter(object):
             pdf.set_font('helvetica','B', size=14)
             pdf.cell(200, 10, txt="Performance metrics:", ln=1, align="C")
             pdf.set_font('helvetica', size=10)
-            pdf.cell(50, 10, txt="MSE:", ln=0, align="C")
+            pdf.cell(50, 10, txt="F1:", ln=0, align="C")
             pdf.set_text_color(105,105,105)
-            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["MSE"],4)), ln=0, align="C")
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance.F1(),4)), ln=0, align="C")
             pdf.set_text_color(0, 0, 0)
-            pdf.cell(50, 10, txt="RMSE:", ln=0, align="C")
+            pdf.cell(50, 10, txt="Accuracy:", ln=0, align="C")
             pdf.set_text_color(105,105,105)
-            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["RMSE"],4)), ln=0, align="C")
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance.accuracy(),4)), ln=0, align="C")
             pdf.set_text_color(0, 0, 0)
-            pdf.cell(50, 10, txt="R2:", ln=0, align="C")
+            pdf.cell(50, 10, txt="MCC:", ln=0, align="C")
             pdf.set_text_color(105,105,105)
-            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["r2"],4)), ln=1, align="C")
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance.mcc(),4)), ln=1, align="C")
             pdf.set_text_color(0, 0, 0)
             pdf.cell(50, 10, txt="logloss:", ln=0, align="C")
             pdf.set_text_color(105,105,105)
             pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["logloss"],4)), ln=0, align="C")
             pdf.set_text_color(0, 0, 0)
-            pdf.cell(50, 10, txt="AUC:", ln=0, align="C")
-            pdf.set_text_color(105,105,105)
-            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["AUC"],4)), ln=0, align="C")
-            pdf.set_text_color(0, 0, 0)
-            pdf.cell(50, 10, txt="GINI:", ln=0, align="C")
-            pdf.set_text_color(105,105,105)
-            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["Gini"],4)), ln=1, align="C")
-            pdf.set_text_color(0, 0, 0)
-            pdf.cell(50, 10, txt="Mean per class error:", ln=0, align="C")
-            pdf.set_text_color(105,105,105)
-            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["mean_per_class_error"],4)), ln=1, align="C")        
-            pdf.set_text_color(0, 0, 0)    
+              
             
             pdf.cell(200, 10, txt="The following samples were predicted by Random Forest to resemble the group labelled 'bad' quality:", ln=1, align="C")
             
