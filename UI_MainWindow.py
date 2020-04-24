@@ -411,17 +411,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def disable_slot(self):
         PCAGraph.PCAGraph.loadingsToggledOff(self)
 
-    @pyqtSlot()
-    def onQuaMeterClicked(self):
-        Ui_MainWindow.DisableAnalysisButtons(self)
-        QuaMeter.QuaMeter.setupUI(self)
-
-
-    @pyqtSlot()
-    def onSwaMeClicked(self):
-        Ui_MainWindow.DisableAnalysisButtons(self)
-        SwaMe.SwaMe.setupUI(self)
-
+    
     @pyqtSlot()
     def onBrowseClicked(self):
         Ui_MainWindow.DisableAnalysisButtons(self)
