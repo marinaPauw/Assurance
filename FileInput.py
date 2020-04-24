@@ -102,7 +102,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
             if(TrainingSetFiles):
                 return TrainingSetFiles
     
-    def GetTrainingQualityFiles(self, trainingortest):
+    def GetTrainingQualityFiles(self):
         files = QtWidgets. QFileDialog()
         files.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
         possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(UI_MainWindow.Ui_MainWindow.tab, 
