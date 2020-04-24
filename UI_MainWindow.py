@@ -639,30 +639,48 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.badPredicted = False
         Ui_MainWindow.goodpredictionList = []
         Ui_MainWindow.badpredictionList = []
-        # InputtingFile:
-        QtWidgets.QMessageBox.about(Ui_MainWindow.tab,  "You have selected Longitudinal analysis.",
-                          "For this supervised approach you will need to set aside files that have not been included in the main dataset which will be randomly divided into test and training sets. You first be asked to provide the idenification results (pepXML's, mzidentML's or summary.txt's) for. These results will be plotted and you will be asked to select a subgroup of 'bad' data. The left over files are automatically classified as good data. Next you will need to provide the corresponding quality files for this dataset. The model is built and the original dataset is classified into good or bad data.")
         
-        FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
-        TrainingSetfiles = FileInput.BrowseWindow.GetTrainingSetFiles(self)
-        Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Number of distinct peptides","Number of spectra identified"])
-        
-        if TrainingSetfiles:
-            if "pepxml" in TrainingSetfiles[0].lower():
-                Ui_MainWindow.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetfiles)
-            elif ".txt" in TrainingSetfiles[0].lower():
-                Ui_MainWindow.TrainingSetTable =maxQuantTxTReader.maxQuantTxtReader.parseTxt(self, TrainingSetfiles[0])
-            elif ".mzid" in TrainingSetfiles[0].lower():
-                Ui_MainWindow.TrainingSetTable =mzIdentMLReader.mzIdentMLReader.parsemzID(self, TrainingSetfiles)
+        #Make a messagebox to ask how you wanna do this:
+        msgBox = QtWidgets.QMessageBox()
+        msgBox.setText("For this supervised approach you will need to set aside files that have not been included in the main dataset which will be randomly divided into test and training sets. You need to divide those files into examples of good and bad quality. How would you like to do so?")
+        msgBox.addButton(QtWidgets.QPushButton('Select from graph of IDs'), QtWidgets.QMessageBox.YesRole)
+        msgBox.addButton(QtWidgets.QPushButton('Select from table of quality metrics'), QtWidgets.QMessageBox.YesRole)
+        msgBox.addButton(QtWidgets.QPushButton('Cancel'), QtWidgets.QMessageBox.RejectRole)
+        ret = msgBox.exec_()
+
+        if ret == 0: # They want the graph
+            FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
+            TrainingSetfiles = FileInput.BrowseWindow.GetTrainingSetFiles(self)
+            Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Number of distinct peptides","Number of spectra identified"])
             
+            if TrainingSetfiles:
+                if "pepxml" in TrainingSetfiles[0].lower():
+                    Ui_MainWindow.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetfiles)
+                elif ".txt" in TrainingSetfiles[0].lower():
+                    Ui_MainWindow.TrainingSetTable =maxQuantTxTReader.maxQuantTxtReader.parseTxt(self, TrainingSetfiles[0])
+                elif ".mzid" in TrainingSetfiles[0].lower():
+                    Ui_MainWindow.TrainingSetTable =mzIdentMLReader.mzIdentMLReader.parsemzID(self, TrainingSetfiles)
+                
+                Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
+                Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px")
+                Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
+                Ui_MainWindow.CreateTrainingTab(self)
+                self.setCurrentIndex(Ui_MainWindow.sIndex)
+                Ui_MainWindow.RandomForestPerformed = True
+                Ui_MainWindow.pdf.setEnabled(True)
+        
+        elif ret == 1:# They want the table
+            FileInput.BrowseWindow.GetTrainingQualityFiles(self)
             Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
             Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px")
             Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
-            
-            Ui_MainWindow.CreateTrainingTab(self)
+            RandomForest.RandomForest.createTable(self)
             self.setCurrentIndex(Ui_MainWindow.sIndex)
             Ui_MainWindow.RandomForestPerformed = True
             Ui_MainWindow.pdf.setEnabled(True)
+            
+            
+            
         
 
     def CreateTrainingTab(self):

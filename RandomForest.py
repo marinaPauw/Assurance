@@ -26,6 +26,7 @@ import imblearn
 import h2o
 from h2o.estimators import H2ORandomForestEstimator
 from h2o.grid.grid_search import H2OGridSearch
+from PyQt5.QtWidgets import QTableWidget,QTableWidgetItem
 
 class RandomForest(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -50,89 +51,29 @@ class RandomForest(FigureCanvas):
 
         # Load in the quality data for training set:
         FileInput.BrowseWindow.__init__(UI_MainWindow.Ui_MainWindow)
-        FileInput.BrowseWindow.GetTrainingQualityFiles(UI_MainWindow.Ui_MainWindow, "training")
+        FileInput.BrowseWindow.GetTrainingQualityFiles(UI_MainWindow.Ui_MainWindow)
+        #FileInput.BrowseWindow.checkTrainingQualityColumns(self, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics)
+        
+        if type(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[0]) != str:
+            UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["Filename"]
+                
+        
         if hasattr(UI_MainWindow.Ui_MainWindow, "Numerictrainingmetrics"):
-            if(UI_MainWindow.Ui_MainWindow.badPredicted):
-                    # Test that Filenames in the quality side and the pepXML's are the same:
-                    for filename in  UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index:
-                                if filename not in table["Filename"]:
-                                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" , "A sample has been identified for which the raw file name was not found in the pepXML's: "+str(filename) + ". The sample was removed from further analysis. Make sure the files in Filename column correspond with file names of pepXML's." )
+            for filename in  UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index:
+                    if filename not in table["Filename"]:
+                                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" , "A sample has been identified for which the raw file name was not found in the ID files: "+str(filename) + ". The sample was removed from further analysis. Make sure the files in Filename column correspond with file names of IDs." )
                                     UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].drop([filename])
                     
-                    
-                    RandomForest.createguideSet(RandomForest)
-                    
-                    WithoutClass = np.array(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns != 'GoodOrBad'])
-                    Classy = np.array(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].ix[:, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns == 'GoodOrBad'])
-                    minSamples = min(len(Classy[Classy=="G"]), len(Classy[Classy=="B"]))
-                    
-                    oversample = imblearn.over_sampling.SMOTE(k_neighbors=minSamples-1)
-                    try:
-                        X, Y = oversample.fit_resample(WithoutClass, Classy.ravel())
-                    except ValueError:
-                        QtWidgets.QMessageBox.warning("ValueError", "Perhaps the number of samples of one of the classes was not enough?")
-                    
-                    dataToBeSplit = pd.concat([pd.DataFrame(X),pd.DataFrame(Y)],axis = 1)
-                    # Input parameters that are going to train
-                    dataToBeSplit.columns= UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns
-                    
-                    dataToBeSplit["GoodOrBad"] = dataToBeSplit["GoodOrBad"].astype('category')
-                    training_columns = list(dataToBeSplit.columns[dataToBeSplit.columns != 'GoodOrBad'])
-                    # Output parameter train against input parameters
-                    response_column = 'GoodOrBad'
-                    # Split data into train and testing
-                    h2o.init()
-                    dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
-                    train, test = dataToBeSplit.split_frame(ratios=[0.6])
-                    
-                    #Check that the training set contains both groups else error is thrown:
-                    while len(train["GoodOrBad"].unique())<2:
-                        train, test = dataToBeSplit.split_frame(ratios=[0.6])
-                    
-                    train = train.as_data_frame()
-                    train["GoodOrBad"] = train["GoodOrBad"].astype('category')
-                    RandomForest.train = train #For the report writing
-                    
-                    test = test.as_data_frame()
+                        
+            if(UI_MainWindow.Ui_MainWindow.badPredicted):
+                    RandomForest.RunRandomForest(self)
                    
-                    RandomForest.test = test
-                    
-                    hyper_parameters = {'ntrees':[50,200], 'max_depth':[20,44], 'mtries':-1}
-                    models = H2OGridSearch(H2ORandomForestEstimator, hyper_params=hyper_parameters)
-                    
-                                     
-                    
-                    
-                    #model = H2ORandomForestEstimator(ntrees=50, max_depth=20, seed=1234, balance_classes= True, class_sampling_factors =[0.6,0.4],  score_each_iteration = True)
-                    # Train model
-                    models.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train))
-                    
-                    
-                    
-                    # Model performance
-                    sortedModels= models.get_grid(sort_by='auc', decreasing=True)
-                    
-                   
-                    best_model = sortedModels.models[0]
-
-                    # Now let's evaluate the model performance on a test set
-                    # so we get an honest estimate of top model performance
-                    performance = best_model.model_performance(h2o.H2OFrame(test))
-
-                    #best_gbm_perf1.auc()
-                    
-                    #performance = model.model_performance(train=True)
-                    RandomForest.performance = performance
-                    #Run the random Forest on the original data:
-                    rf = best_model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
-                    results = rf.as_data_frame()
-                    results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
-                    RandomForestResultsTab.LongitudinalTab.printModelResults(self, performance, results, best_model)
-                    
     def AllocateGoodOrBad(self, table):              
 
         #Now we have to create a column and add to it whether the sample was in the desired or suboptimal group. 
         #This column will serve as our value to predict
+        
+        
         table["GoodOrBad"] = "G"
         for i in UI_MainWindow.Ui_MainWindow.badpredictionList:
             found = False
@@ -142,7 +83,7 @@ class RandomForest(FigureCanvas):
                     found = True
                     continue
             if not found:
-                table["GoodOrBad"].iloc[ii] = "Not Found"
+                table.drop(table.index[ii], inplace=True)
         return table
 
     def createguideSet(self):
@@ -171,7 +112,7 @@ class RandomForest(FigureCanvas):
                 ax.plot(badset.index[i], badset["B"].iloc[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
             else:
                 ax.plot(badset.index[i], badset["B"].iloc[i],  marker='o', markerfacecolor='red', markeredgecolor='r')
-        ax.set_ylabel("Proportion of trees that voted each sample as 'bad'")
+        ax.set_ylabel("Probability of sample being classified as 'bad'")
         FigureCanvas.__init__(self, fig)
         #self.setParent(parent)
 
@@ -180,13 +121,14 @@ class RandomForest(FigureCanvas):
                                    QtWidgets.QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
         ax.set_title("Red samples were classified as 'bad' by the model", fontsize=9)
-        fig.suptitle("Proportion of trees that voted each sample into the same category as the 'bad' training data", fontsize=10)
+        fig.suptitle("Probability of each sample being classified into the same category as the 'bad' training data", fontsize=10)
         
         for tick in ax.get_xticklabels():
                 tick.set_rotation(90)
                 
         self.compute_initial_figure()
         annot = ax.annotate("", xy=(0,0.5),color='green') 
+        fig.savefig("RFPlot.png", dpi = 500)
    
     def compute_initial_figure(self):
         pass
@@ -194,3 +136,101 @@ class RandomForest(FigureCanvas):
     def printForReport(self):
         fig.savefig("RFPlot.png", dpi = 500)
 
+    def createTable(self):
+        UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn = QtWidgets.QPushButton(
+                'This is my selection for suboptimal quality.',
+                UI_MainWindow.Ui_MainWindow.TrainingOrTestSet)
+        UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
+        
+        self.table = QtWidgets.QTableWidget()
+        self.table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        df = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]
+        self.table.setRowCount(len(df))
+        self.table.setColumnCount(len(df.columns))
+        for i in range(len(df.index)):
+            for j in range(len(df.columns)):
+                x = str(df.iloc[i, j])
+                self.table.setItem(i, j, QTableWidgetItem(x))
+        self.table.setHorizontalHeaderLabels(df.columns)
+        self.table.setSortingEnabled(True)
+        
+        RFSelectionGrid = QtWidgets.QGridLayout(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet)
+        RFSelectionGrid.addWidget(self.table,0,0,1,3)
+        RFSelectionGrid.addWidget(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn,2,1,2,1)
+        UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.compute(self))
+        UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(True)
+            
+        
+    def compute(self):
+        UI_MainWindow.Ui_MainWindow.badpredictionList = []
+        UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
+        if type(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[0]) != str:
+            UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["Filename"]
+        
+        for item in self.table.selectionModel().selectedRows():
+            UI_MainWindow.Ui_MainWindow.badpredictionList.append(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item.row()])
+        print(len(UI_MainWindow.Ui_MainWindow.badpredictionList))
+        if len(UI_MainWindow.Ui_MainWindow.badpredictionList)>2:
+                    RandomForest.RunRandomForest(self)
+        #for index in sorted(self.table.selectionModel().selectedRows()):
+        
+    def RunRandomForest(self):
+        for column in UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns:
+            if column not in UI_MainWindow.Ui_MainWindow.metrics[0].columns and column != "GoodOrBad":
+                UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0] = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].drop(columns=[column])
+                
+      
+        RandomForest.createguideSet(RandomForest)
+        
+        dataToBeSplit = RandomForest.guideSetDf
+                    
+        dataToBeSplit.columns= RandomForest.guideSetDf.columns
+                    
+        dataToBeSplit["GoodOrBad"] = dataToBeSplit["GoodOrBad"].astype('category')
+        training_columns = list(dataToBeSplit.columns[dataToBeSplit.columns != 'GoodOrBad'])
+        # Output parameter train against input parameters
+        response_column = 'GoodOrBad'
+        # Split data into train and testing
+        h2o.init()
+        dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
+        train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 73)
+                    
+                    
+        #Check that the training set contains both groups else error is thrown:
+        while len(train["GoodOrBad"].unique())<2:
+                        train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 73)
+                        
+                    
+        train = train.as_data_frame()
+        train["GoodOrBad"] = train["GoodOrBad"].astype('category')
+        RandomForest.train = train #For the report writing
+        print("The number of good in the training section are: " + str( len(train[train["GoodOrBad"]=="G"])))
+        test = test.as_data_frame()
+        RandomForest.test = test
+                    
+        # Search criteria
+        search_criteria = {'strategy': 'RandomDiscrete',  'seed': 73}
+        # Hyper parameters
+        hyper_parameters = {'ntrees':[50,200], 'max_depth':[20,40], 'mtries':-1}
+                    
+        models = H2OGridSearch(H2ORandomForestEstimator(balance_classes=True, seed = 73),  hyper_params=hyper_parameters, search_criteria = search_criteria)
+                    
+        models.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train), seed=73)
+                    
+        sortedModels= models.get_grid(sort_by='accuracy', decreasing=True)
+                    
+        best_model = sortedModels.models[0]
+
+        # Now let's evaluate the model performance on a test set
+        # so we get an honest estimate of top model performance
+        performance = best_model.model_performance(h2o.H2OFrame(test))
+
+        RandomForest.performance = performance
+        #Run the random Forest on the original data:
+        rf = best_model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
+        results = rf.as_data_frame()
+        results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
+        RandomForestResultsTab.LongitudinalTab.printModelResults(self, performance, results, best_model)
+                    
