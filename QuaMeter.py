@@ -80,5 +80,5 @@ class QuaMeter():
         UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
         UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(self)
         UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
-        QtWidgets.QMessageBox.about(self, "Message","QuaMeter has finished successfully.")
+        QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message","QuaMeter has finished successfully.")
 
