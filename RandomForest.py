@@ -234,4 +234,5 @@ class RandomForest(FigureCanvas):
         results = rf.as_data_frame()
         results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
         RandomForestResultsTab.LongitudinalTab.printModelResults(self, performance, results, best_model)
+        UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
                     
