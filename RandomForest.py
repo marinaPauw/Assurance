@@ -196,12 +196,12 @@ class RandomForest(FigureCanvas):
         # Split data into train and testing
         h2o.init()
         dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
-        train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 73)
+        train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
                     
                     
         #Check that the training set contains both groups else error is thrown:
         while len(train["GoodOrBad"].unique())<2:
-                        train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 73)
+                        train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
                         
                     
         train = train.as_data_frame()
@@ -212,13 +212,13 @@ class RandomForest(FigureCanvas):
         RandomForest.test = test
                     
         # Search criteria
-        search_criteria = {'strategy': 'RandomDiscrete',  'seed': 73}
+        search_criteria = {'strategy': 'RandomDiscrete',  'seed': 1}
         # Hyper parameters
         hyper_parameters = {'ntrees':[50,200], 'max_depth':[20,40], 'mtries':-1}
                     
-        models = H2OGridSearch(H2ORandomForestEstimator(balance_classes=True, seed = 73),  hyper_params=hyper_parameters, search_criteria = search_criteria)
+        models = H2OGridSearch(H2ORandomForestEstimator(balance_classes=True, seed = 1),  hyper_params=hyper_parameters, search_criteria = search_criteria)
                     
-        models.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train), seed=73)
+        models.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train), seed=1)
                     
         sortedModels= models.get_grid(sort_by='accuracy', decreasing=True)
                     
