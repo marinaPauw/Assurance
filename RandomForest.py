@@ -107,6 +107,7 @@ class RandomForest(FigureCanvas):
         global ax
         global annot
         ax = fig.add_subplot(1,1,1)
+        fig.subplots_adjust(bottom=0.3)
         for i in range(0,len(badset.index)):
             if badset["predict"].iloc[i]=='G':
                 ax.plot(badset.index[i], badset["B"].iloc[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
