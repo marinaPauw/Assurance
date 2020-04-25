@@ -18,6 +18,11 @@ class QuaMeter():
         QuaMeter.Dir = FileInput.BrowseWindow.GetQuaMeterInputFiles(QuaMeter)
         if(QuaMeter.Dir):
             UI_MainWindow.Ui_MainWindow.fileList.setText(QuaMeter.Dir)
+            try:
+                UI_MainWindow.Ui_MainWindow.assuranceDirectory = os.getcwd()
+                os.chdir(QuaMeter.Dir)
+            except:
+                print("Changing the directory didn't work.")
     
     def onQuaMeterRUNClicked(self):
         if(UI_MainWindow.Ui_MainWindow.CLOTextBox.text()):
