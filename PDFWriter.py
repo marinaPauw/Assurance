@@ -35,12 +35,12 @@ class OutputWriter(object):
                           
                 if len(filename)>20:
                     if currentcolumn >0:
-                        ln=1
+                        pdf.ln()
                     pdf.cell(200, 10, txt=str(filename), ln=1, align="C")
                     currentcolumn =0
                 else:
                     if currentcolumn>4:
-                        ln = 1
+                        pdf.ln()
                         pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
                         currentcolumn = 1
                     else:
@@ -53,12 +53,12 @@ class OutputWriter(object):
                           
                 if len(filename)>20:
                     if currentcolumn >0:
-                        ln=1
+                        pdf.ln()
                     pdf.cell(200, 10, txt=str(filename), ln=1, align="C")
                     currentcolumn =0
                 else:
                     if currentcolumn>4:
-                        ln = 1
+                        pdf.ln()
                         pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
                         currentcolumn = 1
                     else:
@@ -106,7 +106,6 @@ class OutputWriter(object):
             if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
                 pdfName = "00AssuranceReport.pdf"
                 pdf.output(pdfName) 
-                pdf.close()
             
         UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(33)
         
@@ -148,12 +147,12 @@ class OutputWriter(object):
                           
                 if len(filename)>20:
                     if currentcolumn >0:
-                        ln=1
+                        pdf.ln()
                     pdf.cell(200, 10, txt=str(filename), ln=1, align="C")
                     currentcolumn =0
                 else:
                     if currentcolumn>4:
-                        ln = 1
+                        pdf.ln()
                         pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
                         currentcolumn = 1
                     else:
@@ -170,12 +169,12 @@ class OutputWriter(object):
                           
                 if len(filename)>20:
                     if currentcolumn >0:
-                        ln=1
+                        pdf.ln()
                     pdf.cell(200, 10, txt=str(filename), ln=1, align="C")
                     currentcolumn =0
                 else:
                     if currentcolumn>4:
-                        ln = 1
+                        pdf.ln()
                         pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
                         currentcolumn = 1
                     else:
@@ -210,12 +209,12 @@ class OutputWriter(object):
                           
                 if len(filename)>20:
                     if currentcolumn >0:
-                        ln=1
+                        pdf.ln()
                     pdf.cell(200, 10, txt=str(filename), ln=1, align="C")
                     currentcolumn =0
                 else:
                     if currentcolumn>4:
-                        ln = 1
+                        pdf.ln()
                         pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
                         currentcolumn = 1
                     else:
