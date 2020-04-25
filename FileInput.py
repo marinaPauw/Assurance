@@ -554,6 +554,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
             return QuaMeterPath
 
     def SwaMeFileTypeCheck(self, inputFile):
+        
+        
         if inputFile.endswith('.mzML'):
             return inputFile
         else:
@@ -567,12 +569,21 @@ class BrowseWindow(QtWidgets.QMainWindow):
             return FilesDir
 
     def GetSwaMePath(self):
-        SwaMePath,_ = QtWidgets. QFileDialog.getOpenFileNames(None, "Please locate the SwaMe exe on your system:", "", "exe files (*.exe)", 
-                                                               options=
-                                                               QtWidgets.QFileDialog.\
-                                                                   Options())
-        if(SwaMePath):
+        SwaMePath = ""
+        if hasattr(UI_MainWindow.Ui_MainWindow, "assuranceDirectory"):
+            if "SwaMe" in os.listdir(UI_MainWindow.Ui_MainWindow.assuranceDirectory):
+                folderDir = os.path.join(UI_MainWindow.Ui_MainWindow.assuranceDirectory, "SwaMe")
+                if "SwaMe.Console.exe" in os.listdir(folderDir):
+                    SwaMePath = os.path.join(folderDir, "SwaMe.Console.exe")
+        if len(SwaMePath)>2:
             return SwaMePath
+        else:
+            SwaMePath,_ = QtWidgets. QFileDialog.getOpenFileNames(None, "Please locate the SwaMe exe on your system:", "", "exe files (*.exe)", 
+                                                                options=
+                                                                QtWidgets.QFileDialog.\
+                                                                    Options())
+            if(SwaMePath):
+                return SwaMePath
 
     def GetIRTInputFile(self):
         file = QtWidgets. QFileDialog()
