@@ -126,47 +126,61 @@ class OutputWriter(object):
             #Find the names of training samples:
             trainingSampleNames = []
             for element in RandomForest.RandomForest.train[RandomForest.RandomForest.train.columns[1]]:
-                for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][1])):
-                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][1][item]:
-                        match = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][1].index[item]
+                for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0])):
+                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns[1]].iloc[item]:
+                        match = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns[0]].iloc[item]
                         if match not in trainingSampleNames:
-                            trainingSampleNames.append(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item])
+                            trainingSampleNames.append(match)
                 
             
             testSampleNames = []
-            for element in RandomForest.RandomForest.test[0]:
-                for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][0])):
-                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][0][item]:
-                        match = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item]
+            for element in RandomForest.RandomForest.test[RandomForest.RandomForest.test.columns[1]]:
+                for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0])):
+                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns[1]].iloc[item]:
+                        match = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns[0]].iloc[item]
                         if match not in testSampleNames:
-                            testSampleNames.append(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item])
-                
+                            testSampleNames.append(match)
             
             
             pdf.set_text_color(105,105,105)
-            counter = 0
+            currentcolumn = 0  
             for filename in trainingSampleNames:
-                if counter ==2:
-                    pdf.cell(50, 10, txt=str(filename), ln=1, align="C")
+                          
+                if len(filename)>20:
+                    if currentcolumn >0:
+                        ln=1
+                    pdf.cell(200, 10, txt=str(filename), ln=1, align="C")
+                    currentcolumn =0
                 else:
-                    pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
-                counter= counter+1
-                if counter ==3:
-                    counter = 0
+                    if currentcolumn>4:
+                        ln = 1
+                        pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                        currentcolumn = 1
+                    else:
+                        pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                        currentcolumn = currentcolumn+1    
+            
             pdf.set_text_color(0, 0, 0)
             pdf.ln()
             pdf.cell(200, 10, txt="The test set consisted of the following samples:", ln=1, align="C")
             
             pdf.set_text_color(105,105,105)
-            counter = 0
+            currentcolumn = 0  
             for filename in testSampleNames:
-                if counter ==2:
-                    pdf.cell(50, 10, txt=str(filename), ln=1, align="C")
+                          
+                if len(filename)>20:
+                    if currentcolumn >0:
+                        ln=1
+                    pdf.cell(200, 10, txt=str(filename), ln=1, align="C")
+                    currentcolumn =0
                 else:
-                    pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
-                counter= counter+1
-                if counter ==3:
-                    counter = 0
+                    if currentcolumn>4:
+                        ln = 1
+                        pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                        currentcolumn = 1
+                    else:
+                        pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
+                        currentcolumn = currentcolumn+1    
             pdf.set_text_color(0, 0, 0)
             pdf.ln()
             pdf.set_font('helvetica','B', size=14)
@@ -174,15 +188,15 @@ class OutputWriter(object):
             pdf.set_font('helvetica', size=10)
             pdf.cell(50, 10, txt="F1:", ln=0, align="C")
             pdf.set_text_color(105,105,105)
-            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance.F1(),4)), ln=0, align="C")
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance.F1()[0][0],4)), ln=0, align="C")
             pdf.set_text_color(0, 0, 0)
             pdf.cell(50, 10, txt="Accuracy:", ln=0, align="C")
             pdf.set_text_color(105,105,105)
-            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance.accuracy(),4)), ln=0, align="C")
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance.accuracy()[0][0],4)), ln=0, align="C")
             pdf.set_text_color(0, 0, 0)
             pdf.cell(50, 10, txt="MCC:", ln=0, align="C")
             pdf.set_text_color(105,105,105)
-            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance.mcc(),4)), ln=1, align="C")
+            pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance.mcc()[0][0],4)), ln=1, align="C")
             pdf.set_text_color(0, 0, 0)
             pdf.cell(50, 10, txt="logloss:", ln=0, align="C")
             pdf.set_text_color(105,105,105)
