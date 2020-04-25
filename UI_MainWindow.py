@@ -444,7 +444,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onOutliersClicked(self):
-        Ui_MainWindow.outliersDetected = True
         self.DisableAnalysisButtons()
 
         Ui_MainWindow.progress1.show()
@@ -467,6 +466,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         outliers = PCA.PCA.CalculateOutliers(self)
                         Ui_MainWindow.outlierlist = outliers["Filename"]
                         OutlierTab.OutlierTab.createTabWidget(self,now)
+                        Ui_MainWindow.outliersDetected = True
 
                         
 
@@ -569,7 +569,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def onIndMetricsClicked(self):
-        Ui_MainWindow.indMetricsGraphed = True
         Ui_MainWindow.DisableAnalysisButtons(self)
         Ui_MainWindow.progress1.setValue(10)
         Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
@@ -595,6 +594,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         indMetricsTab.IndMetricsTab.createTab(self, whichds)
         Ui_MainWindow.progress1.setValue(100)
         Ui_MainWindow.pdf.setEnabled(True)
+        Ui_MainWindow.indMetricsGraphed = True
 
     
     def checkColumnNumberForPCA(self):
