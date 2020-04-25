@@ -669,6 +669,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.RandomForestPerformed = True
             Ui_MainWindow.pdf.setEnabled(True)
             
+        elif ret == 2:#Cancelled
+            Ui_MainWindow.EnableAnalysisButtons(self)
+            
             
             
         
