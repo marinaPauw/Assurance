@@ -420,7 +420,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         inputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
         if inputFile:
             try:
-                currentDirectory = os.getcwd()
+                Ui_MainWindow.assuranceDirectory = os.getcwd()
                 os.chdir(os.path.dirname(os.path.abspath(inputFile)))
             except:
                 print("Changing the directory didn't work.")
