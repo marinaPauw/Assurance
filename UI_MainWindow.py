@@ -37,6 +37,7 @@ import OutlierTab
 import indMetricsTab
 import maxQuantTxTReader
 import mzIdentMLReader
+import os
 
 
 class Ui_MainWindow(QtWidgets.QTabWidget):
@@ -418,7 +419,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         FileInput.BrowseWindow.__init__(Ui_MainWindow)
         inputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
         if inputFile:
-            #filepath = FileInput.BrowseWindow.FileCheck(self, inputFile)
+            try:
+                currentDirectory = os.getcwd()
+                os.chdir(os.path.dirname(os.path.abspath(inputFile)))
+            except:
+                print("Changing the directory didn't work.")
             Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
             if "Filename " in Ui_MainWindow.metrics[0].columns:
                 Ui_MainWindow.metrics[0] = Ui_MainWindow.metrics[0].rename(columns={"Filename ": 'Filename'})               
