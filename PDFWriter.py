@@ -268,6 +268,7 @@ class OutputWriter(object):
         
         with open(output_path, 'wb') as fileobj:
             pdf_merger.write(fileobj)
+        pdf_merger.close()
     
         
     def saveGraphPDFs(self):
