@@ -202,7 +202,7 @@ class OutputWriter(object):
             pdf.set_text_color(105,105,105)
             pdf.cell(50, 10, txt=str(round(RandomForest.RandomForest.performance._metric_json["logloss"],4)), ln=0, align="C")
             pdf.set_text_color(0, 0, 0)
-              
+            pdf.ln()
             
             pdf.cell(200, 10, txt="The following samples were predicted by Random Forest to resemble the group labelled 'bad' quality:", ln=1, align="C")
             
