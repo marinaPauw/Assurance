@@ -179,6 +179,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.iRTtoleranceTB =QtWidgets.QLineEdit(Ui_MainWindow.rightFrame)
         Ui_MainWindow.iRTminintensityTB =QtWidgets.QLineEdit(Ui_MainWindow.rightFrame)
         Ui_MainWindow.iRTminpeptidesTB =QtWidgets.QLineEdit(Ui_MainWindow.rightFrame)
+        Ui_MainWindow.minintensityLabel =QtWidgets.QLabel(Ui_MainWindow.rightFrame)
+        Ui_MainWindow.minintensityTB =QtWidgets.QLineEdit(Ui_MainWindow.rightFrame)
         Ui_MainWindow.Stextedit =QtWidgets.QTextEdit(readOnly=True)
         Ui_MainWindow.IRTinputFile = None
 
@@ -201,6 +203,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.SRUNButton.setText("RUN")
         Ui_MainWindow.iRTtoleranceLabel.setText("iRTtolerance")
         Ui_MainWindow.iRTminintensityLabel.setText("MinIRTIntensity")
+        Ui_MainWindow.minintensityLabel.setText("MinIntensity")
         Ui_MainWindow.iRTminpeptidesLabel.setText("MinIRTpeptides")
 
         
@@ -225,6 +228,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMehbox3.addWidget(Ui_MainWindow.MTTextBox)
         SwaMehbox3.addWidget(Ui_MainWindow.RTLabel)
         SwaMehbox3.addWidget(Ui_MainWindow.RTTextBox)
+        SwaMehbox3.addWidget(Ui_MainWindow.minintensityLabel)
+        SwaMehbox3.addWidget(Ui_MainWindow.minintensityTB)
         SwaMevbox.addLayout(SwaMehbox3)
         SwaMehbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.rightFrame)
         SwaMehbox4.addWidget(Ui_MainWindow.iRT)
@@ -540,6 +545,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.iRTtoleranceTB.setEnabled(True)
         Ui_MainWindow.iRTminintensityTB.setEnabled(True)
         Ui_MainWindow.iRTminpeptidesTB.setEnabled(True)
+        Ui_MainWindow.minintensityTB.setEnabled(True)
+        
 
     def DisableSwaMeIRTArguments(self):
         Ui_MainWindow.iRTtoleranceLabel.setEnabled(False)
@@ -548,6 +555,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.iRTtoleranceTB.setEnabled(False)
         Ui_MainWindow.iRTminintensityTB.setEnabled(False)
         Ui_MainWindow.iRTminpeptidesTB.setEnabled(False)
+        Ui_MainWindow.minintensityTB.setEnabled(False)
 
     def EnableAnalysisButtons(self):
         Ui_MainWindow.browse.setEnabled(True)
