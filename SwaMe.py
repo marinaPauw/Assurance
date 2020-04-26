@@ -35,16 +35,19 @@ class SwaMe():
         SwaMe.Dir = FileInput.BrowseWindow.GetSwaMeInputFile(SwaMe)
         if(SwaMe.Dir):
                 UI_MainWindow.Ui_MainWindow.SfileList.setText(SwaMe.Dir)
-    
+                try:
+                    UI_MainWindow.Ui_MainWindow.assuranceDirectory = os.getcwd()
+                    os.chdir(SwaMe.Dir)
+                except:
+                    print("Changing the directory didn't work.")
 
                 
     def onSwaMeRUNClicked(self):
-        CurrentDir = os.getcwd()
-        os.chdir(SwaMe.Dir)
+        
         
         SwaMe.Path = FileInput.BrowseWindow.GetSwaMePath(SwaMe)
         SwaMe.timestr = time.strftime("%Y%m%d-%H%M%S")
-           
+        os.chdir(SwaMe.Dir)
         
        
         #Find a file in the directory to be inputFile:
@@ -66,6 +69,10 @@ class SwaMe():
                     SwaMe.MassTolerance =""
                     SwaMe.RTTolerance = ""
                     SwaMe.IRT = ""
+                    SwaMe.IRTolerance = ""
+                    SwaMe.iRTminintensityTB = ""
+                    SwaMe.iRTminpeptidesTB = ""
+                    SwaMe.Minintensity = ""
         
                     
                     SwaMe.i = paths[file]
@@ -81,21 +88,29 @@ class SwaMe():
                         SwaMe.onSwaMeBrowseClicked(self)
                         SwaMe.onSwaMeRUNClicked(self)
                     
+                    if(UI_MainWindow.Ui_MainWindow.minintensityTB.text()):
+                        SwaMe.Minintensity = arguments.join([" --minimumIntensity ", str(UI_MainWindow.Ui_MainWindow.minintensityTB.text())])
                     if(UI_MainWindow.Ui_MainWindow.MTTextBox.text()):
                         SwaMe.MassTolerance = arguments.join([" -m ", str(UI_MainWindow.Ui_MainWindow.MTTextBox.text())])
                     if(UI_MainWindow.Ui_MainWindow.RTTextBox.text()):
-                        SwaMe.RTTolerance = arguments.join([" -rttolerance " , str(UI_MainWindow.Ui_MainWindow.RTTextBox.text())])
+                        SwaMe.RTTolerance = arguments.join([" --rttolerance " , str(UI_MainWindow.Ui_MainWindow.RTTextBox.text())])
                     if(UI_MainWindow.Ui_MainWindow.divisionTextBox.text()):
                         SwaMe.Division = arguments.join([" -d " , str(UI_MainWindow.Ui_MainWindow.divisionTextBox.text())])
                     #if(UI_MainWindow.Ui_MainWindow.Dir.isChecked):
                     #    SwaMe.Dir = str.join(" -dir " , "true")
                     if(UI_MainWindow.Ui_MainWindow.IRTinputFile):
                         SwaMe.IRT = arguments.join([" -r " , str(UI_MainWindow.Ui_MainWindow.IRTinputFile)])
-                     
+                        if(UI_MainWindow.Ui_MainWindow.iRTtoleranceTB):
+                            SwaMe.IRTolerance = arguments.join([" --irttolerance " , str(UI_MainWindow.Ui_MainWindow.iRTtoleranceTB.text())])
+                        if(UI_MainWindow.Ui_MainWindow.iRTminintensityTB):
+                            SwaMe.iRTminintensityTB = arguments.join([" --irtminintensity " , str(UI_MainWindow.Ui_MainWindow.iRTminintensityTB.text())])
+                        if(UI_MainWindow.Ui_MainWindow.iRTminpeptidesTB):
+                            SwaMe.iRTminpeptidesTB = arguments.join([" --irtmintransitions " , str(UI_MainWindow.Ui_MainWindow.iRTminpeptidesTB.text())])
+                        
                     SwaMe.outputFile = " -o "+ str(SwaMe.timestr) +"_"+ os.path.splitext(os.path.basename(SwaMe.filename))[0] + ".json"
 
                     if  SwaMe.Path and SwaMe.i:
-                        arguments = SwaMe.Path[0] + " -i " + SwaMe.i + SwaMe.Division + SwaMe.MassTolerance + SwaMe.RTTolerance + SwaMe.IRT  + SwaMe.outputFile
+                        arguments = QtCore.QDir.toNativeSeparators(SwaMe.Path) + " -i " + QtCore.QDir.toNativeSeparators(SwaMe.i) + SwaMe.Division + SwaMe.MassTolerance + SwaMe.RTTolerance + SwaMe.IRT+SwaMe.IRTolerance+SwaMe.iRTminintensityTB+ SwaMe.iRTminpeptidesTB + SwaMe.Minintensity+SwaMe.outputFile
 
                     SwaMe.process.start(arguments)
 
@@ -117,17 +132,21 @@ class SwaMe():
             UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.CombineJSONs(UI_MainWindow.Ui_MainWindow, files)
             #UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(inputFile)
             #UI_MainWindow.Ui_MainWindow.checkColumnLength(self)
-            UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-            FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
-            FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.ExtractNumericColumns(UI_MainWindow.Ui_MainWindow,
-                            FileInput.BrowseWindow.currentDataset)
-            FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.RemoveLowVarianceColumns(
-                            UI_MainWindow.Ui_MainWindow, FileInput.BrowseWindow.currentDataset)
-            UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
-            UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
-            UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(UI_MainWindow.Ui_MainWindow)
-            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message","SwaMe has finished successfully.")
-
+            if hasattr(UI_MainWindow.Ui_MainWindow,"metrics"):
+                UI_MainWindow.Ui_MainWindow.NumericMetrics = []
+                FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
+                FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.ExtractNumericColumns(UI_MainWindow.Ui_MainWindow,
+                                FileInput.BrowseWindow.currentDataset)
+                FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.RemoveLowVarianceColumns(
+                                UI_MainWindow.Ui_MainWindow, FileInput.BrowseWindow.currentDataset)
+                UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
+                UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
+                UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(UI_MainWindow.Ui_MainWindow)
+                QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message","SwaMe has finished successfully.")
+            else:
+                QtWidgets.QMessageBox.warning(self,"Error","An error occured and no metrics were created.")
+                SwaMe.onSwaMeBrowseClicked(self)
+                
         else:
             file = file+1
             SwaMe.StartProcess(self, files, file, paths)
