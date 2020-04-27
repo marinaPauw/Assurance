@@ -34,21 +34,39 @@ class QuaMeter():
        
         argument1 = "cd/d " + QuaMeter.Dir 
         
-        QuaMeterPath = FileInput.BrowseWindow.GetQuaMeterPath(QuaMeter)
+        QuaMeter.QuaMeterPath = FileInput.BrowseWindow.GetQuaMeterPath(QuaMeter)
+        files = []
+        with os.scandir(QuaMeter.Dir) as entries:
+            for entry in entries:
+                if entry.name.endswith(".mzML"):
+                    files.append(entry.name)
         
+        
+        
+        QuaMeter.StartProcess(self, files, 0)
+                    
+
+    def StartProcess(self, files, file):
+        arguments = ""
         QuaMeter.process = QtCore.QProcess()
         #arguments1 = " cd/d " + QuaMeter.Dir
-        QuaMeter.process.finished.connect(QuaMeter.on_Finished)
-        QuaMeter.process.waitForFinished()
+        QuaMeter.process.finished.connect(lambda:QuaMeter.on_Finished(self, files, file))
         QuaMeter.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         QuaMeter.process.readyReadStandardOutput.connect(lambda: QuaMeter.on_readyReadStandardOutput(self))
 
+        cputext = 1
         cpus = ""
         CUO = ''
         CLO = ""
-        if  UI_MainWindow.Ui_MainWindow.cpusTextBox.text() and UI_MainWindow.Ui_MainWindow.cpusTextBox.text()>0 and UI_MainWindow.Ui_MainWindow.cpusTextBox.text()<6:
-            cpus = " -cpus "+UI_MainWindow.Ui_MainWindow.cpusTextBox.text()
-        
+        if  UI_MainWindow.Ui_MainWindow.cpusTextBox.text(): 
+            try:
+                cputext = int(UI_MainWindow.Ui_MainWindow.cpusTextBox.text())
+                if cputext>0 and cputext<6:
+                    cpus = " -cpus "+UI_MainWindow.Ui_MainWindow.cpusTextBox.text()
+            except:
+                QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow,"Error","cpus value could not be converted to integer and was ignored")
+            
+                
         if UI_MainWindow.Ui_MainWindow.CUOTextBox.text():
             CUO = " -ChromatogramMzUpperOffset " + UI_MainWindow.Ui_MainWindow.CUOTextBox.text()
         
@@ -57,7 +75,7 @@ class QuaMeter():
         
         QuaMeter.process.setWorkingDirectory(QtCore.QDir.toNativeSeparators(QuaMeter.Dir))
         #QuaMeter.process.start(" cd/d " + os.path.dirname(QuaMeter.File))
-        arguments2 = QtCore.QDir.toNativeSeparators(QuaMeterPath)+ " *.mzML " +" " +cpus +  CUO + CLO +" -MetricsType idfree"
+        arguments2 = QtCore.QDir.toNativeSeparators(QuaMeter.QuaMeterPath)+" " +files[file] +" " +cpus +  CUO + CLO +" -MetricsType idfree"
         QuaMeter.process.start(arguments2)
        
     @QtCore.pyqtSlot()
@@ -66,24 +84,27 @@ class QuaMeter():
         UI_MainWindow.Ui_MainWindow.textedit.append(text)
 
     @QtCore.pyqtSlot()
-    def on_Finished(self):
-        dirpath = os.path.dirname(os.path.realpath(QuaMeter.Dir))
-        files = []
-        for root, dirs, allfiles in os.walk(dirpath):  
-            for file in allfiles:
-                if file.endswith("qual.tsv"):
-                    files.append(os.path.join(root,file))
-        UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, files)
-        #UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(inputFile)
-        #UI_MainWindow.Ui_MainWindow.checkColumnLength(self)
-        UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-        FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
-        FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.ExtractNumericColumns(self,
-                           FileInput.BrowseWindow.currentDataset)
-        FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
-                           FileInput.BrowseWindow.currentDataset)
-        UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
-        UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(self)
-        UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
-        QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message","QuaMeter has finished successfully.")
-
+    def on_Finished(self, files,file):
+        if files[file] ==files[-1]:#If the last file:
+        
+            dirpath = os.path.dirname(os.path.realpath(QuaMeter.Dir))
+            ffiles = []
+            for ffile in os.listdir(QuaMeter.Dir):  
+                    if ffile.endswith("qual.tsv"):
+                        ffiles.append(os.path.join(QuaMeter.Dir,ffile))
+            UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, ffiles)
+            #UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(inputFile)
+            #UI_MainWindow.Ui_MainWindow.checkColumnLength(self)
+            UI_MainWindow.Ui_MainWindow.NumericMetrics = []
+            FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
+            FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.ExtractNumericColumns(self,
+                            FileInput.BrowseWindow.currentDataset)
+            FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
+                            FileInput.BrowseWindow.currentDataset)
+            UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
+            UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(self)
+            UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
+            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message","QuaMeter has finished successfully.")
+        else:
+            file = file+1
+            QuaMeter.StartProcess(self, files, file)
