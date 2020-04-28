@@ -14,11 +14,17 @@ import FeatureImportancePlot
 
 class OutputWriter(object):
     def producePDF(self, now ):
-        dirName = str(now) +"_AssuranceReport"
-        dirName = dirName.replace(" ", "_")
-        dirName = dirName.replace(":", "-")
-        OutputWriter.createDir(self,dirName)
-        OutputWriter.changeDir(self,dirName)
+        UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(3)
+        if "AssuranceReport" not in os.getcwd():
+            dirName = str(now) +"_AssuranceReport"
+            dirName = dirName.replace(" ", "_")
+            dirName = dirName.replace(":", "-")
+            OutputWriter.createDir(self,dirName)
+            OutputWriter.changeDir(self,dirName)
+        else:
+            dirName = str(now) +"_AssuranceReport"
+            dirName = dirName.replace(" ", "_")
+            dirName = dirName.replace(":", "-")
         pdf = FPDF()  
         #-----------------------Cover page-------------------------
         pdf.add_page(orientation='P')
@@ -67,7 +73,7 @@ class OutputWriter(object):
             
         pdf.set_text_color(0, 0, 0)
         pdf.cell(200, 10, txt='Assurance version: Development', ln=1, align="L")
-        
+        UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(15)
         #---------------------------PCA-----------------------------
         if UI_MainWindow.Ui_MainWindow.outliersDetected:
             pdf.add_page(orientation='P')
@@ -84,13 +90,21 @@ class OutputWriter(object):
                pdf.cell(200, 10, txt="No samples were identified as possible outliers:", ln=1, align="C")
                  
             #Create images:
-            PCAGraph.PCAGraph.printForReport(self)
+            if not os.path.exists("outlierDetection1.png"):
+                PCAGraph.PCAGraph.printForReport(self, now)
                         
             image_path = os.path.join(os.getcwd(),"outlierDetection1.png")
             pdf.image(image_path, w=200)
             UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(10)
             image_path = os.path.join(os.getcwd(),"outlierDetection2.png")
             pdf.image(image_path, w=200)
+            if os.path.exists("outlierDetectionAfterReanlysis1.png"):
+                    image_path = os.path.join(os.getcwd(),"outlierDetectionAfterReanlysis1.png")
+                    pdf.image(image_path, w=200)
+            if os.path.exists("outlierDetectionAfterReanlysis2.png"):
+                    image_path = os.path.join(os.getcwd(),"outlierDetectionAfterReanlysis2.png")
+                    pdf.image(image_path, w=200)
+            
             UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(20)
             try:
                 if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
