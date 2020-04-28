@@ -100,11 +100,11 @@ class SwaMe():
                     #    SwaMe.Dir = str.join(" -dir " , "true")
                     if(UI_MainWindow.Ui_MainWindow.IRTinputFile):
                         SwaMe.IRT = arguments.join([" -r " , str(UI_MainWindow.Ui_MainWindow.IRTinputFile)])
-                        if(UI_MainWindow.Ui_MainWindow.iRTtoleranceTB):
+                        if(UI_MainWindow.Ui_MainWindow.iRTtoleranceTB.text()):
                             SwaMe.IRTolerance = arguments.join([" --irttolerance " , str(UI_MainWindow.Ui_MainWindow.iRTtoleranceTB.text())])
-                        if(UI_MainWindow.Ui_MainWindow.iRTminintensityTB):
+                        if(UI_MainWindow.Ui_MainWindow.iRTminintensityTB.text()):
                             SwaMe.iRTminintensityTB = arguments.join([" --irtminintensity " , str(UI_MainWindow.Ui_MainWindow.iRTminintensityTB.text())])
-                        if(UI_MainWindow.Ui_MainWindow.iRTminpeptidesTB):
+                        if(UI_MainWindow.Ui_MainWindow.iRTminpeptidesTB.text()):
                             SwaMe.iRTminpeptidesTB = arguments.join([" --irtmintransitions " , str(UI_MainWindow.Ui_MainWindow.iRTminpeptidesTB.text())])
                         
                     SwaMe.outputFile = " -o "+ str(SwaMe.timestr) +"_"+ os.path.splitext(os.path.basename(SwaMe.filename))[0] + ".json"
