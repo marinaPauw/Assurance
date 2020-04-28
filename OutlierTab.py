@@ -16,8 +16,6 @@ class OutlierTab(QtWidgets.QTabWidget):
     def createTabWidget(self,now):
                 # --------------------------------------Widgets-------------------------------------------
                         OutlierTab.PCA = QtWidgets.QTabWidget()
-                        OutlierTab.PCA.plotlabel = QtWidgets.QLabel(OutlierTab.PCA)
-                        #OutlierTab.PCA.plotlabel.setGeometry(10, 500, 1000, 300)
                         OutlierTab.PCA.PCAplot = PCAGraph.PCAGraph(now)
                         
 
@@ -69,12 +67,6 @@ class OutlierTab(QtWidgets.QTabWidget):
                         OutlierTab.PCA.Emptyspace.setText(" ")
                         vbox4.addWidget(OutlierTab.PCA.Emptyspace)
                         hbox.addLayout(vbox4)
-                        hboxPlot = QtWidgets.QHBoxLayout(OutlierTab.PCA)
-                        hboxPlot.addStretch()
-
-                        hboxPlot.addWidget(OutlierTab.PCA.plotlabel)
-                        hboxPlot.addStretch()
-                        vbox2.addLayout(hboxPlot)
                         vbox2.setAlignment(QtCore.Qt.AlignCenter)
                         hbox.setAlignment(QtCore.Qt.AlignCenter)
                         vbox2.addLayout(hbox)
@@ -134,8 +126,6 @@ class OutlierTab(QtWidgets.QTabWidget):
         array = range(1, len(UI_MainWindow.Ui_MainWindow.outlierlist), 1)
         OutlierTab.outlierlistLabel.setText(
             "Suggested outlier candidates: ")
-        OutlierTab.PCA.plotlabel.setText(
-            "Principal components analysis of quality metrics for outlier detection:")
         font = QtGui.QFont()
         font.setPointSize(18)
         if(len(UI_MainWindow.Ui_MainWindow.outlierlist) > 0):
