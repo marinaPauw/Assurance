@@ -20,6 +20,7 @@ import FileInput
 import OutlierTab
 import re
 import os
+import PDFWriter
 
 class PCAGraph(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -126,13 +127,27 @@ class PCAGraph(FigureCanvas):
          for ii in loadingsTextAnnot:
             ii.set_visible(False)
             
-    def printForReport(self):
+    def printForReport(self, now):
         for element in UI_MainWindow.Ui_MainWindow.outlierlist:
             outlierIndex = np.where([FileInput.BrowseWindow.currentDataset.index==element])
             ax.annotate(element, xy=(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1]),color='green')
-       
-        fig.savefig("outlierDetection1.png", dpi=500)
-        PCAGraph.loadingsToggledOn(self)
-        fig.savefig("outlierDetection2.png", dpi=500)
-        PCAGraph.loadingsToggledOff(self)
+        if "AssuranceReport" not in os.getcwd():
+            dirName = str(now) +"_AssuranceReport"
+            dirName = dirName.replace(" ", "_")
+            dirName = dirName.replace(":", "-")
+            PDFWriter.OutputWriter.createDir(self,dirName)
+            PDFWriter.OutputWriter.changeDir(self,dirName)
+        repeat = len(UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index)-len(FileInput.BrowseWindow.currentDataset.index)
+        if repeat ==0:
+            PCAGraph.loadingsToggledOff(self)
+            fig.savefig("outlierDetection1.png", dpi=500)
+            PCAGraph.loadingsToggledOn(self)
+            fig.savefig("outlierDetection2.png", dpi=500)
+            PCAGraph.loadingsToggledOff(self)
+        elif os.path.exists("outlierDetection1.png") and not os.path.exists("outlierDetectionAfterReanlysis1.png"):
+            PCAGraph.loadingsToggledOff(self)
+            fig.savefig("outlierDetectionAfterReanlysis1.png", dpi=500)
+            PCAGraph.loadingsToggledOn(self)
+            fig.savefig("outlierDetectionAfterReanlysis2.png", dpi=500)
+            PCAGraph.loadingsToggledOff(self)
         
