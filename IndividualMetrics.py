@@ -120,7 +120,7 @@ class MyIndMetricsCanvas(FigureCanvas):
             MyIndMetricsCanvas.ax.set_facecolor('gainsboro')
             if UI_MainWindow.Ui_MainWindow.sampleSelected in tableContainingRownames.index:
                 sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
-            else:
+            elif type(UI_MainWindow.Ui_MainWindow.sampleSelected) == int:
                 sIndex = int(UI_MainWindow.Ui_MainWindow.sampleSelected)
                 
             if not forReport:
