@@ -6,8 +6,6 @@ from PyQt5.QtGui import *
 import math
 import statistics
 import scipy
-from sklearn import decomposition as sd
-from sklearn import preprocessing
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import RobustScaler
