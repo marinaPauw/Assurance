@@ -123,15 +123,14 @@ class OutlierTab(QtWidgets.QTabWidget):
     
     def retranslateUi2(self):
         _translate = QtCore.QCoreApplication.translate
-        array = range(1, len(UI_MainWindow.Ui_MainWindow.outlierlist), 1)
         OutlierTab.outlierlistLabel.setText(
             "Suggested outlier candidates: ")
         font = QtGui.QFont()
         font.setPointSize(18)
         if(len(UI_MainWindow.Ui_MainWindow.outlierlist) > 0):
             outlierstring = ""
-            for element in array:
-                outlierstring = str(outlierstring) + "\n" + str(UI_MainWindow.Ui_MainWindow.outlierlist.array[element])
+            for element in UI_MainWindow.Ui_MainWindow.outlierlist:
+                outlierstring = str(outlierstring) + "\n" + str(element)
         else:
             outlierstring = "No outliers found."
         OutlierTab.OutlierSamples.setText(outlierstring)
