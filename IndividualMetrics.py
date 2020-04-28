@@ -72,7 +72,7 @@ class MyIndMetricsCanvas(FigureCanvas):
             MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
             MyIndMetricsCanvas.samplenames = []
             
-            if isinstance(table[element][0], int) or isinstance(table[element][0], float)  or isinstance(table[element][0], np.float64):
+            if isinstance(table[element].iloc[0], int) or isinstance(table[element].iloc[0], float)  or isinstance(table[element].iloc[0], np.float64):
                 tableContainingRownames = tableContainingRownames.sort_values(element)
                 table = table.sort_values(element)
             
