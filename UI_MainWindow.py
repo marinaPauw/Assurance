@@ -570,7 +570,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def enable_reanalysis(self):
-        FileInput.BrowseWindow.currentDataset = Ui_MainWindow.NumericMetrics[0].drop(Ui_MainWindow.outlierlist)
+        PCAGraph.PCAGraph.printForReport(self, now)# Print it now before reanalysis
+        FileInput.BrowseWindow.currentDataset = FileInput.BrowseWindow.currentDataset.drop(Ui_MainWindow.outlierlist)
         Ui_MainWindow.onOutliersClicked(self)
 
     @pyqtSlot()
@@ -583,7 +584,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.DisableAnalysisButtons(self)
         Ui_MainWindow.progress1.setValue(10)
         Ui_MainWindow.indMetrics = QtWidgets.QTabWidget()
-        Ui_MainWindow.progress1.setValue(33)
         
        
         Ui_MainWindow.listOfMetrics = list()
@@ -596,6 +596,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.element = Ui_MainWindow.listOfMetrics[0]
         #-------------- widgets ---------------------------------------
         
+        Ui_MainWindow.progress1.setValue(33)
         whichds = 0
         for dataset in range(len(Ui_MainWindow.NumericMetrics)):
                 if Ui_MainWindow.element in Ui_MainWindow.NumericMetrics[dataset].columns:
