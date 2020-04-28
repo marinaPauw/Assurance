@@ -461,8 +461,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
        
         self.EnableAnalysisButtons()
-        
-        FileInput.BrowseWindow.currentDataset = Ui_MainWindow.NumericMetrics[0]
+        if not hasattr(FileInput.BrowseWindow,"currentDataset"):
+            FileInput.BrowseWindow.currentDataset = Ui_MainWindow.NumericMetrics[0]
              # Check if you have the correct number of variables/samples
         if self.checkColumnNumberForPCA() == 1:
 
@@ -572,7 +572,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @pyqtSlot()
     def enable_reanalysis(self):
-        Ui_MainWindow.NumericMetrics[0] = Ui_MainWindow.NumericMetrics[0].drop(Ui_MainWindow.outlierlist)
+        FileInput.BrowseWindow.currentDataset = Ui_MainWindow.NumericMetrics[0].drop(Ui_MainWindow.outlierlist)
         Ui_MainWindow.onOutliersClicked(self)
 
     @pyqtSlot()
