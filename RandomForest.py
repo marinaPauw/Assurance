@@ -167,7 +167,7 @@ class RandomForest(FigureCanvas):
     def compute(self):
         UI_MainWindow.Ui_MainWindow.badpredictionList = []
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
-        if type(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[0]) != str:
+        if type(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[0]) != str and "Filename" in UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns:
             UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["Filename"]
         
         for item in self.table.selectionModel().selectedRows():
