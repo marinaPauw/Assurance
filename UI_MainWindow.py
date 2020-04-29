@@ -442,6 +442,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             except:
                 print("Changing the directory didn't work.")
             database.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
+            QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 30))
             if "Filename " in database.metrics[0].columns:
                 database.metrics[0] = database.metrics[0].rename(columns={"Filename ": 'Filename'})               
             if  "Filename" in database.metrics[0].columns:
@@ -455,7 +458,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 database.metrics[0].index = filenames
                 QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
                                  QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 30))
+                                 QtCore.Q_ARG(int, 40))
             database.NumericMetrics =[]
             database.NumericMetrics.append(DataPreparation.DataPrep.ExtractNumericColumns(self, database.metrics[0]))
             
@@ -679,25 +682,13 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         ret = msgBox.exec_()
 
         if ret == 0: # They want the graph
-            FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
-            TrainingSetfiles = FileInput.BrowseWindow.GetTrainingSetFiles(self)
-            Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Number of distinct peptides","Number of spectra identified"])
             
-            if TrainingSetfiles:
-                if "pepxml" in TrainingSetfiles[0].lower():
-                    Ui_MainWindow.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetfiles)
-                elif ".txt" in TrainingSetfiles[0].lower():
-                    Ui_MainWindow.TrainingSetTable =maxQuantTxTReader.maxQuantTxtReader.parseTxt(self, TrainingSetfiles[0])
-                elif ".mzid" in TrainingSetfiles[0].lower():
-                    Ui_MainWindow.TrainingSetTable =mzIdentMLReader.mzIdentMLReader.parsemzID(self, TrainingSetfiles)
-                
-                Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
-                Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px")
-                Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
-                Ui_MainWindow.CreateTrainingTab(self)
-                self.setCurrentIndex(Ui_MainWindow.sIndex)
-                Ui_MainWindow.RandomForestPerformed = True
-                Ui_MainWindow.pdf.setEnabled(True)
+            tpep = Threads.SideThread(self.GetTrainingSetTable)
+            tpep.signals.result.connect(self.OnParserThreadFinish)
+            tpep.signals.progress.connect(self.progress_fn)
+            self.threadpool.start(tpep)
+            
+            
         
         elif ret == 1:# They want the table
             FileInput.BrowseWindow.GetTrainingQualityFiles(self)
@@ -713,8 +704,33 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.EnableAnalysisButtons(self)
             
             
+    def GetTrainingSetTable(self):
+            FileInput.BrowseWindow.__init__(FileInput.BrowseWindow)
+            TrainingSetfiles = FileInput.BrowseWindow.GetTrainingSetFiles(self)
+            QtCore.QMetaObject.invokeMethod(Ui_MainWindow.progress1, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 20))
+            Ui_MainWindow.TrainingSetTable = pd.DataFrame(columns = ["Filename","Number of distinct peptides","Number of spectra identified"])
             
-        
+            if TrainingSetfiles:
+                if "pepxml" in TrainingSetfiles[0].lower():
+                    Ui_MainWindow.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetfiles)
+                elif ".txt" in TrainingSetfiles[0].lower():
+                    Ui_MainWindow.TrainingSetTable =maxQuantTxTReader.maxQuantTxtReader.parseTxt(self, TrainingSetfiles[0])
+                elif ".mzid" in TrainingSetfiles[0].lower():
+                    Ui_MainWindow.TrainingSetTable =mzIdentMLReader.mzIdentMLReader.parsemzID(self, TrainingSetfiles)
+                return Ui_MainWindow.TrainingSetTable
+                       
+    def OnParserThreadFinish(self, results):
+                Ui_MainWindow.TrainingSetTable = results
+                Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
+                Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px")
+                Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
+                Ui_MainWindow.CreateTrainingTab(self)
+                Ui_MainWindow.progress1.setValue(100)
+                self.setCurrentIndex(Ui_MainWindow.sIndex)
+                Ui_MainWindow.RandomForestPerformed = True
+                Ui_MainWindow.pdf.setEnabled(True)   
 
     def CreateTrainingTab(self):
         # Create the tab which will contain the graph:
