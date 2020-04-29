@@ -9,12 +9,12 @@ import os
 import collections
 import json
 import DataPreparation
+import Datasets
 
 
 class BrowseWindow(QtWidgets.QMainWindow):
     def __init__(self):
         self.title = "Load file"
-        UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
 
     def GetInputFile(self):
         files = QtWidgets. QFileDialog()
@@ -273,7 +273,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
             except:
                     QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"Error:", 
                                             "Upload failed. Please check the content of the files and try again.")
-                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+                    database = Datasets.Datasets()
+                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow, database)
             metricsDf = pd.DataFrame(metrics)
             # Create dataframes - for SwaMe we need one for comprehensive, one for swath, one for rt, one for quartiles, one for quantiles
             fileIndexInFiles = 0
@@ -586,7 +587,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                                 QtWidgets.QFileDialog.\
                                                                     Options())
             if(SwaMePath):
-                return SwaMePath
+                return SwaMePath[0]
 
     def GetIRTInputFile(self):
         file = QtWidgets. QFileDialog()
@@ -605,5 +606,4 @@ class BrowseWindow(QtWidgets.QMainWindow):
             return [i for i, elem in enumerate(lst) if condition(elem)]
    
         
-
 

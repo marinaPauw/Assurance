@@ -36,14 +36,20 @@ import indMetricsTab
 import maxQuantTxTReader
 import mzIdentMLReader
 import os
+import Threads
+import Datasets
 
 
 class Ui_MainWindow(QtWidgets.QTabWidget):
     
     def setupUi(self):
-
+        self.threadpool = QtCore.QThreadPool()
         self.setWindowTitle("Assurance")
         self.resize(800,650)
+        
+        #Create an object for datasets:
+        database = Datasets.Datasets()
+        
         global now
         global tempDir
         Ui_MainWindow.outliersDetected = False
@@ -268,9 +274,14 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.Longitudinal.setStyleSheet("background-color: rgb(240,240,240);")
         
         
+        #Threading
+        tbrowse = Threads.SideThread(lambda: self.onBrowseClicked(database))
+        tbrowse.signals.result.connect(self.ThreadingFix)
+        tbrowse.signals.finished.connect(self.EnableAnalysisButtons)
+        tbrowse.signals.progress.connect(self.progress_fn)
 
         #clicked.connect
-        Ui_MainWindow.browse.clicked.connect(self.onBrowseClicked)
+        Ui_MainWindow.browse.clicked.connect(lambda:self.threadpool.start(tbrowse))
         Ui_MainWindow.Outliers.clicked.connect(self.onOutliersClicked)
         Ui_MainWindow.IndMetrics.clicked.connect(self.onIndMetricsClicked)
         Ui_MainWindow.Longitudinal.clicked.connect(self.onLongitudinalClicked)
@@ -394,6 +405,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         vbox.addLayout(hbox2)
         
         vbox.setAlignment(QtCore.Qt.AlignLeft)
+        self.DisableAnalysisButtons()
         Ui_MainWindow.browse.setEnabled(True)
 
         QtCore.QMetaObject.connectSlotsByName(self)
@@ -406,7 +418,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         elif text == "Upload a file":
             self.stacked.setCurrentWidget(self.browseFrame)
             
-            
+    def progress_fn(self,n):
+        Ui_MainWindow.UploadProgress.setValue(n)
 
     def enable_slot(self):
         PCAGraph.PCAGraph.loadingsToggledOn(self)
@@ -415,39 +428,53 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def disable_slot(self):
         PCAGraph.PCAGraph.loadingsToggledOff(self)
 
-    
-    @pyqtSlot()
-    def onBrowseClicked(self):
-        Ui_MainWindow.DisableAnalysisButtons(self)
+    @QtCore.pyqtSlot()    
+    def onBrowseClicked(self, database):
         FileInput.BrowseWindow.__init__(Ui_MainWindow)
         inputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
+        QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 20))
         if inputFile:
             try:
                 Ui_MainWindow.assuranceDirectory = os.getcwd()
                 os.chdir(os.path.dirname(os.path.abspath(inputFile)))
             except:
                 print("Changing the directory didn't work.")
-            Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
-            if "Filename " in Ui_MainWindow.metrics[0].columns:
-                Ui_MainWindow.metrics[0] = Ui_MainWindow.metrics[0].rename(columns={"Filename ": 'Filename'})               
-            if  "Filename" in Ui_MainWindow.metrics[0].columns:
-                filenames = Ui_MainWindow.metrics[0]["Filename"]
+            database.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
+            if "Filename " in database.metrics[0].columns:
+                database.metrics[0] = database.metrics[0].rename(columns={"Filename ": 'Filename'})               
+            if  "Filename" in database.metrics[0].columns:
+                filenames = database.metrics[0]["Filename"]
                 if ".mzml" in filenames[0].lower():
                        for item in range(0,len(filenames)):
                             if ".mzml" in filenames[item].lower():
                                 filenames[item] = filenames[item].split('.')[0]
                             
                     
-                Ui_MainWindow.metrics[0].index = filenames
-            Ui_MainWindow.NumericMetrics =[]
-            #Ui_MainWindow.checkColumnLength(self)
-            #Ui_MainWindow.metrics.set_index(Ui_MainWindow.metrics[0].index[0])
-            Ui_MainWindow.NumericMetrics.append(DataPreparation.DataPrep.ExtractNumericColumns(self, self.metrics[0]))
-
-            Ui_MainWindow.NumericMetrics[0]  = DataPreparation.DataPrep.RemoveLowVarianceColumns(self, self.NumericMetrics[0])
-            Ui_MainWindow.NumericMetrics[0].index = Ui_MainWindow.metrics[0].index
+                database.metrics[0].index = filenames
+                QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 30))
+            database.NumericMetrics =[]
+            database.NumericMetrics.append(DataPreparation.DataPrep.ExtractNumericColumns(self, database.metrics[0]))
             
+            QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 60))
+            database.NumericMetrics[0]  = DataPreparation.DataPrep.RemoveLowVarianceColumns(self, database.NumericMetrics[0])
+            database.NumericMetrics[0].index = database.metrics[0].index
             
+            QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 100))
+        return database
+        #return "stringy"
+    
+    
+    def ThreadingFix(self,database):
+        Ui_MainWindow.metrics = database.metrics
+        Ui_MainWindow.NumericMetrics = database.NumericMetrics
         Ui_MainWindow.EnableAnalysisButtons(self)
 
     @pyqtSlot()
@@ -476,7 +503,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         OutlierTab.OutlierTab.createTabWidget(self,now)
                         Ui_MainWindow.outliersDetected = True
 
-                        
+    def setProgressVal(self, val):
+        OutlierTab.OutlierTab.LoadingsProgressBar.setValue(val)                        
 
     def DisableBrowseButtons(self):
         Ui_MainWindow.browse.setEnabled(False)
