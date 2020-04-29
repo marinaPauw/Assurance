@@ -26,7 +26,9 @@ class maxQuantTxtReader(object):
             pepTable["Filename"] = df["Raw file"]
         if "MS/MS Identified" in df.columns:
             pepTable["Number of spectra identified"] = df["MS/MS Identified"]
-        
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.progress1, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 40))
         #summary.txt contains a total which we are not interested in
         if "Total" in pepTable.index:
             pepTable = pepTable.drop(["Total"])
@@ -41,4 +43,7 @@ class maxQuantTxtReader(object):
                     UI_MainWindow.Ui_MainWindow.TrainingSetTable = maxQuantTxtReader.parseTxt(self, TrainingSetfiles[0])
              
         else:
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.progress1, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 90))
             return pepTable    
