@@ -1,5 +1,5 @@
 import sys
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 import datetime
 import UI_MainWindow
 import DataPreparation
@@ -19,13 +19,15 @@ class BrowseWindow(QtWidgets.QMainWindow):
     def GetInputFile(self):
         files = QtWidgets. QFileDialog()
         files.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
-        possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(UI_MainWindow.Ui_MainWindow.tab, 
-                                                               "Browse", "",
-                                                               "All Files (*)", 
+        possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(parent=None,caption = "Browse", directory="",
+                                                               filter = "All Files (*)", 
                                                                options=
                                                                QtWidgets.QFileDialog.\
                                                                    Options())
         if(possibleinputFiles):
+            return possibleinputFiles
+        
+    def parseInputFiles(self, possibleinputFiles):
             if(len(possibleinputFiles) > 1):
                 justJSONFiles = True
                 justTSVFiles = True
@@ -37,7 +39,9 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 if not justJSONFiles and not justTSVFiles:
                     QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,
                                       "Error:" ,"You may select multiple mzQC files or multiple tsv files to combine into one table, but you may not select multiple files of any other type or a mixture of the two.")
-                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+                    
+                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow, "onBrowseClicked",
+                                 QtCore.Qt.QueuedConnection)
 
                 if(justJSONFiles==True):
                     inputFiles = possibleinputFiles
@@ -57,13 +61,20 @@ class BrowseWindow(QtWidgets.QMainWindow):
                            UI_MainWindow.Ui_MainWindow, BrowseWindow.currentDataset)
                        UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
                     str1 = " " 
-                    UI_MainWindow.Ui_MainWindow.filename.setText(str1.join(inputFiles))
-                    UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
+                    inputs = str1.join(inputFiles)
+                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.filename, "setText",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(str, inputs))
+                    
+                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow, "DisableBrowseButtons",
+                                 QtCore.Qt.QueuedConnection)
             
                 elif(justTSVFiles == True):
+                    
                     inputFiles = possibleinputFiles
                     metrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)          
                     UI_MainWindow.Ui_MainWindow.NumericMetrics = []
+                    
                     for i in range(0,len(metrics)):
                         #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
                             #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
@@ -71,8 +82,14 @@ class BrowseWindow(QtWidgets.QMainWindow):
                             UI_MainWindow.Ui_MainWindow.NumericMetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
                             NMColumnsonly))
                     
-                    str1 = "  "        
-                    UI_MainWindow.Ui_MainWindow.filename.setText(str1.join(inputFiles))    
+                    str1 = " " 
+                    inputs = str1.join(inputFiles)
+                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.filename, "setText",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(str, inputs))
+                    
+                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow, "DisableBrowseButtons",
+                                 QtCore.Qt.QueuedConnection)  
             
             else:
                 possibleinputFile = possibleinputFiles[0]
@@ -87,7 +104,12 @@ class BrowseWindow(QtWidgets.QMainWindow):
                          BrowseWindow.datasetname,throw,throw,throw = inputFile.split('.')
                     else:
                          BrowseWindow.datasetname = inputFile
-                    UI_MainWindow.Ui_MainWindow.filename.setText("   " + inputFile + "  ")
+                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.filename, "setText",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(str, str(inputFile)))
+                    
+                    
+                    
                     return inputFile
    
     def GetTrainingSetFiles(self):
@@ -238,7 +260,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
           else:
             QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message from Assurance: ", "Error: File type incorrect. Please load a pepXML/ a summary.txt file from MaxQuant.")
-            UI_MainWindow.Ui_MainWindow.onLongitudinalClicked(self)
+            
             
     def TrainingSetParse(self,inputFile):
         if inputFile.endswith('.csv'):
