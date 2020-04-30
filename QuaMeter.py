@@ -48,6 +48,7 @@ class QuaMeter():
 
     def StartProcess(self, files, file):
         arguments = ""
+        QuaMeter.errors = []
         QuaMeter.process = QtCore.QProcess()
         #arguments1 = " cd/d " + QuaMeter.Dir
         QuaMeter.process.finished.connect(lambda:QuaMeter.on_Finished(self, files, file))
@@ -74,19 +75,29 @@ class QuaMeter():
             CLO = " -ChromatogramMzLowerOffset " + UI_MainWindow.Ui_MainWindow.CLOTextBox.text()
         
         QuaMeter.process.setWorkingDirectory(QtCore.QDir.toNativeSeparators(QuaMeter.Dir))
-        #QuaMeter.process.start(" cd/d " + os.path.dirname(QuaMeter.File))
-        arguments2 = QtCore.QDir.toNativeSeparators(QuaMeter.QuaMeterPath)+" " +files[file] +" " +cpus +  CUO + CLO +" -MetricsType idfree"
-        QuaMeter.process.start(arguments2)
+        try:
+            arguments2 = QtCore.QDir.toNativeSeparators(QuaMeter.QuaMeterPath)+" " +files[file] +" " +cpus +  CUO + CLO +" -MetricsType idfree"
+            QuaMeter.process.start(arguments2)        
+        except IndexError:
+            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Warning","No mzML files were found in the folder selected.")
+            QuaMeter.onQuaMeterBrowseClicked(self)
        
     @QtCore.pyqtSlot()
     def on_readyReadStandardOutput(self):
         text = QuaMeter.process.readAllStandardOutput().data().decode()
         UI_MainWindow.Ui_MainWindow.textedit.append(text)
+        if "error" in text.lower():
+            QuaMeter.errors.append(text)
 
     @QtCore.pyqtSlot()
     def on_Finished(self, files,file):
         if files[file] ==files[-1]:#If the last file:
-        
+            if len(QuaMeter.errors)>0:
+                str1 = ""
+                QtWidgets.QtMessageBox(self, "Warning", "The following errors occurred: " + str1.join(QuaMeter.errors))
+                
+                
+                
             dirpath = os.path.dirname(os.path.realpath(QuaMeter.Dir))
             ffiles = []
             for ffile in os.listdir(QuaMeter.Dir):  
@@ -104,7 +115,7 @@ class QuaMeter():
             UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
             UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(self)
             UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
-            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message","QuaMeter has finished successfully.")
+            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message","QuaMeter has finished.")
         else:
             file = file+1
             QuaMeter.StartProcess(self, files, file)
