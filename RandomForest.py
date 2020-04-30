@@ -27,6 +27,7 @@ import h2o
 from h2o.estimators import H2ORandomForestEstimator
 from h2o.grid.grid_search import H2OGridSearch
 from PyQt5.QtWidgets import QTableWidget,QTableWidgetItem
+import Threads
 
 class RandomForest(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -166,9 +167,12 @@ class RandomForest(FigureCanvas):
         self.table.setHorizontalHeaderLabels(df.columns)
         self.table.setSortingEnabled(True)
         
+        UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2 = QtWidgets.QProgressBar()
+        
         RFSelectionGrid = QtWidgets.QGridLayout(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet)
         RFSelectionGrid.addWidget(self.table,0,0,1,3)
         RFSelectionGrid.addWidget(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn,2,1,2,1)
+        RFSelectionGrid.addWidget(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2,3,1,2,1)
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.compute(self))
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(True)
             
@@ -176,15 +180,10 @@ class RandomForest(FigureCanvas):
     def compute(self):
         UI_MainWindow.Ui_MainWindow.badpredictionList = []
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
-        if type(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[0]) != str and "Filename" in UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns:
-            UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["Filename"]
-        
-        for item in self.table.selectionModel().selectedRows():
-            UI_MainWindow.Ui_MainWindow.badpredictionList.append(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item.row()])
-        print(len(UI_MainWindow.Ui_MainWindow.badpredictionList))
-        if len(UI_MainWindow.Ui_MainWindow.badpredictionList)>2:
-                    RandomForest.RunRandomForest(self)
-        #for index in sorted(self.table.selectionModel().selectedRows()):
+        tRF = Threads.SideThread(lambda: RandomForest.RFFromTable(self))
+        tRF.signals.result.connect(lambda: UI_MainWindow.Ui_MainWindow.RFFinished(self))
+        self.threadpool.start(tRF)
+            
         
     def RunRandomForest(self):
         QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
@@ -270,4 +269,14 @@ class RandomForest(FigureCanvas):
         results = RandomForest.computeTrainingSamplesFromArea(self)
         if results == True:
             RandomForest.RunRandomForest(self)
+            
+    def RFFromTable(self):
+        if type(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[0]) != str and "Filename" in UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns:
+            UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["Filename"]
+        
+        for item in self.table.selectionModel().selectedRows():
+            UI_MainWindow.Ui_MainWindow.badpredictionList.append(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item.row()])
+        print(len(UI_MainWindow.Ui_MainWindow.badpredictionList))
+        if len(UI_MainWindow.Ui_MainWindow.badpredictionList)>2:
+                    RandomForest.RunRandomForest(self)
                     
