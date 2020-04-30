@@ -46,8 +46,8 @@ class PCAGraph(FigureCanvas):
             ax.plot(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1], linestyle="none",linewidth=0, marker='o', markerfacecolor='r', markeredgecolor='k')
             #if forReport:
             #    ax.annotate(element, xy=(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1]),color='green')
-        ax.set_xlabel("PC1")
-        ax.set_ylabel("PC2")
+        ax.set_xlabel("PC1   "+ str(round(PCA.PCA.componentVariance[0],4))+ "%")
+        ax.set_ylabel("PC2   "+ str(round(PCA.PCA.componentVariance[1],4))+ "%")
         FigureCanvas.__init__(self, fig)
         #self.setParent(parent)
 
