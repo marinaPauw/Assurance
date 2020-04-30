@@ -46,26 +46,24 @@ class SwaMe():
         
         
         SwaMe.Path = FileInput.BrowseWindow.GetSwaMePath(SwaMe)
-        SwaMe.timestr = time.strftime("%Y%m%d-%H%M%S")
-        os.chdir(SwaMe.Dir)
-        
-       
-        #Find a file in the directory to be inputFile:
-        paths = []
-        files = []
-        with os.scandir(SwaMe.Dir) as entries:
-            for entry in entries:
-                if entry.name.endswith(".mzML"):
-                    paths.append(entry.path)
-                    files.append(entry.name)
+        if SwaMe.Path in globals():
+            SwaMe.timestr = time.strftime("%Y%m%d-%H%M%S")
+            os.chdir(SwaMe.Dir)
                     
-                    
-        SwaMe.StartProcess(self, files, 0, paths)
+            #Find a file in the directory to be inputFile:
+            paths = []
+            files = []
+            with os.scandir(SwaMe.Dir) as entries:
+                for entry in entries:
+                    if entry.name.endswith(".mzML"):
+                        paths.append(entry.path)
+                        files.append(entry.name)
+            SwaMe.StartProcess(self, files, 0, paths)
                     
 
     def StartProcess(self, files, file, paths):
             try:        
-                    SwaMe.errors = []
+                    
                     arguments = ""
                     SwaMe.Division = ""
                     SwaMe.MassTolerance =""
