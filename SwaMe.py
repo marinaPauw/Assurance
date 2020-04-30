@@ -64,6 +64,8 @@ class SwaMe():
                     
 
     def StartProcess(self, files, file, paths):
+            try:        
+                    SwaMe.errors = []
                     arguments = ""
                     SwaMe.Division = ""
                     SwaMe.MassTolerance =""
@@ -113,16 +115,25 @@ class SwaMe():
                         arguments = QtCore.QDir.toNativeSeparators(SwaMe.Path) + " -i " + QtCore.QDir.toNativeSeparators(SwaMe.i) + SwaMe.Division + SwaMe.MassTolerance + SwaMe.RTTolerance + SwaMe.IRT+SwaMe.IRTolerance+SwaMe.iRTminintensityTB+ SwaMe.iRTminpeptidesTB + SwaMe.Minintensity+SwaMe.outputFile
 
                     SwaMe.process.start(arguments)
+                    
+            except IndexError:
+                QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Warning","No mzML files were found in the folder selected.")
+                SwaMe.onSwaMeBrowseClicked(self)
 
     @QtCore.pyqtSlot()
     def on_readyReadStandardOutput(self):
         text = SwaMe.process.readAllStandardOutput().data().decode()
         UI_MainWindow.Ui_MainWindow.Stextedit.append(text)
+        if "error" in text.lower():
+            SwaMe.errors.append(text)
         
     @QtCore.pyqtSlot()
     def on_Finished(self, files, file, paths):
         if SwaMe.filename ==files[-1]:#If the last file:
-                        
+            if len(SwaMe.errors)>1:
+                str1 = ""
+                QtWidgets.QtMessageBox(self, "Warning", "The following errors occurred: " + str1.join(SwaMe.errors))
+                           
             files = []
             with os.scandir(SwaMe.Dir) as allfiles:
                 for file in allfiles:
