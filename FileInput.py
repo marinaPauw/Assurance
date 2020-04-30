@@ -62,8 +62,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(str, inputs))
                     
-                    QtCore.QMetaObject.invokeMethod(self, "DisableBrowseButtons",
-                                 QtCore.Qt.QueuedConnection)
             
                 elif(justTSVFiles == True):
                     
