@@ -183,7 +183,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.RTLabel= QtWidgets.QLabel(Ui_MainWindow.rightFrame)
         Ui_MainWindow.RTTextBox = QtWidgets.QLineEdit(Ui_MainWindow.rightFrame)
         Ui_MainWindow.SRUNButton = QtWidgets.QPushButton(Ui_MainWindow.rightFrame)
-        Ui_MainWindow.iRT = QtWidgets.QRadioButton("iRT")
+        Ui_MainWindow.iRT =  QtWidgets.QPushButton(Ui_MainWindow.rightFrame)
+        Ui_MainWindow.iRTFilelist = QtWidgets.QLabel(Ui_MainWindow.rightFrame)
         Ui_MainWindow.iRTtoleranceLabel =QtWidgets.QLabel(Ui_MainWindow.rightFrame)
         Ui_MainWindow.iRTminintensityLabel =QtWidgets.QLabel(Ui_MainWindow.rightFrame)
         Ui_MainWindow.iRTminpeptidesLabel =QtWidgets.QLabel(Ui_MainWindow.rightFrame)
@@ -204,6 +205,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.MTTextBox.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
         Ui_MainWindow.RTTextBox.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
         Ui_MainWindow.Stextedit.setStyleSheet("background-color: rgb(240,240,240); padding: 1px;")
+        Ui_MainWindow.iRT.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
         Ui_MainWindow.iRTtoleranceTB.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
         Ui_MainWindow.iRTminintensityTB.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
         Ui_MainWindow.iRTminpeptidesTB.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
@@ -211,7 +213,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.SBrowseButton.setFixedHeight(30)
         Ui_MainWindow.SBrowseButton.setFixedHeight(30)
 
-         #Clicked.connect
+        #For error logging:
+        Ui_MainWindow.errors = []
+        
+        #Clicked.connect
         Ui_MainWindow.SBrowseButton.clicked.connect(SwaMe.SwaMe.onSwaMeBrowseClicked)
         Ui_MainWindow.SRUNButton.clicked.connect(SwaMe.SwaMe.onSwaMeRUNClicked)
 
@@ -226,7 +231,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.iRTminintensityLabel.setText("MinIRTIntensity")
         Ui_MainWindow.minintensityLabel.setText("MinIntensity")
         Ui_MainWindow.iRTminpeptidesLabel.setText("MinIRTpeptides")
-
+        Ui_MainWindow.iRT.setText("iRT")
+        Ui_MainWindow.iRTFilelist.setText("File...")
         
         #Layout:
         SwaMevbox = QtWidgets.QVBoxLayout(Ui_MainWindow.rightFrame)
@@ -240,11 +246,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMehbox1.addLayout(SwaMevbox2)
         SwaMehbox1.addStretch()
         SwaMevbox.addLayout(SwaMehbox1)
-        SwaMehbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.rightFrame)
-        SwaMehbox2.addWidget(Ui_MainWindow.divisionLabel)
-        SwaMehbox2.addWidget(Ui_MainWindow.divisionTextBox)
-        SwaMevbox.addLayout(SwaMehbox2)
         SwaMehbox3 = QtWidgets.QHBoxLayout(Ui_MainWindow.rightFrame)
+        SwaMehbox3.addWidget(Ui_MainWindow.divisionLabel)
+        SwaMehbox3.addWidget(Ui_MainWindow.divisionTextBox)
         SwaMehbox3.addWidget(Ui_MainWindow.MTLabel)
         SwaMehbox3.addWidget(Ui_MainWindow.MTTextBox)
         SwaMehbox3.addWidget(Ui_MainWindow.RTLabel)
@@ -252,8 +256,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMehbox3.addWidget(Ui_MainWindow.minintensityLabel)
         SwaMehbox3.addWidget(Ui_MainWindow.minintensityTB)
         SwaMevbox.addLayout(SwaMehbox3)
+        SwaMehbox2 = QtWidgets.QHBoxLayout(Ui_MainWindow.rightFrame)
+        SwaMehbox2.addWidget(Ui_MainWindow.iRT)
+        SwaMehbox2.addWidget(Ui_MainWindow.iRTFilelist)
+        SwaMevbox.addLayout(SwaMehbox2)
         SwaMehbox4 = QtWidgets.QHBoxLayout(Ui_MainWindow.rightFrame)
-        SwaMehbox4.addWidget(Ui_MainWindow.iRT)
         SwaMehbox4.addWidget(Ui_MainWindow.iRTtoleranceLabel)
         SwaMehbox4.addWidget(Ui_MainWindow.iRTtoleranceTB)
         SwaMehbox4.addWidget(Ui_MainWindow.iRTminintensityLabel)
@@ -297,7 +304,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.Outliers.clicked.connect(self.onOutliersClicked)
         Ui_MainWindow.IndMetrics.clicked.connect(self.onIndMetricsClicked)
         Ui_MainWindow.Longitudinal.clicked.connect(self.onLongitudinalClicked)
-        Ui_MainWindow.iRT.toggled.connect(self.onIRTClicked)
+        Ui_MainWindow.iRT.clicked.connect(self.onIRTClicked)
         Ui_MainWindow.pdf.clicked.connect(self.onPDFClicked)
 
 
@@ -641,6 +648,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def onIRTClicked(self):
          Ui_MainWindow.EnableSwaMeIRTArguments(self)
          Ui_MainWindow.IRTinputFile = FileInput.BrowseWindow.GetIRTInputFile(Ui_MainWindow)
+         Ui_MainWindow.iRTFilelist.setText(Ui_MainWindow.IRTinputFile)
 
     @pyqtSlot()
     def onIndMetricsClicked(self):

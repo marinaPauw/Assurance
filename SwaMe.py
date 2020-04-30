@@ -44,9 +44,8 @@ class SwaMe():
                 
     def onSwaMeRUNClicked(self):
         
-        
         SwaMe.Path = FileInput.BrowseWindow.GetSwaMePath(SwaMe)
-        if SwaMe.Path in globals():
+        if "SwaMe.Path":
             SwaMe.timestr = time.strftime("%Y%m%d-%H%M%S")
             os.chdir(SwaMe.Dir)
                     
@@ -126,14 +125,14 @@ class SwaMe():
             SwaMe.lastfile = text
         if "error" in text.lower():
             fullMessage = "For file: "+ SwaMe.lastfile+" - " +text
-            SwaMe.errors.append(fullMessage)
+            UI_MainWindow.Ui_MainWindow.errors.append(fullMessage)
         
     @QtCore.pyqtSlot()
     def on_Finished(self, files, file, paths):
         if SwaMe.filename ==files[-1]:#If the last file:
-            if len(SwaMe.errors)>0:
+            if len(UI_MainWindow.Ui_MainWindow.errors)>0:
                 str1 = ""
-                QtWidgets.QtMessageBox(self, "Warning", "The following errors occurred: " + str1.join(SwaMe.errors))
+                QtWidgets.QMessageBox(self, "Warning", "The following errors occurred: " + str1.join(UI_MainWindow.Ui_MainWindow.errors))
                            
             files = []
             with os.scandir(SwaMe.Dir) as allfiles:
