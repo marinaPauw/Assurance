@@ -75,7 +75,7 @@ class SwaMe():
                     SwaMe.iRTminintensityTB = ""
                     SwaMe.iRTminpeptidesTB = ""
                     SwaMe.Minintensity = ""
-        
+                    SwaMe.lastfile = ""
                     
                     SwaMe.i = paths[file]
                     SwaMe.filename = files[file]
@@ -124,13 +124,16 @@ class SwaMe():
     def on_readyReadStandardOutput(self):
         text = SwaMe.process.readAllStandardOutput().data().decode()
         UI_MainWindow.Ui_MainWindow.Stextedit.append(text)
+        if "loading file" in text.lower():
+            SwaMe.lastfile = text
         if "error" in text.lower():
-            SwaMe.errors.append(text)
+            fullMessage = "For file: "+ SwaMe.lastfile+" - " +text
+            SwaMe.errors.append(fullMessage)
         
     @QtCore.pyqtSlot()
     def on_Finished(self, files, file, paths):
         if SwaMe.filename ==files[-1]:#If the last file:
-            if len(SwaMe.errors)>1:
+            if len(SwaMe.errors)>0:
                 str1 = ""
                 QtWidgets.QtMessageBox(self, "Warning", "The following errors occurred: " + str1.join(SwaMe.errors))
                            
