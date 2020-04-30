@@ -40,9 +40,13 @@ import UI_MainWindow
 
 class LongitudinalTab(QtWidgets.QTabWidget):
 
-    def printModelResults(self, performance, results, model):
+    def printModelResults(self):
+        performance= RandomForest.RandomForest.performance
+        results = RandomForest.RandomForest.results
+        model = RandomForest.RandomForest.best_model
         UI_MainWindow.Ui_MainWindow.removeTab(self, self.sIndex)
-        UI_MainWindow.Ui_MainWindow.setCurrentIndex(self,0)
+        #self.TrainingOrTestSet.removeTab(self, UI_MainWindow.Ui_MainWindow.sIndex)
+        self.setCurrentIndex(0)
         
         TrainingOrTestSet = QtWidgets.QTabWidget()
         LongitudinalTab.sIndex = self.addTab(TrainingOrTestSet,"Random Forest Results:")

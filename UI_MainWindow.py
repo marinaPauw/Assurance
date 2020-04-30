@@ -27,6 +27,7 @@ import pandas as pd
 import SwaMe
 import pepXMLReader
 import RFSelectionPlots
+import RandomForestResultsTab
 import FeatureImportancePlot
 import PDFWriter
 import tempfile
@@ -43,7 +44,7 @@ import Datasets
 class Ui_MainWindow(QtWidgets.QTabWidget):
     
     def setupUi(self):
-        self.threadpool = QtCore.QThreadPool()
+        Ui_MainWindow.threadpool = QtCore.QThreadPool()
         self.setWindowTitle("Assurance")
         self.resize(800,650)
         
@@ -274,14 +275,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.Longitudinal.setStyleSheet("background-color: rgb(240,240,240);")
         
         
-        #Threading
-        tbrowse = Threads.SideThread(lambda: self.onBrowseClicked(database))
-        tbrowse.signals.result.connect(self.ThreadingFix)
-        tbrowse.signals.finished.connect(self.EnableAnalysisButtons)
-        tbrowse.signals.progress.connect(self.progress_fn)
 
         #clicked.connect
-        Ui_MainWindow.browse.clicked.connect(lambda:self.threadpool.start(tbrowse))
+        Ui_MainWindow.browse.clicked.connect(lambda:self.onBrowseClicked(database))
         Ui_MainWindow.Outliers.clicked.connect(self.onOutliersClicked)
         Ui_MainWindow.IndMetrics.clicked.connect(self.onIndMetricsClicked)
         Ui_MainWindow.Longitudinal.clicked.connect(self.onLongitudinalClicked)
@@ -431,7 +427,16 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     @QtCore.pyqtSlot()    
     def onBrowseClicked(self, database):
         FileInput.BrowseWindow.__init__(Ui_MainWindow)
-        inputFile = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
+        inputFiles = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
+        #Threading
+        tbrowse = Threads.SideThread(lambda: self.ParseFiles(inputFiles, database))
+        tbrowse.signals.result.connect(self.ThreadingFix)
+        tbrowse.signals.finished.connect(self.EnableAnalysisButtons)
+        self.threadpool.start(tbrowse)
+        
+    def ParseFiles(self, inputFiles, database):
+        
+        inputFile = FileInput.BrowseWindow.parseInputFiles(Ui_MainWindow, inputFiles)
         QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 20))
@@ -472,7 +477,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 100))
         return database
-        #return "stringy"
     
     
     def ThreadingFix(self,database):
@@ -480,7 +484,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.NumericMetrics = database.NumericMetrics
         Ui_MainWindow.EnableAnalysisButtons(self)
 
-    @pyqtSlot()
+    @QtCore.pyqtSlot()
     def onOutliersClicked(self):
         self.DisableAnalysisButtons()
 
@@ -663,7 +667,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def disable_legend(metric):
         IndividualMetrics.MyIndMetricsCanvas.HideLegend(metric)
 
-    @pyqtSlot()
+    @QtCore.pyqtSlot()
     def onLongitudinalClicked(self):
         Ui_MainWindow.DisableAnalysisButtons(self)
         Ui_MainWindow.predictionArea = [0, 0, 0, 0]
@@ -685,7 +689,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             
             tpep = Threads.SideThread(self.GetTrainingSetTable)
             tpep.signals.result.connect(self.OnParserThreadFinish)
-            tpep.signals.progress.connect(self.progress_fn)
             self.threadpool.start(tpep)
             
             
@@ -748,16 +751,25 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 Ui_MainWindow.TrainingOrTestSet)
         Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
         
-        
+        #ProgressBar
+        Ui_MainWindow.TrainingOrTestSet.progress2 = QtWidgets.QProgressBar()
         
         RFSelectionGrid = QtWidgets.QGridLayout(Ui_MainWindow.TrainingOrTestSet)
         RFSelectionGrid.addWidget(Ui_MainWindow.TrainingSetPlot,0,0,1,3)
         RFSelectionGrid.addWidget(Ui_MainWindow.TrainingOrTestSet.badbtn,2,1,2,1)
+        RFSelectionGrid.addWidget(Ui_MainWindow.TrainingOrTestSet.progress2,3,1,2,1)
+                
+        self.TrainingOrTestSet.badbtn.clicked.connect(lambda: self.RandomForestSelection())
         
-        
-        # Create full training set
-        Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.RandomForest.computeTrainingSamplesFromArea(self))
-        
+    def RFFinished(self):
+        RandomForestResultsTab.LongitudinalTab.printModelResults(self)
+        Ui_MainWindow.EnableAnalysisButtons(self)
+            
+    
+    def RandomForestSelection(self):
+        tRF = Threads.SideThread(lambda: RandomForest.RandomForest.RFFromGraph(Ui_MainWindow))
+        tRF.signals.result.connect(self.RFFinished)
+        Ui_MainWindow.threadpool.start(tRF)
     
     def onPDFClicked(self):
         PDFWriter.OutputWriter.producePDF(self,now)

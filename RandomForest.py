@@ -37,6 +37,7 @@ class RandomForest(FigureCanvas):
 
     def computeTrainingSamplesFromArea(self):
         #The format is x1, y1, x2, y2: left, bottom, right, top
+        
         table = UI_MainWindow.Ui_MainWindow.TrainingSetTable
         area = UI_MainWindow.Ui_MainWindow.predictionArea
         if area[1]>len(table.index)-1:
@@ -47,13 +48,18 @@ class RandomForest(FigureCanvas):
 
         if(len(UI_MainWindow.Ui_MainWindow.badpredictionList)>0):
                   UI_MainWindow.Ui_MainWindow.badPredicted=True
+                  QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn, "setEnabled",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(bool, True))
                   UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
 
         # Load in the quality data for training set:
         FileInput.BrowseWindow.__init__(UI_MainWindow.Ui_MainWindow)
         FileInput.BrowseWindow.GetTrainingQualityFiles(UI_MainWindow.Ui_MainWindow)
         #FileInput.BrowseWindow.checkTrainingQualityColumns(self, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics)
-        
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 5))
         if type(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[0]) != str:
             UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]["Filename"]
                 
@@ -63,10 +69,13 @@ class RandomForest(FigureCanvas):
                     if filename not in table["Filename"]:
                                     QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" , "A sample has been identified for which the raw file name was not found in the ID files: "+str(filename) + ". The sample was removed from further analysis. Make sure the files in Filename column correspond with file names of IDs." )
                                     UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].drop([filename])
-                    
+            
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 10))         
                         
             if(UI_MainWindow.Ui_MainWindow.badPredicted):
-                    RandomForest.RunRandomForest(self)
+                return True
                    
     def AllocateGoodOrBad(self, table):              
 
@@ -178,13 +187,18 @@ class RandomForest(FigureCanvas):
         #for index in sorted(self.table.selectionModel().selectedRows()):
         
     def RunRandomForest(self):
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 15))
         for column in UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns:
             if column not in UI_MainWindow.Ui_MainWindow.metrics[0].columns and column != "GoodOrBad":
                 UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0] = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].drop(columns=[column])
                 
       
         RandomForest.createguideSet(RandomForest)
-        
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 20))
         dataToBeSplit = RandomForest.guideSetDf
                     
         dataToBeSplit.columns= RandomForest.guideSetDf.columns
@@ -197,7 +211,9 @@ class RandomForest(FigureCanvas):
         h2o.init()
         dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
         train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
-                    
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 30))            
                     
         #Check that the training set contains both groups else error is thrown:
         while len(train["GoodOrBad"].unique())<2:
@@ -217,22 +233,41 @@ class RandomForest(FigureCanvas):
         hyper_parameters = {'ntrees':[50,200], 'max_depth':[20,40], 'mtries':-1}
                     
         models = H2OGridSearch(H2ORandomForestEstimator(balance_classes=True, seed = 1),  hyper_params=hyper_parameters, search_criteria = search_criteria)
-                    
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 50))            
         models.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train), seed=1)
-                    
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 70))           
         sortedModels= models.get_grid(sort_by='accuracy', decreasing=True)
-                    
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 80))            
         best_model = sortedModels.models[0]
 
         # Now let's evaluate the model performance on a test set
         # so we get an honest estimate of top model performance
         performance = best_model.model_performance(h2o.H2OFrame(test))
-
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 85))
         RandomForest.performance = performance
         #Run the random Forest on the original data:
         rf = best_model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 90))
         results = rf.as_data_frame()
+        RandomForest.results = results
+        RandomForest.best_model = best_model
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 100))
         results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
-        RandomForestResultsTab.LongitudinalTab.printModelResults(self, performance, results, best_model)
-        UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
+        
+    def RFFromGraph(self):
+        results = RandomForest.computeTrainingSamplesFromArea(self)
+        if results == True:
+            RandomForest.RunRandomForest(self)
                     
