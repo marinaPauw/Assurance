@@ -121,7 +121,13 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
 
         #Widget stylesheets:
-        Ui_MainWindow.BrowseButton.setStyleSheet("background-color: rgb(240,240,240);")
+        Ui_MainWindow.BrowseButton.setStyleSheet("background-color: rgb(240,240,240);padding: 3px;")
+        Ui_MainWindow.RUNButton.setStyleSheet("background-color: rgb(240,240,240);padding: 3px;")
+        Ui_MainWindow.cpusTextBox.setStyleSheet("background-color: rgb(240,240,240);padding: 3px;")
+        Ui_MainWindow.CLOTextBox.setStyleSheet("background-color: rgb(240,240,240);padding: 3px;")
+        Ui_MainWindow.CUOTextBox.setStyleSheet("background-color: rgb(240,240,240);padding: 3px;")
+        Ui_MainWindow.fileList.setStyleSheet("padding: 3px;")
+        Ui_MainWindow.textedit.setStyleSheet("background-color: rgb(240,240,240);padding: 1px;")
 
         #Widget texts:
         Ui_MainWindow.BrowseButton.setText("Browse ")
@@ -129,7 +135,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.cpusLabel.setText("Number of CPU's: ")
         Ui_MainWindow.CLOLabel.setText("m/z Lower Offset:")
         Ui_MainWindow.CUOLabel.setText("m/z Upper Offset:")
-        Ui_MainWindow.RUNButton.setText("RUN")
+        Ui_MainWindow.RUNButton.setText("Run")
 
         #Clicked.connect
         Ui_MainWindow.BrowseButton.clicked.connect(QuaMeter.QuaMeter.onQuaMeterBrowseClicked)
@@ -191,7 +197,17 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
 
         #Widget stylesheets:
-        Ui_MainWindow.SBrowseButton.setStyleSheet("background-color: rgb(240,240,240);")
+        Ui_MainWindow.SBrowseButton.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
+        Ui_MainWindow.SRUNButton.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
+        Ui_MainWindow.SfileList.setStyleSheet(" padding: 3px;")
+        Ui_MainWindow.divisionTextBox.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
+        Ui_MainWindow.MTTextBox.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
+        Ui_MainWindow.RTTextBox.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
+        Ui_MainWindow.Stextedit.setStyleSheet("background-color: rgb(240,240,240); padding: 1px;")
+        Ui_MainWindow.iRTtoleranceTB.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
+        Ui_MainWindow.iRTminintensityTB.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
+        Ui_MainWindow.iRTminpeptidesTB.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
+        Ui_MainWindow.minintensityTB.setStyleSheet("background-color: rgb(240,240,240); padding: 3px;")
         Ui_MainWindow.SBrowseButton.setFixedHeight(30)
         Ui_MainWindow.SBrowseButton.setFixedHeight(30)
 
@@ -205,7 +221,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.divisionLabel.setText("Number of segments to divide the RT into: ")
         Ui_MainWindow.MTLabel.setText("MassTolerance:")
         Ui_MainWindow.RTLabel.setText("RTTolerance:")
-        Ui_MainWindow.SRUNButton.setText("RUN")
+        Ui_MainWindow.SRUNButton.setText("Run")
         Ui_MainWindow.iRTtoleranceLabel.setText("iRTtolerance")
         Ui_MainWindow.iRTminintensityLabel.setText("MinIRTIntensity")
         Ui_MainWindow.minintensityLabel.setText("MinIntensity")
@@ -251,7 +267,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         SwaMevbox.addLayout(SwaMehbox7)
         #------------------------------------------------OutputFrame--------------------------------------------------------
         Ui_MainWindow.pdf = QtWidgets.QPushButton(OutputFrame)
-        Ui_MainWindow.pdf.setStyleSheet("background-color: rgb(240,240,240);")
+        Ui_MainWindow.pdf.setStyleSheet("background-color: rgb(240,240,240);padding: 3px;")
         Ui_MainWindow.pdf.setText("Export to PDF")
         Ui_MainWindow.pdf.progress = QtWidgets.QProgressBar()
         Ui_MainWindow.pdf.progress.setGeometry(200, 80, 250, 20)
