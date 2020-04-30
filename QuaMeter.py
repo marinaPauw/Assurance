@@ -35,15 +35,14 @@ class QuaMeter():
         argument1 = "cd/d " + QuaMeter.Dir 
         
         QuaMeter.QuaMeterPath = FileInput.BrowseWindow.GetQuaMeterPath(QuaMeter)
-        files = []
-        with os.scandir(QuaMeter.Dir) as entries:
-            for entry in entries:
-                if entry.name.endswith(".mzML"):
-                    files.append(entry.name)
-        
-        
-        
-        QuaMeter.StartProcess(self, files, 0)
+        if "QuaMeter.QuaMeterPath" in globals():
+            files = []
+            with os.scandir(QuaMeter.Dir) as entries:
+                for entry in entries:
+                    if entry.name.endswith(".mzML"):
+                        files.append(entry.name)
+            
+            QuaMeter.StartProcess(self, files, 0)
                     
 
     def StartProcess(self, files, file):

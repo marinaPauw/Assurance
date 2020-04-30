@@ -548,6 +548,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                                    Options())
         if(QuaMeterPath):
             return QuaMeterPath
+            
 
     def SwaMeFileTypeCheck(self, inputFile):
         
