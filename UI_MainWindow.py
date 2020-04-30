@@ -426,6 +426,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     @QtCore.pyqtSlot()    
     def onBrowseClicked(self, database):
+              
         FileInput.BrowseWindow.__init__(Ui_MainWindow)
         inputFiles = FileInput.BrowseWindow.GetInputFile(Ui_MainWindow)
         #Threading
@@ -434,10 +435,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         tbrowse.signals.finished.connect(self.EnableAnalysisButtons)
         self.threadpool.start(tbrowse)
         
-    def ParseFiles(self, inputFiles, database):
-        
-        inputFile = FileInput.BrowseWindow.parseInputFiles(Ui_MainWindow, inputFiles)
-        QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+    def ParseFiles(self, inputFiles, database):                
+        inputFile = FileInput.BrowseWindow.parseInputFiles(self, inputFiles)
+        QtCore.QMetaObject.invokeMethod(self.UploadProgress, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 20))
         if inputFile:
@@ -476,13 +476,22 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 100))
-        return database
+            return database
+        else:
+            return False
+    
     
     
     def ThreadingFix(self,database):
-        Ui_MainWindow.metrics = database.metrics
-        Ui_MainWindow.NumericMetrics = database.NumericMetrics
-        Ui_MainWindow.EnableAnalysisButtons(self)
+        if type(database)==Datasets.Datasets:
+            Ui_MainWindow.metrics = database.metrics
+            Ui_MainWindow.NumericMetrics = database.NumericMetrics
+            Ui_MainWindow.EnableAnalysisButtons(self)
+        elif type(database)==bool:
+            self.Message("An error occurred. Please check that the input files are either mzQC, tsv or csv quality files. Multiple files of the same type are allowed.")
+            database = Datasets.Datasets()
+            Ui_MainWindow.UploadProgress.setValue(0)
+            self.onBrowseClicked(database)
 
     @QtCore.pyqtSlot()
     def onOutliersClicked(self):
@@ -646,7 +655,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     
     def checkColumnNumberForPCA(self):
         if(len(Ui_MainWindow.NumericMetrics[0].columns) < 3):
-            QtWidgets.QMessageBox.warning(self, "Warning:", "There are less than three \
+            self.Message(self, "Message from Assurance", "There are less than three \
                               numeric columns in the dataset. PCA will not \
                               be performed.")
             return 0
@@ -655,7 +664,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
 
     def checkSampleNumberForPCA(self):
         if(len(FileInput.BrowseWindow.currentDataset.index) < 4):
-            QtWidgets.QMessageBox.warning(self, "Warning:", "There are less than three samples in the dataset. PCA will not be performed.")
+            self.Message("There are less than three samples in the dataset. PCA will not be performed.")
             return 0
         else:
             return 1
@@ -722,9 +731,18 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                     Ui_MainWindow.TrainingSetTable =maxQuantTxTReader.maxQuantTxtReader.parseTxt(self, TrainingSetfiles[0])
                 elif ".mzid" in TrainingSetfiles[0].lower():
                     Ui_MainWindow.TrainingSetTable =mzIdentMLReader.mzIdentMLReader.parsemzID(self, TrainingSetfiles)
-                return Ui_MainWindow.TrainingSetTable
+                else:
+                    return False
+                
+                if len(Ui_MainWindow.TrainingSetTable.index)>2:
+                    return Ui_MainWindow.TrainingSetTable
+                else:
+                    return False
+            else:
+                return False
                        
     def OnParserThreadFinish(self, results):
+            if type(results)!=bool: 
                 Ui_MainWindow.TrainingSetTable = results
                 Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
                 Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px")
@@ -734,6 +752,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 self.setCurrentIndex(Ui_MainWindow.sIndex)
                 Ui_MainWindow.RandomForestPerformed = True
                 Ui_MainWindow.pdf.setEnabled(True)   
+            else:
+                self.Message("An error occurred. The ID approach requires id files to make a graph out of (pepXML, mzID or summary.txt), then corresponding quality tsvs or json files. The samples in the quality files should correspond to the samples in the ID files and the variables should correspond to the original analysis files.")
+                Ui_MainWindow.progress1.setValue(0)
+                self.onLongitudinalClicked()
+                
+                
 
     def CreateTrainingTab(self):
         # Create the tab which will contain the graph:
@@ -761,9 +785,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 
         self.TrainingOrTestSet.badbtn.clicked.connect(lambda: self.RandomForestSelection())
         
-    def RFFinished(self):
-        RandomForestResultsTab.LongitudinalTab.printModelResults(self)
-        Ui_MainWindow.EnableAnalysisButtons(self)
+    def RFFinished(self, results):
+        if results:
+            RandomForestResultsTab.LongitudinalTab.printModelResults(self)
+            Ui_MainWindow.EnableAnalysisButtons(self)
+        else:
+            self.onLongitudinalClicked()
             
     
     def RandomForestSelection(self):
@@ -774,6 +801,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def onPDFClicked(self):
         PDFWriter.OutputWriter.producePDF(self,now)
 
-
+    @QtCore.pyqtSlot()
+    def Message(self, words):
+        QtWidgets.QMessageBox.warning(self, "Message",words)
     
         

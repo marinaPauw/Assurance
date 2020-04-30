@@ -68,7 +68,7 @@ class RandomForest(FigureCanvas):
         if hasattr(UI_MainWindow.Ui_MainWindow, "Numerictrainingmetrics"):
             for filename in  UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index:
                     if filename not in table["Filename"]:
-                                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Error:" , "A sample has been identified for which the raw file name was not found in the ID files: "+str(filename) + ". The sample was removed from further analysis. Make sure the files in Filename column correspond with file names of IDs." )
+                                    self.Message("A sample has been identified for which the raw file name was not found in the ID files: "+str(filename) + ". The sample was removed from further analysis. Make sure the files in Filename column correspond with file names of IDs.")
                                     UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].drop([filename])
             
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
@@ -186,84 +186,88 @@ class RandomForest(FigureCanvas):
             
         
     def RunRandomForest(self):
-        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 15))
-        for column in UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns:
-            if column not in UI_MainWindow.Ui_MainWindow.metrics[0].columns and column != "GoodOrBad":
-                UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0] = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].drop(columns=[column])
-                
-      
-        RandomForest.createguideSet(RandomForest)
-        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 20))
-        dataToBeSplit = RandomForest.guideSetDf
+        try:
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 15))
+            for column in UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns:
+                if column not in UI_MainWindow.Ui_MainWindow.metrics[0].columns and column != "GoodOrBad":
+                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0] = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].drop(columns=[column])
                     
-        dataToBeSplit.columns= RandomForest.guideSetDf.columns
-                    
-        dataToBeSplit["GoodOrBad"] = dataToBeSplit["GoodOrBad"].astype('category')
-        training_columns = list(dataToBeSplit.columns[dataToBeSplit.columns != 'GoodOrBad'])
-        # Output parameter train against input parameters
-        response_column = 'GoodOrBad'
-        # Split data into train and testing
-        h2o.init()
-        dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
-        train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
-        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 30))            
-                    
-        #Check that the training set contains both groups else error is thrown:
-        while len(train["GoodOrBad"].unique())<2:
-                        train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
+        
+            RandomForest.createguideSet(RandomForest)
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 20))
+            dataToBeSplit = RandomForest.guideSetDf
                         
-                    
-        train = train.as_data_frame()
-        train["GoodOrBad"] = train["GoodOrBad"].astype('category')
-        RandomForest.train = train #For the report writing
-        print("The number of good in the training section are: " + str( len(train[train["GoodOrBad"]=="G"])))
-        test = test.as_data_frame()
-        RandomForest.test = test
-                    
-        # Search criteria
-        search_criteria = {'strategy': 'RandomDiscrete',  'seed': 1}
-        # Hyper parameters
-        hyper_parameters = {'ntrees':[50,200], 'max_depth':[20,40], 'mtries':-1}
-                    
-        models = H2OGridSearch(H2ORandomForestEstimator(balance_classes=True, seed = 1),  hyper_params=hyper_parameters, search_criteria = search_criteria)
-        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 50))            
-        models.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train), seed=1)
-        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 70))           
-        sortedModels= models.get_grid(sort_by='accuracy', decreasing=True)
-        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 80))            
-        best_model = sortedModels.models[0]
+            dataToBeSplit.columns= RandomForest.guideSetDf.columns
+                        
+            dataToBeSplit["GoodOrBad"] = dataToBeSplit["GoodOrBad"].astype('category')
+            training_columns = list(dataToBeSplit.columns[dataToBeSplit.columns != 'GoodOrBad'])
+            # Output parameter train against input parameters
+            response_column = 'GoodOrBad'
+            # Split data into train and testing
+            h2o.init()
+            dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
+            train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 30))            
+                        
+            #Check that the training set contains both groups else error is thrown:
+            while len(train["GoodOrBad"].unique())<2:
+                            train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
+                            
+                        
+            train = train.as_data_frame()
+            train["GoodOrBad"] = train["GoodOrBad"].astype('category')
+            RandomForest.train = train #For the report writing
+            print("The number of good in the training section are: " + str( len(train[train["GoodOrBad"]=="G"])))
+            test = test.as_data_frame()
+            RandomForest.test = test
+                        
+            # Search criteria
+            search_criteria = {'strategy': 'RandomDiscrete',  'seed': 1}
+            # Hyper parameters
+            hyper_parameters = {'ntrees':[50,200], 'max_depth':[20,40], 'mtries':-1}
+                        
+            models = H2OGridSearch(H2ORandomForestEstimator(balance_classes=True, seed = 1),  hyper_params=hyper_parameters, search_criteria = search_criteria)
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 50))            
+            models.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train), seed=1)
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 70))           
+            sortedModels= models.get_grid(sort_by='accuracy', decreasing=True)
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 80))            
+            best_model = sortedModels.models[0]
 
-        # Now let's evaluate the model performance on a test set
-        # so we get an honest estimate of top model performance
-        performance = best_model.model_performance(h2o.H2OFrame(test))
-        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 85))
-        RandomForest.performance = performance
-        #Run the random Forest on the original data:
-        rf = best_model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
-        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 90))
-        results = rf.as_data_frame()
-        RandomForest.results = results
-        RandomForest.best_model = best_model
-        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 100))
-        results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
+            # Now let's evaluate the model performance on a test set
+            # so we get an honest estimate of top model performance
+            performance = best_model.model_performance(h2o.H2OFrame(test))
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 85))
+            RandomForest.performance = performance
+            #Run the random Forest on the original data:
+            rf = best_model.predict(h2o.H2OFrame(UI_MainWindow.Ui_MainWindow.NumericMetrics[0]))
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 90))
+            results = rf.as_data_frame()
+            RandomForest.results = results
+            RandomForest.best_model = best_model
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 100))
+            results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
+            return True
+        except:
+            return False
         
     def RFFromGraph(self):
         results = RandomForest.computeTrainingSamplesFromArea(self)

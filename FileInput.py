@@ -37,11 +37,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     if(".tsv" not in possiblefile):
                            justTSVFiles = False
                 if not justJSONFiles and not justTSVFiles:
-                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,
-                                      "Error:" ,"You may select multiple mzQC files or multiple tsv files to combine into one table, but you may not select multiple files of any other type or a mixture of the two.")
-                    
-                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow, "onBrowseClicked",
-                                 QtCore.Qt.QueuedConnection)
+                    return False
 
                 if(justJSONFiles==True):
                     inputFiles = possibleinputFiles
@@ -62,17 +58,17 @@ class BrowseWindow(QtWidgets.QMainWindow):
                        UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
                     str1 = " " 
                     inputs = str1.join(inputFiles)
-                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.filename, "setText",
+                    QtCore.QMetaObject.invokeMethod(self.filename, "setText",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(str, inputs))
                     
-                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow, "DisableBrowseButtons",
+                    QtCore.QMetaObject.invokeMethod(self, "DisableBrowseButtons",
                                  QtCore.Qt.QueuedConnection)
             
                 elif(justTSVFiles == True):
                     
                     inputFiles = possibleinputFiles
-                    metrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)          
+                    metrics = BrowseWindow.CombineTSVs(self, inputFiles)          
                     UI_MainWindow.Ui_MainWindow.NumericMetrics = []
                     
                     for i in range(0,len(metrics)):
@@ -84,11 +80,11 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     
                     str1 = " " 
                     inputs = str1.join(inputFiles)
-                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.filename, "setText",
+                    QtCore.QMetaObject.invokeMethod(self.filename, "setText",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(str, inputs))
                     
-                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow, "DisableBrowseButtons",
+                    QtCore.QMetaObject.invokeMethod(self, "DisableBrowseButtons",
                                  QtCore.Qt.QueuedConnection)  
             
             else:
@@ -104,7 +100,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                          BrowseWindow.datasetname,throw,throw,throw = inputFile.split('.')
                     else:
                          BrowseWindow.datasetname = inputFile
-                    QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.filename, "setText",
+                    QtCore.QMetaObject.invokeMethod(self.filename, "setText",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(str, str(inputFile)))
                     
@@ -144,9 +140,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                         justTSVFiles = False   
             
                 if not justJSONFiles and not justTSVFiles:
-                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,
-                                      "Error:" ,"You may select multiple mzQC files to combine into one table, but you may not select multiple files of any other type.")
-                    
+                   return False
 
                 elif(justJSONFiles): 
                     inputFiles = possibleinputFiles
@@ -159,8 +153,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     trainingmetrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)          
                    
                 else: 
-                      QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,
-                                      "Error:" ,"Something went wrong, please try again.")
+                    return False
                        
                      
             else:
@@ -186,10 +179,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
     def fileTypeCheck(self,inputFile):
         if inputFile.endswith('.json') or inputFile.endswith('.csv') or inputFile.endswith('.tsv'):
             return inputFile
-        else:
-            QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
-                              "Message from Assurance: ", "Error: File type incorrect. Please load a.json, .tsv or .csv file. Also please ensure that the decimals are separated by '.'.")
-            UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+        
 
     def metricsParsing(self,inputFile):
         try:
@@ -212,54 +202,43 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 PCAInput = pd.DataFrame(myPIArray, columns=columnNames)
                 metrics = PCAInput
                 if(metrics.iloc[:, 0].count() < 2) :
-                    QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"Error:", 
-                                    "There are not enough samples in your file to conduct analysis. Please choose another file.")
-                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
-                return metrics
+                    return False
+                else:
+                    return metrics
 
             elif inputFile.endswith('.csv'):
                 metrics = list()
                 metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep=",")))
                 if len(metrics[0].index) < 2:
-                    QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                                    "There are not enough samples in your file to conduct analysis. Please choose another file.")
-                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
-                return metrics
+                    return False
+                else:
+                    return metrics
 
             elif inputFile.endswith('.tsv'):
                 metrics = list()
                 metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep="\t")))
                 if len(metrics[0].index) < 2:
-                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                                    "There are not enough samples in your file to conduct analysis. Please choose another file.")
-                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
-                return metrics
+                    return False
+                else:
+                    return metrics
 
 
-        except json.decoder.JSONDecodeError:
-            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Message from Assurance: ", "This file does not contain data in the correct format. Please load a different file.")
-            UI_MainWindow.Ui_MainWindow.onBrowseClicked(
-                UI_MainWindow.Ui_MainWindow)
+        except :
+            return False
         
-        except:
-            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab,"Message from Assurance: ", "Some error has occurred during parsing, please check the file again.")
-            UI_MainWindow.Ui_MainWindow.onBrowseClicked(
-                UI_MainWindow.Ui_MainWindow)
-
+     
     def FileCheck(self, path):       
         try:
             return(open(path,'rb'))
         except IOError:
-            QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow, "Message from Assurance: ",
-                              "Error loading file...")
-            return 0
+            return False
     
     def TrainingSetFileTypeCheck(self, inputFile):
           if inputFile.endswith('.pepXML') or inputFile.endswith('.txt') or inputFile.endswith('.mzid'):
             return inputFile
 
           else:
-            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message from Assurance: ", "Error: File type incorrect. Please load a pepXML/ a summary.txt file from MaxQuant.")
+            return False
             
             
     def TrainingSetParse(self,inputFile):
@@ -278,9 +257,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
     def TrainingSetFileMatchNames(self, TrainingSet):
         for i in range(0, len(TrainingSet.iloc[:, 0])):
             if(UI_MainWindow.Ui_MainWindow.metrics[0].iloc[i, 0] != TrainingSet.iloc[i, 0]):
-               QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                                  "The first column of the  file does not match that of the quality metrics input file. Try again.")
-               UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+                return False
 
     def CombineJSONs(self, inputFiles):
         AllMetricSizesDf = list()
@@ -293,10 +270,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 filename = os.path.splitext(os.path.basename(file))[0]
                 #Input reading of jsonfiles here:
             except:
-                    QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,"Error:", 
-                                            "Upload failed. Please check the content of the files and try again.")
-                    database = Datasets.Datasets()
-                    UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow, database)
+                   return False
             metricsDf = pd.DataFrame(metrics)
             # Create dataframes - for SwaMe we need one for comprehensive, one for swath, one for rt, one for quartiles, one for quantiles
             fileIndexInFiles = 0
@@ -562,9 +536,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
         if inputFile.endswith('.wiff') or inputFile.endswith('.raw') or inputFile.endswith('.mzML'):
             return inputFile
         else:
-             QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
-                              "Message from Assurance: ", "Error: File type incorrect. Please load a .mzML, .wiff or .raw file.")
-             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+            return False
      
     def GetQuaMeterInputFiles(self):
         FilesDir = QtWidgets. QFileDialog.getExistingDirectory(None, " Select the directory for QuaMeter input")
@@ -585,9 +557,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
         if inputFile.endswith('.mzML'):
             return inputFile
         else:
-             QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow.tab,
-                              "Message from Assurance: ", "Error: File type incorrect. Please load a .mzML file.")
-             UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.Ui_MainWindow)
+            return False
      
     def GetSwaMeInputFile(self):
         FilesDir= QtWidgets.QFileDialog.getExistingDirectory(None, " Select the directory containing files for SwaMe input")
