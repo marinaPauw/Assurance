@@ -447,36 +447,39 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             except:
                 print("Changing the directory didn't work.")
             database.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
-            QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 30))
-            if "Filename " in database.metrics[0].columns:
-                database.metrics[0] = database.metrics[0].rename(columns={"Filename ": 'Filename'})               
-            if  "Filename" in database.metrics[0].columns:
-                filenames = database.metrics[0]["Filename"]
-                if ".mzml" in filenames[0].lower():
-                       for item in range(0,len(filenames)):
-                            if ".mzml" in filenames[item].lower():
-                                filenames[item] = filenames[item].split('.')[0]
-                            
-                    
-                database.metrics[0].index = filenames
+            if type(database.metrics) != bool:
                 QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 40))
-            database.NumericMetrics =[]
-            database.NumericMetrics.append(DataPreparation.DataPrep.ExtractNumericColumns(self, database.metrics[0]))
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 30))
+                if "Filename " in database.metrics[0].columns:
+                    database.metrics[0] = database.metrics[0].rename(columns={"Filename ": 'Filename'})               
+                if  "Filename" in database.metrics[0].columns:
+                    filenames = database.metrics[0]["Filename"]
+                    if ".mzml" in filenames[0].lower():
+                        for item in range(0,len(filenames)):
+                                if ".mzml" in filenames[item].lower():
+                                    filenames[item] = filenames[item].split('.')[0]
+                                
+                        
+                    database.metrics[0].index = filenames
+                    QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 40))
+                database.NumericMetrics =[]
+                database.NumericMetrics.append(DataPreparation.DataPrep.ExtractNumericColumns(self, database.metrics[0]))
+                
+                QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 60))
+                database.NumericMetrics[0]  = DataPreparation.DataPrep.RemoveLowVarianceColumns(self, database.NumericMetrics[0])
+                database.NumericMetrics[0].index = database.metrics[0].index
+                
+                QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 100))
+            return False
             
-            QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 60))
-            database.NumericMetrics[0]  = DataPreparation.DataPrep.RemoveLowVarianceColumns(self, database.NumericMetrics[0])
-            database.NumericMetrics[0].index = database.metrics[0].index
             
-            QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(int, 100))
-            return database
         else:
             return False
     
@@ -488,7 +491,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             Ui_MainWindow.NumericMetrics = database.NumericMetrics
             Ui_MainWindow.EnableAnalysisButtons(self)
         elif type(database)==bool:
-            self.Message("An error occurred. Please check that the input files are either mzQC, tsv or csv quality files. Multiple files of the same type are allowed.")
+            Ui_MainWindow.Message(self,"An error occurred. Please check that the input files are either mzQC, tsv or csv quality files. Multiple files of the same type are allowed.")
             database = Datasets.Datasets()
             Ui_MainWindow.UploadProgress.setValue(0)
             self.onBrowseClicked(database)
@@ -655,9 +658,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     
     def checkColumnNumberForPCA(self):
         if(len(Ui_MainWindow.NumericMetrics[0].columns) < 3):
-            self.Message(self, "Message from Assurance", "There are less than three \
+            self.Message("There are less than three \
                               numeric columns in the dataset. PCA will not \
                               be performed.")
+            self.progress1.setValue(0)
+            self.EnableAnalysisButtons()
             return 0
         else: 
             return 1
@@ -665,6 +670,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def checkSampleNumberForPCA(self):
         if(len(FileInput.BrowseWindow.currentDataset.index) < 4):
             self.Message("There are less than three samples in the dataset. PCA will not be performed.")
+            self.progress1.setValue(0)
+            self.EnableAnalysisButtons()
             return 0
         else:
             return 1
