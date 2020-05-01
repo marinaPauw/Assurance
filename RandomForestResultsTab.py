@@ -96,7 +96,6 @@ class LongitudinalTab(QtWidgets.QTabWidget):
         phbox1.addWidget(TrainingOrTestSet.MetricsFrame.MainLabel)
         pvbox.addLayout(phbox1)
         phbox2 = QtWidgets.QHBoxLayout(TrainingOrTestSet.MetricsFrame)
-        phbox2.addStretch()
         pgrid = QtWidgets.QGridLayout(TrainingOrTestSet.MetricsFrame)
         pgrid.addWidget(TrainingOrTestSet.MetricsFrame.MainLabel,0,0,1,8)
         pgrid.addWidget(TrainingOrTestSet.MetricsFrame.F1Label,1,0,1,1)
@@ -107,8 +106,14 @@ class LongitudinalTab(QtWidgets.QTabWidget):
         pgrid.addWidget(TrainingOrTestSet.MetricsFrame.MCCresults,1,7,1,1)
         pgrid.addWidget(TrainingOrTestSet.MetricsFrame.LLLabel,1,9,1,1)
         pgrid.addWidget(TrainingOrTestSet.MetricsFrame.LLresults,1,10,1,1)
+        try:
+            if TrainingOrTestSet.MetricsFrame.AccuracyResults <0.5:
+                accuracyWarning = QtWidgets.QLabel()
+                accuracyWarning.setText("The low accuracy of this model may indicate that conclusions should be approached with caution.")
+                pgrid.addWidget(accuracyWarning,2,3,1,1)
+        except:
+            print("Could not evaluate Accuracy/ add label.")
         phbox2.addLayout(pgrid)
-        phbox2.addStretch()
         pvbox.addLayout(phbox2)
     
         # -------------------------Results Layout ------------------------------------
