@@ -482,25 +482,31 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         for item in range(0,len(filenames)):
                                 if ".mzml" in filenames[item].lower():
                                     filenames[item] = filenames[item].split('.')[0]
-                                
-                        
+                                if item == round(len(filenames)/4):
+                                    QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 50))
+                                elif item == round(len(filenames)/2):
+                                    QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 70))
                     database.metrics[0].index = filenames
                     QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
                                     QtCore.Qt.QueuedConnection,
-                                    QtCore.Q_ARG(int, 40))
+                                    QtCore.Q_ARG(int, 80))
                 database.NumericMetrics =[]
                 database.NumericMetrics.append(DataPreparation.DataPrep.ExtractNumericColumns(self, database.metrics[0]))
                 
                 QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
                                     QtCore.Qt.QueuedConnection,
-                                    QtCore.Q_ARG(int, 60))
+                                    QtCore.Q_ARG(int, 90))
                 database.NumericMetrics[0]  = DataPreparation.DataPrep.RemoveLowVarianceColumns(self, database.NumericMetrics[0])
                 database.NumericMetrics[0].index = database.metrics[0].index
                 
                 QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 100))
-            return False
+            return database
             
             
         else:
@@ -568,7 +574,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def DisableQuaMeterArguments(self):
         Ui_MainWindow.BrowseButton.setEnabled(False)
         Ui_MainWindow.files.setEnabled(False)
-        Ui_MainWindow.fileList.setEnabled(False)
         Ui_MainWindow.cpusLabel.setEnabled(False)
         Ui_MainWindow.cpusTextBox.setEnabled(False)
         Ui_MainWindow.CLOLabel.setEnabled(False)
@@ -736,7 +741,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         elif ret == 1:# They want the table
             FileInput.BrowseWindow.GetTrainingQualityFiles(self)
             Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
-            Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px")
+            Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px;")
             Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
             RandomForest.RandomForest.createTable(self)
             self.setCurrentIndex(Ui_MainWindow.sIndex)
@@ -816,11 +821,13 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 
         self.TrainingOrTestSet.badbtn.clicked.connect(lambda: self.RandomForestSelection())
         
-    def RFFinished(self, results):
+    def RFFinished(self,results):
+        print("825" + str(results))
         if results:
-            RandomForestResultsTab.LongitudinalTab.printModelResults(self)
-            Ui_MainWindow.EnableAnalysisButtons(self)
+                RandomForestResultsTab.LongitudinalTab.printModelResults(self)
+                Ui_MainWindow.EnableAnalysisButtons(self)
         else:
+            self.Message("Something went wrong. Please try again.")
             self.onLongitudinalClicked()
             
     
