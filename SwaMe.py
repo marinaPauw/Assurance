@@ -43,9 +43,10 @@ class SwaMe():
 
                 
     def onSwaMeRUNClicked(self):
-        
+        UI_MainWindow.Ui_MainWindow.DisableSwaMeArguments(self)
+        UI_MainWindow.Ui_MainWindow.DisableAnalysisButtons(self)
         SwaMe.Path = FileInput.BrowseWindow.GetSwaMePath(SwaMe)
-        if "SwaMe.Path":
+        if SwaMe.Path:
             SwaMe.timestr = time.strftime("%Y%m%d-%H%M%S")
             os.chdir(SwaMe.Dir)
                     
