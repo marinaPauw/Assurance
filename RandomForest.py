@@ -168,11 +168,12 @@ class RandomForest(FigureCanvas):
         self.table.setSortingEnabled(True)
         
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2 = QtWidgets.QProgressBar()
+        UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setStyleSheet("background-color: rgb(240,240,240);padding: 3px;")
         
         RFSelectionGrid = QtWidgets.QGridLayout(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet)
         RFSelectionGrid.addWidget(self.table,0,0,1,3)
-        RFSelectionGrid.addWidget(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn,2,1,2,1)
-        RFSelectionGrid.addWidget(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2,3,1,2,1)
+        RFSelectionGrid.addWidget(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn,2,1)
+        RFSelectionGrid.addWidget(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2,4,1)
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.compute(self))
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(True)
             
