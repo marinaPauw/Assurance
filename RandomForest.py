@@ -169,6 +169,9 @@ class RandomForest(FigureCanvas):
         
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2 = QtWidgets.QProgressBar()
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setStyleSheet("background-color: rgb(240,240,240);padding: 3px;")
+        UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setGeometry(200, 80, 250, 20)
+        UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2.setGeometry(200, 80, 250, 20)
+        
         
         RFSelectionGrid = QtWidgets.QGridLayout(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet)
         RFSelectionGrid.addWidget(self.table,0,0,1,3)
@@ -176,13 +179,12 @@ class RandomForest(FigureCanvas):
         RFSelectionGrid.addWidget(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2,4,1)
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.clicked.connect(lambda: RandomForest.compute(self))
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(True)
-            
         
     def compute(self):
         UI_MainWindow.Ui_MainWindow.badpredictionList = []
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
         tRF = Threads.SideThread(lambda: RandomForest.RFFromTable(self))
-        tRF.signals.result.connect(lambda: UI_MainWindow.Ui_MainWindow.RFFinished(self))
+        tRF.signals.result.connect(self.RFFinished)
         self.threadpool.start(tRF)
             
         
@@ -273,7 +275,7 @@ class RandomForest(FigureCanvas):
     def RFFromGraph(self):
         results = RandomForest.computeTrainingSamplesFromArea(self)
         if results == True:
-            RandomForest.RunRandomForest(self)
+            results = RandomForest.RunRandomForest(self)
             
     def RFFromTable(self):
         if type(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[0]) != str and "Filename" in UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns:
@@ -283,5 +285,7 @@ class RandomForest(FigureCanvas):
             UI_MainWindow.Ui_MainWindow.badpredictionList.append(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item.row()])
         print(len(UI_MainWindow.Ui_MainWindow.badpredictionList))
         if len(UI_MainWindow.Ui_MainWindow.badpredictionList)>2:
-                    RandomForest.RunRandomForest(self)
+                    results = RandomForest.RunRandomForest(self)
+                    print("289: " + str(results))
+                    return results
                     
