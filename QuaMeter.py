@@ -25,6 +25,8 @@ class QuaMeter():
                 print("Changing the directory didn't work.")
     
     def onQuaMeterRUNClicked(self):
+        UI_MainWindow.Ui_MainWindow.DisableQuaMeterArguments(self)
+        UI_MainWindow.Ui_MainWindow.DisableAnalysisButtons(self)
         if(UI_MainWindow.Ui_MainWindow.CLOTextBox.text()):
             QuaMeter.CLO = UI_MainWindow.Ui_MainWindow.CLOTextBox.text()
         if(UI_MainWindow.Ui_MainWindow.CUOTextBox.text()):
@@ -35,7 +37,7 @@ class QuaMeter():
         argument1 = "cd/d " + QuaMeter.Dir 
         
         QuaMeter.QuaMeterPath = FileInput.BrowseWindow.GetQuaMeterPath(QuaMeter)
-        if "QuaMeter.QuaMeterPath" in globals():
+        if QuaMeter.QuaMeterPath:
             files = []
             with os.scandir(QuaMeter.Dir) as entries:
                 for entry in entries:
