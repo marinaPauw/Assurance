@@ -22,6 +22,7 @@ import re
 import Legend
 import FileInput
 import pylab
+import indMetricsTab
 from matplotlib.colors import hsv_to_rgb
 from cycler import cycler
 import os
@@ -153,9 +154,9 @@ class MyIndMetricsCanvas(FigureCanvas):
                         if tableContainingRownames.iloc[ii,0]==uniqueSamples[item]:
                             rowNumList.append(ii)
                     if element == "runDate":
-                        lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table[element].iloc[rowNumList], marker='o', color = "black",label = uniqueSamples[item])   
+                        MyIndMetricsCanvas.lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table[element].iloc[rowNumList], marker='o', color = "black",label = uniqueSamples[item])   
                     else:    
-                        lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table[element].iloc[rowNumList], marker='o', color = "black",label = uniqueSamples[item])   
+                        MyIndMetricsCanvas.lines = MyIndMetricsCanvas.ax.plot(tableContainingRownames.iloc[rowNumList,1],  table[element].iloc[rowNumList], marker='o', color = "black",label = uniqueSamples[item])   
                 
             else:
                 lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table[element], linestyle="-",marker='o', markerfacecolor = "dimgrey",color = "black")
@@ -175,18 +176,14 @@ class MyIndMetricsCanvas(FigureCanvas):
                     MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].iloc[sIndex], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='limegreen', markeredgecolor='darkgreen')
                 if type(table[element].iloc[0])!= datetime.datetime:
                     xlim = MyIndMetricsCanvas.ax.get_xlim()
-                    xaxrange = abs(xlim[1])-abs(xlim[0])
                     thisylim = MyIndMetricsCanvas.ax.get_ylim()
                     yaxrange = abs(thisylim[1])-abs(thisylim[0])
                     svalue = (MyIndMetricsCanvas.ax.get_xticks()[sIndex])
                     offsets = [svalue,table[element].iloc[sIndex]+(yaxrange/6)]
                     stringify = "x:" + str(MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(table[element].iloc[sIndex])
-                    MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,table[element].iloc[sIndex]), xytext=(offsets[0], offsets[1]), color="k", 
+                    MyIndMetricsCanvas.ann = MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,table[element].iloc[sIndex]), xytext=(offsets[0], offsets[1]), color="k", 
                         size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
-                    #stringify = str(MyIndMetricsCanvas.samplenames[sIndex])+ "\n" + str( table[element].iloc[sIndex]) #(sIndex/len(table.index)*xaxrange)+xlim[0]
-                    #MyIndMetricsCanvas.ax.annotate(stringify, xy=(,table[element].iloc[sIndex]),bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))
-                    xlim = MyIndMetricsCanvas.ax.get_xlim()
-                    print(xlim)
+                    
                 
             MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
             if element == "runDate":
@@ -209,21 +206,43 @@ class MyIndMetricsCanvas(FigureCanvas):
                                     QtWidgets.QSizePolicy.Expanding,
                                     QtWidgets.QSizePolicy.Expanding)
             FigureCanvas.updateGeometry(self)
-            self.compute_initial_figure()
             image_path = os.path.join(os.getcwd(), element +".pdf")
             MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
             MyIndMetricsCanvas.fig.savefig(image_path)
-            
-        ##except:
-            #if UI_MainWindow.Ui_MainWindow.metrics[0].columns.tolist().index(element) < len(UI_MainWindow.Ui_MainWindow.metrics[0].columns):
-                #UI_MainWindow.Ui_MainWindow.element = UI_MainWindow.Ui_MainWindow.metrics[0].columns[ UI_MainWindow.Ui_MainWindow.metrics[0].columns.tolist().index(element)]
-            #MyIndMetricsCanvas(tableContainingRownames, table, element, False)
-
+            MyIndMetricsCanvas.table = table
+            MyIndMetricsCanvas.element = element
+            MyIndMetricsCanvas.fig.canvas.mpl_connect('button_press_event',
+                                                        lambda event:MyIndMetricsCanvas.onClick(self, event))
+            self.compute_initial_figure()
       
     def compute_initial_figure(self):
         pass    
 
-
-
+    def onClick(self,event):
+        if event.inaxes == MyIndMetricsCanvas.ax:
+            cont, ind = MyIndMetricsCanvas.fig.contains(event)
+            if cont:
+                if hasattr(MyIndMetricsCanvas,"ann"):
+                    MyIndMetricsCanvas.ann.remove()
+                if hasattr(MyIndMetricsCanvas,"lines"):
+                    MyIndMetricsCanvas.lines.remove()
+                closestx = int(event.xdata)
+                UI_MainWindow.Ui_MainWindow.sampleSelected = MyIndMetricsCanvas.samplenames[closestx]
+                sIndex = int(closestx) 
+                MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  MyIndMetricsCanvas.table[MyIndMetricsCanvas.element], linestyle="-",marker='o', markerfacecolor = "dimgrey",color = "black")
+                MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], MyIndMetricsCanvas.table[MyIndMetricsCanvas.element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none", marker='o', markerfacecolor='limegreen', markeredgecolor='darkgreen')
+                if type(MyIndMetricsCanvas.table[MyIndMetricsCanvas.element].iloc[0])!= datetime.datetime:
+                    xlim = MyIndMetricsCanvas.ax.get_xlim()
+                    thisylim = MyIndMetricsCanvas.ax.get_ylim()
+                    yaxrange = abs(thisylim[1])-abs(thisylim[0])
+                    svalue = (MyIndMetricsCanvas.ax.get_xticks()[sIndex])
+                    offsets = [svalue,MyIndMetricsCanvas.table[MyIndMetricsCanvas.element].iloc[sIndex]+(yaxrange/6)]
+                    stringify = "x:" + str(MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(MyIndMetricsCanvas.table[MyIndMetricsCanvas.element].iloc[sIndex])
+                    MyIndMetricsCanvas.ann = MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,MyIndMetricsCanvas.table[MyIndMetricsCanvas.element].iloc[sIndex]), xytext=(offsets[0], offsets[1]), color="k", 
+                            size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
+                        
+            MyIndMetricsCanvas.fig.canvas.draw()
+            
+        
 
 
