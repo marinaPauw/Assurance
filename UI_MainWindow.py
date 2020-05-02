@@ -724,6 +724,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         #Make a messagebox to ask how you wanna do this:
         msgBox = QtWidgets.QMessageBox()
+        msgBox.setWindowTitle("Assurance - Longitudinal analysis")
         msgBox.setText("For this supervised approach you will need to set aside files that have not been included in the main dataset which will be randomly divided into test and training sets. You need to divide those files into examples of good and bad quality. How would you like to do so?")
         msgBox.addButton(QtWidgets.QPushButton('Select from graph of IDs'), QtWidgets.QMessageBox.YesRole)
         msgBox.addButton(QtWidgets.QPushButton('Select from table of quality metrics'), QtWidgets.QMessageBox.YesRole)
