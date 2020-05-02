@@ -25,6 +25,8 @@ import pylab
 from matplotlib.colors import hsv_to_rgb
 from cycler import cycler
 import os
+import numbers
+import decimal
 
 class MyIndMetricsCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -42,6 +44,7 @@ class MyIndMetricsCanvas(FigureCanvas):
 
     def __init__(self, tableContainingRownames, table,element, forReport, parent=None, width=25, height=15, dpi=100):
         #try:
+            
             if element == "StartTimeStamp":
                 table = UI_MainWindow.Ui_MainWindow.metrics[0]
                 tableContainingRownames = UI_MainWindow.Ui_MainWindow.metrics[0]
@@ -56,12 +59,25 @@ class MyIndMetricsCanvas(FigureCanvas):
             if isinstance(tableContainingRownames.index[0], str):
                 MyIndMetricsCanvas.fig, MyIndMetricsCanvas.ax = plt.subplots(constrained_layout=True)
             else:
+               
                 tableContainingRownames["sampleNames"] = "sample0"
                 for this in range(0,len(tableContainingRownames.index)):
                         tableContainingRownames["sampleNames"][this] = "sample"+str(tableContainingRownames.index[this])
                 
                 tableContainingRownames.set_index("sampleNames", inplace=True, drop = True)
+            
+            #Quantiles
+            if  [isinstance(table[element].iloc[0], numbers.Number) for x in (0, 0.0, 0j, decimal.Decimal(0))]:
+                    if type(table[element].iloc[0]) != datetime.datetime:
+                        Q1 = table[element].quantile(0.25)
+                        Q3 = table[element].quantile(0.75)
+                        outlierOver = Q3 + 1.5*(Q3-Q1)
+                        outlierUnder = Q1 - 1.5*(Q3-Q1)
+            
+            
             MyIndMetricsCanvas.fig = Figure(figsize=(width, height), dpi=dpi)
+            
+            
             if forReport:
                 MyIndMetricsCanvas.fig.suptitle(element, fontsize=20)
             else:
@@ -99,6 +115,33 @@ class MyIndMetricsCanvas(FigureCanvas):
                 if Ymax > 10000:
                     MyIndMetricsCanvas.ax.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.0e'))
             #Find if there are duplicates in MyIndMetricsCanvas.samplenames (like n a swath/RT file for SwaMe)
+            if "Q1" in locals():
+                if Q1 != Q3:
+                    Q1Line = MyIndMetricsCanvas.ax.axhline(y=Q1, color='darkslateblue')
+                    y = Q1Line.get_ydata()[-1]
+                    Q1str = "Q1:" + str(round(Q1,2))
+                    MyIndMetricsCanvas.ax.annotate(Q1str, xy=(1,Q1), xytext=(6,0), color=Q1Line.get_color(), 
+                    xycoords = MyIndMetricsCanvas.ax.get_yaxis_transform(), textcoords="offset points",
+                    size=8, va="center")
+                    Q3Line = MyIndMetricsCanvas.ax.axhline(y=Q3, color="darkslateblue")
+                    y = Q1Line.get_ydata()[-1]
+                    Q3str = "Q3:" + str(round(Q3,2))
+                    MyIndMetricsCanvas.ax.annotate(Q3str, xy=(1,Q3), xytext=(6,0), color=Q3Line.get_color(), 
+                    xycoords = MyIndMetricsCanvas.ax.get_yaxis_transform(), textcoords="offset points",
+                    size=8, va="center")
+                    outOverLine = MyIndMetricsCanvas.ax.axhline(y=outlierOver, color='royalblue')
+                    y = outOverLine.get_ydata()[-1]
+                    outlierOverstr = "Out:" + str(round(outlierOver,2))
+                    MyIndMetricsCanvas.ax.annotate(outlierOverstr, xy=(1,outlierOver), xytext=(6,0), color=outOverLine.get_color(), 
+                    xycoords = MyIndMetricsCanvas.ax.get_yaxis_transform(), textcoords="offset points",
+                    size=8, va="center")
+                    outUnderLine = MyIndMetricsCanvas.ax.axhline(y=outlierUnder, color='royalblue')
+                    y = outOverLine.get_ydata()[-1]
+                    outlierUnderstr = "Out:" + str(round(outlierUnder,2))
+                    MyIndMetricsCanvas.ax.annotate(outlierUnderstr, xy=(1,outlierUnder), xytext=(6,0), color=outUnderLine.get_color(), 
+                    xycoords = MyIndMetricsCanvas.ax.get_yaxis_transform(), textcoords="offset points",
+                    size=8, va="center")
+                
             if(len(MyIndMetricsCanvas.samplenames) != len(set(MyIndMetricsCanvas.samplenames))):#duplicates present
                 for iii in sampleSize:#If they are numeric values they should be strings
                     tableContainingRownames.iloc[iii,1] = str(tableContainingRownames.iloc[iii,1])
@@ -116,6 +159,7 @@ class MyIndMetricsCanvas(FigureCanvas):
                 
             else:
                 lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table[element], linestyle="-",marker='o', markerfacecolor = "dimgrey",color = "black")
+            
             MyIndMetricsCanvas.ax.grid(True)
             MyIndMetricsCanvas.ax.set_facecolor('gainsboro')
             if UI_MainWindow.Ui_MainWindow.sampleSelected in tableContainingRownames.index:
@@ -125,11 +169,25 @@ class MyIndMetricsCanvas(FigureCanvas):
                 
             if not forReport:
                 if sIndex in MyIndMetricsCanvas.samplenames:
-                    MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
-                elif isinstance(sIndex, int):
-                    MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].iloc[sIndex], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='b', markeredgecolor='b')
+                    MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='limegreen', markeredgecolor='darkgreen')
                 
-            
+                elif isinstance(sIndex, int):
+                    MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].iloc[sIndex], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='limegreen', markeredgecolor='darkgreen')
+                if type(table[element].iloc[0])!= datetime.datetime:
+                    xlim = MyIndMetricsCanvas.ax.get_xlim()
+                    xaxrange = abs(xlim[1])-abs(xlim[0])
+                    thisylim = MyIndMetricsCanvas.ax.get_ylim()
+                    yaxrange = abs(thisylim[1])-abs(thisylim[0])
+                    svalue = (MyIndMetricsCanvas.ax.get_xticks()[sIndex])
+                    offsets = [svalue,table[element].iloc[sIndex]+(yaxrange/6)]
+                    stringify = "x:" + str(MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(table[element].iloc[sIndex])
+                    MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,table[element].iloc[sIndex]), xytext=(offsets[0], offsets[1]), color="k", 
+                        size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
+                    #stringify = str(MyIndMetricsCanvas.samplenames[sIndex])+ "\n" + str( table[element].iloc[sIndex]) #(sIndex/len(table.index)*xaxrange)+xlim[0]
+                    #MyIndMetricsCanvas.ax.annotate(stringify, xy=(,table[element].iloc[sIndex]),bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))
+                    xlim = MyIndMetricsCanvas.ax.get_xlim()
+                    print(xlim)
+                
             MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
             if element == "runDate":
                 #MyIndMetricsCanvas.ax.set_yticklabels(set(table["dates"]))
