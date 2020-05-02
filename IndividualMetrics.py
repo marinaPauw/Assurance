@@ -183,6 +183,17 @@ class MyIndMetricsCanvas(FigureCanvas):
                     stringify = "x:" + str(MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(table[element].iloc[sIndex])
                     MyIndMetricsCanvas.ann = MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,table[element].iloc[sIndex]), xytext=(offsets[0], offsets[1]), color="k", 
                         size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
+                else:
+                    xlim = MyIndMetricsCanvas.ax.get_xlim()
+                    yvalue = (MyIndMetricsCanvas.ax.get_yticks()[sIndex])
+                    ylabel = str(table[element].iloc[sIndex]).split(" ")[0]
+                    thisylim = MyIndMetricsCanvas.ax.get_ylim()
+                    yaxrange = abs(thisylim[1])-abs(thisylim[0])
+                    svalue = (MyIndMetricsCanvas.ax.get_xticks()[sIndex])
+                    offsets = [svalue,yvalue+(yaxrange/6)]
+                    stringify = "x:" + str(MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(ylabel)
+                    MyIndMetricsCanvas.ann = MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,yvalue), xytext=(offsets[0], offsets[1]), color="k", 
+                        size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
                     
                 
             MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
@@ -240,7 +251,18 @@ class MyIndMetricsCanvas(FigureCanvas):
                     stringify = "x:" + str(MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(MyIndMetricsCanvas.table[MyIndMetricsCanvas.element].iloc[sIndex])
                     MyIndMetricsCanvas.ann = MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,MyIndMetricsCanvas.table[MyIndMetricsCanvas.element].iloc[sIndex]), xytext=(offsets[0], offsets[1]), color="k", 
                             size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
-                        
+                else:
+                    xlim = MyIndMetricsCanvas.ax.get_xlim()
+                    yvalue = event.ydata
+                    ylabel = str(MyIndMetricsCanvas.table[MyIndMetricsCanvas.element].iloc[sIndex]).split(" ")[0]
+                    thisylim = MyIndMetricsCanvas.ax.get_ylim()
+                    yaxrange = abs(thisylim[1])-abs(thisylim[0])
+                    svalue = (MyIndMetricsCanvas.ax.get_xticks()[sIndex])
+                    offsets = [svalue,yvalue+(yaxrange/6)]
+                    stringify = "x:" + str(MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(ylabel)
+                    MyIndMetricsCanvas.ann = MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,yvalue), xytext=(offsets[0], offsets[1]), color="k", 
+                        size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
+                            
             MyIndMetricsCanvas.fig.canvas.draw()
             
         
