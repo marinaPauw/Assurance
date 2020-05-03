@@ -28,6 +28,7 @@ from cycler import cycler
 import os
 import numbers
 import decimal
+from datetime import timedelta
 
 class MyIndMetricsCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -110,12 +111,17 @@ class MyIndMetricsCanvas(FigureCanvas):
                                     MyIndMetricsCanvas.samplenames.append(temp)
                 else:
                     MyIndMetricsCanvas.samplenames = tableContainingRownames.index
+            #Sorting out the axes
             MyIndMetricsCanvas.ax.get_yaxis().get_major_formatter().set_scientific(False)
             if type(element) =="int" or type(element) == "float" :
                 Ymax = table[element].max()
                 if Ymax > 10000:
                     MyIndMetricsCanvas.ax.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.0e'))
-            #Find if there are duplicates in MyIndMetricsCanvas.samplenames (like n a swath/RT file for SwaMe)
+            if element == "runDate":
+                MyIndMetricsCanvas.ax.yaxis_date()
+                
+                
+            #Quartiles:
             if "Q1" in locals():
                 if Q1 != Q3:
                     Q1Line = MyIndMetricsCanvas.ax.axhline(y=Q1, color='darkslateblue')
@@ -160,20 +166,25 @@ class MyIndMetricsCanvas(FigureCanvas):
                 
             else:
                 lines = MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames,  table[element], linestyle="-",marker='o', markerfacecolor = "dimgrey",color = "black")
-            
+            if element == "runDate":
+                MyIndMetricsCanvas.ax.yaxis_date()
             MyIndMetricsCanvas.ax.grid(True)
             MyIndMetricsCanvas.ax.set_facecolor('gainsboro')
-            if UI_MainWindow.Ui_MainWindow.sampleSelected in tableContainingRownames.index:
-                sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
-            elif type(UI_MainWindow.Ui_MainWindow.sampleSelected) == int:
-                sIndex = int(UI_MainWindow.Ui_MainWindow.sampleSelected)
+            if UI_MainWindow.Ui_MainWindow.sampleSelected != "":
+                if UI_MainWindow.Ui_MainWindow.sampleSelected in tableContainingRownames.index:
+                    sIndex = tableContainingRownames.index.tolist().index(UI_MainWindow.Ui_MainWindow.sampleSelected)
+                elif type(UI_MainWindow.Ui_MainWindow.sampleSelected) == int:
+                    sIndex = int(UI_MainWindow.Ui_MainWindow.sampleSelected)
                 
             if not forReport:
-                if sIndex in MyIndMetricsCanvas.samplenames:
-                    MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='limegreen', markeredgecolor='darkgreen')
-                
-                elif isinstance(sIndex, int):
-                    MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].iloc[sIndex], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='limegreen', markeredgecolor='darkgreen')
+                if 'sIndex' in globals() or locals(): #It seems to sometimes be in locals and sometimes in globals
+                    if sIndex in MyIndMetricsCanvas.samplenames:
+                        MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].loc[UI_MainWindow.Ui_MainWindow.sampleSelected], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='limegreen', markeredgecolor='darkgreen')
+                    
+                    elif isinstance(sIndex, int):
+                        MyIndMetricsCanvas.ax.plot(MyIndMetricsCanvas.samplenames[sIndex], table[element].iloc[sIndex], linestyle="none",linewidth=0, color = "black", marker='o', markerfacecolor='limegreen', markeredgecolor='darkgreen')
+                    line = MyIndMetricsCanvas.ax.lines[0]
+                    yVal = line.get_ydata()
                 if type(table[element].iloc[0])!= datetime.datetime:
                     xlim = MyIndMetricsCanvas.ax.get_xlim()
                     thisylim = MyIndMetricsCanvas.ax.get_ylim()
@@ -185,21 +196,21 @@ class MyIndMetricsCanvas(FigureCanvas):
                         size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
                 else:
                     xlim = MyIndMetricsCanvas.ax.get_xlim()
-                    yvalue = (MyIndMetricsCanvas.ax.get_yticks()[sIndex])
+                    diffBetweenDpAndMin = table[element].iloc[sIndex] - table[element].min()
+                    diffinDays = diffBetweenDpAndMin.days
+                    yaxmin = MyIndMetricsCanvas.ax.get_yticks().min()
+                    yaxrange = MyIndMetricsCanvas.ax.get_yticks().max() -yaxmin 
                     ylabel = str(table[element].iloc[sIndex]).split(" ")[0]
-                    thisylim = MyIndMetricsCanvas.ax.get_ylim()
-                    yaxrange = abs(thisylim[1])-abs(thisylim[0])
+                    yVal = yaxmin + diffinDays
                     svalue = (MyIndMetricsCanvas.ax.get_xticks()[sIndex])
-                    offsets = [svalue,yvalue+(yaxrange/6)]
+                    offsets = [svalue,yVal+(yaxrange/6)]
                     stringify = "x:" + str(MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(ylabel)
-                    MyIndMetricsCanvas.ann = MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,yvalue), xytext=(offsets[0], offsets[1]), color="k", 
+                    MyIndMetricsCanvas.ann = MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,table[element].iloc[sIndex]), xytext=(offsets[0], offsets[1]), color="k", 
                         size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
-                    
+               
                 
             MyIndMetricsCanvas.ax.tick_params(labelrotation = 90, labelsize = 9)
-            if element == "runDate":
-                #MyIndMetricsCanvas.ax.set_yticklabels(set(table["dates"]))
-                MyIndMetricsCanvas.ax.yaxis_date()
+            
             for tick in MyIndMetricsCanvas.ax.get_xticklabels():
                 tick.set_rotation(90)
                 if forReport:
@@ -219,7 +230,8 @@ class MyIndMetricsCanvas(FigureCanvas):
             FigureCanvas.updateGeometry(self)
             image_path = os.path.join(os.getcwd(), element +".pdf")
             MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
-            MyIndMetricsCanvas.fig.savefig(image_path)
+            if forReport:
+                MyIndMetricsCanvas.fig.savefig(image_path)
             MyIndMetricsCanvas.table = table
             MyIndMetricsCanvas.element = element
             MyIndMetricsCanvas.fig.canvas.mpl_connect('button_press_event',
