@@ -741,13 +741,16 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         elif ret == 1:# They want the table
             FileInput.BrowseWindow.GetTrainingQualityFiles(self)
-            Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
-            Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px;")
-            Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
-            RandomForest.RandomForest.createTable(self)
-            self.setCurrentIndex(Ui_MainWindow.sIndex)
-            Ui_MainWindow.RandomForestPerformed = True
-            Ui_MainWindow.pdf.setEnabled(True)
+            if hasattr(Ui_MainWindow,"Numerictrainingmetrics"):
+                Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
+                Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px;")
+                Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
+                RandomForest.RandomForest.createTable(self)
+                self.setCurrentIndex(Ui_MainWindow.sIndex)
+                Ui_MainWindow.RandomForestPerformed = True
+                Ui_MainWindow.pdf.setEnabled(True)
+            else:
+                Ui_MainWindow.EnableAnalysisButtons(self) 
             
         elif ret == 2:#Cancelled
             Ui_MainWindow.EnableAnalysisButtons(self)
@@ -823,17 +826,13 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.TrainingOrTestSet.badbtn.clicked.connect(lambda: self.RandomForestSelection())
         
     def RFFinished(self,results):
-        print("825" + str(results))
-        if results:
-                RandomForestResultsTab.LongitudinalTab.printModelResults(self)
-                Ui_MainWindow.EnableAnalysisButtons(self)
-        else:
-            self.Message("Something went wrong. Please try again.")
-            self.onLongitudinalClicked()
+        RandomForestResultsTab.LongitudinalTab.printModelResults(self)
+        Ui_MainWindow.EnableAnalysisButtons(self)
+        
             
     
     def RandomForestSelection(self):
-        tRF = Threads.SideThread(lambda: RandomForest.RandomForest.RFFromGraph(Ui_MainWindow))
+        tRF = Threads.SideThread(lambda: RandomForest.RandomForest.RFFromGraph(self))
         tRF.signals.result.connect(self.RFFinished)
         Ui_MainWindow.threadpool.start(tRF)
     
