@@ -274,7 +274,17 @@ class MyIndMetricsCanvas(FigureCanvas):
                     stringify = "x:" + str(MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(ylabel)
                     MyIndMetricsCanvas.ann = MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,yvalue), xytext=(offsets[0], offsets[1]), color="k", 
                         size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
-                            
+            #Have to check if hide tick marks are selected:
+            samples = list(MyIndMetricsCanvas.samplenames)
+            tableIndex = list(UI_MainWindow.Ui_MainWindow.metrics[0].index)
+            if indMetricsTab.IndMetricsTab.tickBox.isChecked():
+                    #Find index of selected sample:
+                    sIndex = samples.index(UI_MainWindow.Ui_MainWindow.sampleSelected)
+                    labels = [""] * len(samples)
+                    labels[sIndex] = UI_MainWindow.Ui_MainWindow.sampleSelected
+                    MyIndMetricsCanvas.ax.set_xticklabels(labels)
+           
+            indMetricsTab.IndMetricsTab.sampleBox.setCurrentIndex(tableIndex.index(UI_MainWindow.Ui_MainWindow.sampleSelected)+1)                 
             MyIndMetricsCanvas.fig.canvas.draw()
             
         

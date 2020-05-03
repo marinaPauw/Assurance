@@ -22,6 +22,11 @@ class IndMetricsTab(QtWidgets.QWidget):
         IndMetricsTab.createGraph(self, whichds)
 
     def createGraph(self, whichds):
+        
+        #Widgets
+        IndMetricsTab.tickBox = QtWidgets.QCheckBox()
+        IndMetricsTab.tBoxLabel = QtWidgets.QLabel()
+        IndMetricsTab.tBoxLabel.setText("Hide unselected tick marks")
         IndMetricsTab.comboBox = QtWidgets.QComboBox()
         for metric in UI_MainWindow.Ui_MainWindow.listOfMetrics:
             IndMetricsTab.comboBox.addItem(metric)
@@ -31,6 +36,8 @@ class IndMetricsTab(QtWidgets.QWidget):
         for sample in UI_MainWindow.Ui_MainWindow.metrics[0].index:
             IndMetricsTab.sampleBox.addItem(str(sample))
         IndMetricsTab.sampleBox.activated[str].connect(lambda x: IndMetricsTab.sample_change(self, text=IndMetricsTab.sampleBox.currentText()))
+        IndMetricsTab.tickBox.toggled.connect(IndMetricsTab.hideTickMarks)
+        
         UI_MainWindow.Ui_MainWindow.progress1.setValue(80)
         
         #Create layout
@@ -39,6 +46,11 @@ class IndMetricsTab(QtWidgets.QWidget):
         hbox15.addStretch()
         hbox15.addWidget(IndMetricsTab.sampleBox)
         vbox.addLayout(hbox15)
+        hbox17 = QtWidgets.QHBoxLayout()
+        hbox17.addStretch()
+        hbox17.addWidget(IndMetricsTab.tBoxLabel)
+        hbox17.addWidget(IndMetricsTab.tickBox)
+        vbox.addLayout(hbox17)
         hbox2 = QtWidgets.QHBoxLayout()
         hbox2.addStretch()
         try:
@@ -69,6 +81,8 @@ class IndMetricsTab(QtWidgets.QWidget):
                     break
         UI_MainWindow.Ui_MainWindow.removeTab(self, self.iIndex)
         IndMetricsTab.createTab(self, whichds)
+        tableIndex = list(UI_MainWindow.Ui_MainWindow.metrics[0].index)
+        IndMetricsTab.sampleBox.setCurrentIndex(tableIndex.index(UI_MainWindow.Ui_MainWindow.sampleSelected)+1)                 
         IndMetricsTab.comboBox.setCurrentIndex( UI_MainWindow.Ui_MainWindow.listOfMetrics.index(text))
         UI_MainWindow.Ui_MainWindow.progress1.setValue(100)
 
@@ -107,8 +121,31 @@ class IndMetricsTab(QtWidgets.QWidget):
                     stringify = "x:" + str(IndividualMetrics.MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(ylabel)
                     IndividualMetrics.MyIndMetricsCanvas.ann = IndividualMetrics.MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,IndividualMetrics.MyIndMetricsCanvas.table[IndividualMetrics.MyIndMetricsCanvas.element].iloc[sIndex]), xytext=(offsets[0], offsets[1]), color="k", 
                         size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
+                #Have to check if hide tick marks are selected:
+                if IndMetricsTab.tickBox.isChecked():
+                    #Find index of selected sample:
+                    samples = list(IndividualMetrics.MyIndMetricsCanvas.samplenames)
+                    sIndex = samples.index(UI_MainWindow.Ui_MainWindow.sampleSelected)
+                    labels = [""] * len(samples)
+                    labels[sIndex] = UI_MainWindow.Ui_MainWindow.sampleSelected
+                    IndividualMetrics.MyIndMetricsCanvas.ax.set_xticklabels(labels)
+           
                  
                 IndividualMetrics.MyIndMetricsCanvas.fig.canvas.draw()    
                 samples = list(UI_MainWindow.Ui_MainWindow.metrics[0].index)
                 IndMetricsTab.sampleBox.setCurrentIndex(samples.index(text)+1) #Because the first one is
                 UI_MainWindow.Ui_MainWindow.progress1.setValue(100)
+                
+    def hideTickMarks(self):
+        if IndMetricsTab.tickBox.isChecked():
+            #Find index of selected sample:
+            samples = list(IndividualMetrics.MyIndMetricsCanvas.samplenames)
+            sIndex = samples.index(UI_MainWindow.Ui_MainWindow.sampleSelected)
+            labels = [""] * len(samples)
+            labels[sIndex] = UI_MainWindow.Ui_MainWindow.sampleSelected
+            IndividualMetrics.MyIndMetricsCanvas.ax.set_xticklabels(labels)
+           
+        else:
+            IndividualMetrics.MyIndMetricsCanvas.ax.set_xticklabels(IndividualMetrics.MyIndMetricsCanvas.samplenames)
+        
+        IndividualMetrics.MyIndMetricsCanvas.fig.canvas.draw()  
