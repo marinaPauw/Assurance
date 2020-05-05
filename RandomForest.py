@@ -28,6 +28,7 @@ from h2o.estimators import H2ORandomForestEstimator
 from h2o.grid.grid_search import H2OGridSearch
 from PyQt5.QtWidgets import QTableWidget,QTableWidgetItem
 import Threads
+import os
 
 class RandomForest(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -104,15 +105,15 @@ class RandomForest(FigureCanvas):
         RandomForest.guideSetDf = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]
         RandomForest.guideSetDf = RandomForest.AllocateGoodOrBad(self,RandomForest.guideSetDf) 
         
-    def  __init__(self, results):
+    def  __init__(self):
         global badset
         badset = pd.DataFrame()
-        badset["B"] = results["B"]
-        badset["predict"] = results["predict"]
-        
-        
+        badset["B"] = RandomForest.results["B"]
+        badset["predict"] = RandomForest.results["predict"]
         badset = badset.sort_values("B")
-        badset.index = results.index
+        badset.index = RandomForest.results.index
+        print(type(badset["B"].iloc[0]))
+        print(type(badset.index[0]))
         badset["X"] = range(0,len(badset.index)) #Later the annotations get added to this column
         global fig
         fig = Figure()#figsize=(width, height), dpi=dpi)
@@ -126,6 +127,8 @@ class RandomForest(FigureCanvas):
                 ax.plot(badset.index[i], badset["B"].iloc[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
             else:
                 ax.plot(badset.index[i], badset["B"].iloc[i],  marker='o', markerfacecolor='red', markeredgecolor='r')
+                print(badset.index[i])
+                print(badset["B"].iloc[i])
         ax.set_ylabel("Probability of sample being classified as 'bad'")
         FigureCanvas.__init__(self, fig)
         #self.setParent(parent)
@@ -213,7 +216,13 @@ class RandomForest(FigureCanvas):
             # Output parameter train against input parameters
             response_column = 'GoodOrBad'
             # Split data into train and testing
-            h2o.init()
+            jarpath = os.path.join(UI_MainWindow.Ui_MainWindow.assuranceDirectory,"h2o",#"backend","bin",
+                                   "h2o.jar")
+            jarpath = jarpath.replace("\\", "\\\\")
+            os.environ["H2O_JAR_PATH"] = jarpath
+            h2o.init(strict_version_check=False)
+            
+            
             dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
             train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
@@ -223,11 +232,19 @@ class RandomForest(FigureCanvas):
             while len(train["GoodOrBad"].unique())<2:
                             train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
                          
-            train = train.as_data_frame()
+            train = train.as_data_frame(use_pandas=False)
+            if type(train) != pd.DataFrame:#In the exe it struggles to access pandas and returns a list instead
+                train = pd.DataFrame(data = train[1:], columns= train[0])
+            if "Filename" in train.columns:
+                train.index = train["Filename"]
             train["GoodOrBad"] = train["GoodOrBad"].astype('category')
             RandomForest.train = train #For the report writing
-            print("The number of good in the training section are: " + str( len(train[train["GoodOrBad"]=="G"])))
             test = test.as_data_frame()
+            if type(test) != pd.DataFrame:#In the exe it struggles to access pandas and returns a list instead
+                test = pd.DataFrame(data = test[1:], columns= test[0])
+            if "Filename" in test.columns:
+                test.index = test["Filename"]
+            
             RandomForest.test = test    
             # Search criteria
             search_criteria = {'strategy': 'RandomDiscrete',  'seed': 1}
@@ -240,7 +257,7 @@ class RandomForest(FigureCanvas):
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 50)) 
-                 
+            print(training_columns)     
             models.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train), seed=1)
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
                                     QtCore.Qt.QueuedConnection,
@@ -262,13 +279,17 @@ class RandomForest(FigureCanvas):
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 90))
-            results = rf.as_data_frame()
+            results = rf.as_data_frame(use_pandas=False)
+            if type(results) != pd.DataFrame:#In the exe it struggles to access pandas and returns a list instead
+                results = pd.DataFrame(data = results[1:], columns= results[0])
+            results["B"] = pd.to_numeric(results["B"])
+            results["G"] = pd.to_numeric(results["G"])
+            results.index = UI_MainWindow.Ui_MainWindow.metrics[0].index
             RandomForest.results = results
             RandomForest.best_model = best_model
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 100))
-            results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
             #return True
         #except:
         #    return False

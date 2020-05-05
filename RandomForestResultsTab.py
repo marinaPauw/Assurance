@@ -175,7 +175,7 @@ class LongitudinalTab(QtWidgets.QTabWidget):
 
 
         # plot        
-        RFPlot = RandomForest.RandomForest(results)
+        RFPlot = RandomForest.RandomForest()
         FeaturePlot = FeatureImportancePlot.FeaturePlot(model)
         fgrid = QtWidgets.QGridLayout(TrainingOrTestSet.PlotFrame)
         fgrid.addWidget(FeaturePlot,0,0,1,1)          
