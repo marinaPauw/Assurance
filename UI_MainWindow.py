@@ -832,6 +832,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
             
     
     def RandomForestSelection(self):
+        Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(False)
         tRF = Threads.SideThread(lambda: RandomForest.RandomForest.RFFromGraph(self))
         tRF.signals.result.connect(self.RFFinished)
         Ui_MainWindow.threadpool.start(tRF)
