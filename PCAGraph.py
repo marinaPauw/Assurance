@@ -123,9 +123,10 @@ class PCAGraph(FigureCanvas):
 
     def loadingsToggledOff(self):
          OutlierTab.OutlierTab.LoadingsProgressBar.hide() 
-         loadingsAnnot.set_visible(False)
-         for ii in loadingsTextAnnot:
-            ii.set_visible(False)
+         if "loadingsAnnot" in globals():
+            loadingsAnnot.set_visible(False)
+            for ii in loadingsTextAnnot:
+                ii.set_visible(False)
             
     def printForReport(self, now):
         for element in UI_MainWindow.Ui_MainWindow.outlierlist:
