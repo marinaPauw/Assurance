@@ -3,7 +3,7 @@ from fpdf import FPDF
 import os
 import UI_MainWindow
 import IndividualMetrics
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 import matplotlib
 from matplotlib.backends.backend_pdf import PdfPages
 from PyPDF2 import PdfFileMerger
@@ -14,7 +14,9 @@ import FeatureImportancePlot
 
 class OutputWriter(object):
     def producePDF(self, now ):
-        UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(3)
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 3))
         if "AssuranceReport" not in os.getcwd():
             dirName = str(now) +"_AssuranceReport"
             dirName = dirName.replace(" ", "_")
@@ -73,7 +75,9 @@ class OutputWriter(object):
             
         pdf.set_text_color(0, 0, 0)
         pdf.cell(200, 10, txt='Assurance version: Development', ln=1, align="L")
-        UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(15)
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 15))
         #---------------------------PCA-----------------------------
         if UI_MainWindow.Ui_MainWindow.outliersDetected:
             pdf.add_page(orientation='P')
@@ -95,7 +99,9 @@ class OutputWriter(object):
                         
             image_path = os.path.join(os.getcwd(),"outlierDetection1.png")
             pdf.image(image_path, w=200)
-            UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(10)
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 20))
             image_path = os.path.join(os.getcwd(),"outlierDetection2.png")
             pdf.image(image_path, w=200)
             if os.path.exists("outlierDetectionAfterReanlysis1.png"):
@@ -105,7 +111,9 @@ class OutputWriter(object):
                     image_path = os.path.join(os.getcwd(),"outlierDetectionAfterReanlysis2.png")
                     pdf.image(image_path, w=200)
             
-            UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(20)
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 30))
             try:
                 if UI_MainWindow.Ui_MainWindow.RandomForestPerformed == False and UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
                     pdfName = "00AssuranceReport.pdf"
@@ -121,7 +129,9 @@ class OutputWriter(object):
                 pdfName = "00AssuranceReport.pdf"
                 pdf.output(pdfName) 
             
-        UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(33)
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 33))
         
             
         
@@ -145,7 +155,9 @@ class OutputWriter(object):
                         if match not in trainingSampleNames:
                             trainingSampleNames.append(match)
                 
-            
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 36))
             testSampleNames = []
             for element in RandomForest.RandomForest.test[RandomForest.RandomForest.test.columns[1]]:
                 for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0])):
@@ -154,7 +166,9 @@ class OutputWriter(object):
                         if match not in testSampleNames:
                             testSampleNames.append(match)
             
-            
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 40))
             pdf.set_text_color(105,105,105)
             currentcolumn = 0  
             for filename in trainingSampleNames:
@@ -176,7 +190,9 @@ class OutputWriter(object):
             pdf.set_text_color(0, 0, 0)
             pdf.ln()
             pdf.cell(200, 10, txt="The test set consisted of the following samples:", ln=1, align="C")
-            
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 44))
             pdf.set_text_color(105,105,105)
             currentcolumn = 0  
             for filename in testSampleNames:
@@ -235,17 +251,26 @@ class OutputWriter(object):
                         pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
                         currentcolumn = currentcolumn+1            
                     
-            
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 50))
                     
             #Print Graphs:
             FeatureImportancePlot.FeaturePlot.printForReport(self)
             RandomForest.RandomForest.printForReport(self)
-            
+            pdf.ln()
             #Read in Graphs:
             image_path = os.path.join(os.getcwd(),"RFPlot.png")
-            pdf.image(image_path, w = 200)
+            pdf.image(image_path, w=200)
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 55))
+            pdf.ln()
             image_path = os.path.join(os.getcwd(),"FIPlot.png")
-            pdf.image(image_path, w=200)              
+            pdf.image(image_path, w=200)         
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 63))     
            
             try:
                 if UI_MainWindow.Ui_MainWindow.indMetricsGraphed == True:
@@ -256,20 +281,24 @@ class OutputWriter(object):
                     pdf.output(pdfName) 
             except:
                 pdfName = dirName + ".pdf"
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 66))
                   
 
         #---------------------------Individual metrics----------------
                             
         if(UI_MainWindow.Ui_MainWindow.indMetricsGraphed):
             OutputWriter.saveGraphPDFs(self)
-            UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(55)
             #import all the pdfs:
             paths = glob.glob('*.pdf')
             paths.sort()
             OutputWriter.merger('AssuranceReport.pdf', paths)
             
         OutputWriter.deleteExtraFiles(self, dirName)
-        UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(100)
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 100))
 
         
     
@@ -298,8 +327,10 @@ class OutputWriter(object):
                             UI_MainWindow.Ui_MainWindow.metrics[whichds], metric, True)
             
             del graph
-            progressCounter2= progressCounter2+(10/len(UI_MainWindow.Ui_MainWindow.listOfMetrics))
-            UI_MainWindow.Ui_MainWindow.pdf.progress.setValue(33+progressCounter2)
+            progressCounter2= progressCounter2+(30/len(UI_MainWindow.Ui_MainWindow.listOfMetrics))
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, 66+progressCounter2))
             
     def createDir(self, dirName):
         
