@@ -837,7 +837,13 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.threadpool.start(tRF)
     
     def onPDFClicked(self):
-        PDFWriter.OutputWriter.producePDF(self,now)
+        Ui_MainWindow.DisableAnalysisButtons(self)
+        tPDF = Threads.SideThread(lambda: PDFWriter.OutputWriter.producePDF(self,now))
+        tPDF.signals.result.connect(self.PDFFinished)
+        Ui_MainWindow.threadpool.start(tPDF)
+    
+    def PDFFinished(self):
+        Ui_MainWindow.EnableAnalysisButtons(self)    
 
     @QtCore.pyqtSlot()
     def Message(self, words):
