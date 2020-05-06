@@ -107,10 +107,10 @@ class LongitudinalTab(QtWidgets.QTabWidget):
         pgrid.addWidget(TrainingOrTestSet.MetricsFrame.LLLabel,1,9,1,1)
         pgrid.addWidget(TrainingOrTestSet.MetricsFrame.LLresults,1,10,1,1)
         try:
-            if TrainingOrTestSet.MetricsFrame.AccuracyResults <0.5:
+            if performance.accuracy()[0][0] <0.5:
                 accuracyWarning = QtWidgets.QLabel()
                 accuracyWarning.setText("The low accuracy of this model may indicate that conclusions should be approached with caution.")
-                pgrid.addWidget(accuracyWarning,2,3,1,1)
+                pgrid.addWidget(accuracyWarning,2,0,1,10)
         except:
             print("Could not evaluate Accuracy/ add label.")
         phbox2.addLayout(pgrid)
