@@ -90,7 +90,7 @@ class OutputWriter(object):
                 pdf.cell(200, 10, txt="The following samples were identified as possible outliers:", ln=1, align="C")
                 for element in UI_MainWindow.Ui_MainWindow.outlierlist:
                     pdf.cell(50, 10, txt=str(element), ln=1, align="L")
-            else:
+            elif len(UI_MainWindow.Ui_MainWindow.outlierlist)==0:
                pdf.cell(200, 10, txt="No samples were identified as possible outliers:", ln=1, align="C")
                  
             #Create images:
