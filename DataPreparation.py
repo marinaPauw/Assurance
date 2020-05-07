@@ -21,6 +21,7 @@ import FileInput
 import UI_MainWindow
 import numpy as np
 import pandas as pd
+import Datasets
 
 
 class DataPrep(object):
@@ -63,6 +64,7 @@ class DataPrep(object):
         return NumericMetrics
 
     def RemoveLowVarianceColumns(self, Nm):
+        
         Files = []
         if "Filename" in Nm.columns:
             Files = Nm["Filename"]
@@ -70,11 +72,7 @@ class DataPrep(object):
         dpIndex = []
         threshold = 0.01
         if (len(Nm.columns)) < 1:
-
-            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Error:",
-                              "After removing low variance columns, there were no columns left from which to conduct any sort of analysis. Please select another dataset.")
-            UI_MainWindow.Ui_MainWindow.onBrowseClicked(UI_MainWindow.
-                                                        Ui_MainWindow)
+                return
 
         for i in range(0, len(Nm.columns)):
             variance = np.var(Nm.iloc[:,i])
@@ -85,6 +83,7 @@ class DataPrep(object):
 
         if len(Files)>0:
             Nm.index = Files
+        
         return Nm
 
     def FindRealSampleNames(self, rawSampleNames):

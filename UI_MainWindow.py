@@ -48,6 +48,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.setWindowTitle("Assurance")
         self.resize(800,650)
         
+        Ui_MainWindow.Nulvalues = []
+        
         #Create an object for datasets:
         database = Datasets.Datasets()
         
@@ -455,21 +457,25 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         #Threading
         tbrowse = Threads.SideThread(lambda: self.ParseFiles(inputFiles, database))
         tbrowse.signals.result.connect(self.ThreadingFix)
-        tbrowse.signals.finished.connect(self.EnableAnalysisButtons)
         self.threadpool.start(tbrowse)
         
+        
     def ParseFiles(self, inputFiles, database):                
-        inputFile = FileInput.BrowseWindow.parseInputFiles(self, inputFiles)
-        QtCore.QMetaObject.invokeMethod(self.UploadProgress, "setValue",
+            FileInput.BrowseWindow.parseInputFiles(self, inputFiles)
+            QtCore.QMetaObject.invokeMethod(self.UploadProgress, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 20))
-        if inputFile:
+        
             try:
                 Ui_MainWindow.assuranceDirectory = os.getcwd()
                 os.chdir(os.path.dirname(os.path.abspath(inputFile)))
             except:
                 print("Changing the directory didn't work.")
-            database.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
+            #database.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
+            print(type(Ui_MainWindow.metrics))
+            print("476")
+            print(type(Ui_MainWindow.metrics[0]))
+            database.metrics = Ui_MainWindow.metrics
             if type(database.metrics) != bool:
                 QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
                                     QtCore.Qt.QueuedConnection,
@@ -494,27 +500,31 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                     QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 80))
-                database.NumericMetrics =[]
-                database.NumericMetrics.append(DataPreparation.DataPrep.ExtractNumericColumns(self, database.metrics[0]))
+                Nm = DataPreparation.DataPrep.ExtractNumericColumns(self, database.metrics[0])
                 
                 QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 90))
-                database.NumericMetrics[0]  = DataPreparation.DataPrep.RemoveLowVarianceColumns(self, database.NumericMetrics[0])
-                database.NumericMetrics[0].index = database.metrics[0].index
+                database.NumericMetrics = []
+                database.NumericMetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self, Nm))
+                
+                #database.NumericMetrics[0].index = database.metrics[0].index
+                
                 
                 QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 100))
             return database
             
-            
-        else:
-            return False
+       
     
     
     
-    def ThreadingFix(self,database):
+    def ThreadingFix(self, database):
+        if len(Ui_MainWindow.Nulvalues) >0:
+            QtWidgets.QMessageBox.warning(self, "Warning","There were metrics that did not have values in them:" + str(Ui_MainWindow.Nulvalues))
+        Ui_MainWindow.EnableAnalysisButtons(self)
+        
         if type(database)==Datasets.Datasets:
             Ui_MainWindow.metrics = database.metrics
             Ui_MainWindow.NumericMetrics = database.NumericMetrics
