@@ -10,6 +10,7 @@ import collections
 import json
 import DataPreparation
 import Datasets
+import FileInput
 
 
 class BrowseWindow(QtWidgets.QMainWindow):
@@ -68,6 +69,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     inputFiles = possibleinputFiles
                     metrics = BrowseWindow.CombineTSVs(self, inputFiles)          
                     UI_MainWindow.Ui_MainWindow.NumericMetrics = []
+                    if "Filename" in  metrics[0].columns:
+                            metrics[0].index = metrics[0]["Filename"]
                     
                     for i in range(0,len(metrics)):
                         #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
@@ -84,6 +87,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     
                     QtCore.QMetaObject.invokeMethod(self, "DisableBrowseButtons",
                                  QtCore.Qt.QueuedConnection)  
+                    return inputFile
             
             else:
                 possibleinputFile = possibleinputFiles[0]
@@ -101,10 +105,16 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     QtCore.QMetaObject.invokeMethod(self.filename, "setText",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(str, str(inputFile)))
+                    UI_MainWindow.Ui_MainWindow.metrics = []
+                    UI_MainWindow.Ui_MainWindow.metrics.append(FileInput.BrowseWindow.metricsParsing(self, inputFile))
+                    print(type(UI_MainWindow.Ui_MainWindow.metrics[0]))
+                    if "Filename" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
+                            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
+                    UI_MainWindow.Ui_MainWindow.NumericMetrics = []
                     
-                    
-                    
-                    return inputFile
+                    NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, UI_MainWindow.Ui_MainWindow.metrics[0])
+                    UI_MainWindow.Ui_MainWindow.NumericMetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
+                            NMColumnsonly))
    
     def GetTrainingSetFiles(self):
         possibleInputFiles, _ =QtWidgets. QFileDialog.getOpenFileNames(
@@ -180,7 +190,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
         
 
     def metricsParsing(self,inputFile):
-        try:
             if inputFile.endswith('.json'):
                 with open(inputFile) as f:
                     metrics = json.loads(f.read())
@@ -194,35 +203,29 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 tempVec = []
                 for ii in metricsDf["mzQC"]["runQuality"]:
                     for iii in ii["qualityParameters"]:
-                        tempVec.append(iii["value"])
+                        try:
+                            tempVec.append(iii["value"])
+                        except:
+                            print("For "+ str(iii)+"there was no value.")
+                            tempVec.append(0)
+                            str1 = str(iii)
+                            str1 = str1.join(str(inputFile))
+                            UI_MainWindow.Ui_MainWindow.Nulvalues.append(str1)      
             
                 myPIArray = np.vstack((myPIArray, tempVec)) 
+                
                 PCAInput = pd.DataFrame(myPIArray, columns=columnNames)
                 metrics = PCAInput
-                if(metrics.iloc[:, 0].count() < 2) :
-                    return False
-                else:
-                    return metrics
+                return metrics
 
             elif inputFile.endswith('.csv'):
-                metrics = list()
-                metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep=",")))
-                if len(metrics[0].index) < 2:
-                    return False
-                else:
-                    return metrics
+                metrics = pd.DataFrame(pd.read_csv(inputFile, sep=","))
+                return metrics
 
             elif inputFile.endswith('.tsv'):
-                metrics = list()
-                metrics.append(pd.DataFrame(pd.read_csv(inputFile, sep="\t")))
-                if len(metrics[0].index) < 2:
-                    return False
-                else:
-                    return metrics
+                metrics = pd.DataFrame(pd.read_csv(inputFile, sep="\t"))
+                return metrics
 
-
-        except :
-            return False
         
      
     def FileCheck(self, path):       
@@ -277,9 +280,10 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 if file == inputFiles[i]:
                     fileIndexInFiles = i+1
                 i=i+1
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.UploadProgress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int, fileIndexInFiles/(len(inputFiles)+1)*100))
             
-            UI_MainWindow.Ui_MainWindow.UploadProgress.setValue(fileIndexInFiles/(len(inputFiles)+1)*100)
-
             for ii in metricsDf["mzQC"]["runQuality"]:
                # NumofTotalTransitions = []
                # SumOfTotalTransition = 0
@@ -512,7 +516,9 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                 AllMetricSizesDf[dfIndex]["Name"].loc[filename] = iii["name"]
                                 AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii['value']
         
-        UI_MainWindow.Ui_MainWindow.UploadProgress.setValue(100)
+        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.UploadProgress, "setValue",
+                                 QtCore.Qt.QueuedConnection,
+                                 QtCore.Q_ARG(int,100))
         return AllMetricSizesDf
 
     def CombineTSVs(self, inputFiles):
