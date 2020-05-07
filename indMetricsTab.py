@@ -105,7 +105,7 @@ class IndMetricsTab(QtWidgets.QWidget):
                     yaxrange = abs(thisylim[1])-abs(thisylim[0])
                     svalue = (IndividualMetrics.MyIndMetricsCanvas.ax.get_xticks()[sIndex])
                     offsets = [svalue,IndividualMetrics.MyIndMetricsCanvas.table[IndividualMetrics.MyIndMetricsCanvas.element].iloc[sIndex]+(yaxrange/6)]
-                    stringify = "x:" + str(IndividualMetrics.MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(MyIndMetricsCanvas.table[IndividualMetrics.MyIndMetricsCanvas.element].iloc[sIndex])
+                    stringify = "x:" + str(IndividualMetrics.MyIndMetricsCanvas.samplenames[sIndex]) + "\ny:" + str(IndividualMetrics.MyIndMetricsCanvas.table[IndividualMetrics.MyIndMetricsCanvas.element].iloc[sIndex])
                     IndividualMetrics.MyIndMetricsCanvas.ann = IndividualMetrics.MyIndMetricsCanvas.ax.annotate(stringify, xy=(svalue,IndividualMetrics.MyIndMetricsCanvas.table[IndividualMetrics.MyIndMetricsCanvas.element].iloc[sIndex]), xytext=(offsets[0], offsets[1]), color="k", 
                             size=10,ha = 'center', va="center", bbox=dict(facecolor='white', edgecolor='blue', pad=3.0))           
                 else:
