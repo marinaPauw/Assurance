@@ -110,8 +110,8 @@ class RandomForest(FigureCanvas):
         badset = pd.DataFrame()
         badset["B"] = RandomForest.results["B"]
         badset["predict"] = RandomForest.results["predict"]
-        badset = badset.sort_values("B")
         badset.index = RandomForest.results.index
+        badset = badset.sort_values("B")
         print(type(badset["B"].iloc[0]))
         print(type(badset.index[0]))
         badset["X"] = range(0,len(badset.index)) #Later the annotations get added to this column
