@@ -15,7 +15,7 @@ from matplotlib.figure import Figure
 import datetime
 import matplotlib.pyplot as plt
 import re
-import FileInput
+#import FileInput
 import QuaMeter
 import IndividualMetrics
 import PCA
@@ -751,14 +751,21 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         elif ret == 1:# They want the table
             FileInput.BrowseWindow.GetTrainingQualityFiles(self)
+            if FileInput.BrowseWindow.NullError:
+                QtWidgets.QMessageBox.warning(self,"Error","Is it possible there may be unnecessary spaces in your tsv? Two spaces next to each other will create a NaN column.Fix the file and upload it again.")
+                FileInput.BrowseWindow.__init__(Ui_MainWindow)
+                FileInput.BrowseWindow.GetTrainingQualityFiles(Ui_MainWindow)
             if hasattr(Ui_MainWindow,"Numerictrainingmetrics"):
-                Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
-                Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px;")
-                Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
-                RandomForest.RandomForest.createTable(self)
-                self.setCurrentIndex(Ui_MainWindow.sIndex)
-                Ui_MainWindow.RandomForestPerformed = True
-                Ui_MainWindow.pdf.setEnabled(True)
+                if len(Ui_MainWindow.Numerictrainingmetrics)>0:
+                    Ui_MainWindow.TrainingOrTestSet = QtWidgets.QTabWidget()
+                    Ui_MainWindow.TrainingOrTestSet.setStyleSheet("margin: 2px;")
+                    Ui_MainWindow.sIndex = self.addTab(Ui_MainWindow.TrainingOrTestSet,"Setting up the training set:")
+                    RandomForest.RandomForest.createTable(self)
+                    self.setCurrentIndex(Ui_MainWindow.sIndex)
+                    Ui_MainWindow.RandomForestPerformed = True
+                    Ui_MainWindow.pdf.setEnabled(True)
+                else:
+                    QtWidgets.QMessageBox.warning(self,"Error","Something went wrong.")
             else:
                 Ui_MainWindow.EnableAnalysisButtons(self) 
             
