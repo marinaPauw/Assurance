@@ -58,8 +58,10 @@ class RandomForest(FigureCanvas):
         # Load in the quality data for training set:
         FileInput.BrowseWindow.__init__(UI_MainWindow.Ui_MainWindow)
         FileInput.BrowseWindow.GetTrainingQualityFiles(UI_MainWindow.Ui_MainWindow)
-        #FileInput.BrowseWindow.checkTrainingQualityColumns(self, UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics)
-        
+        if FileInput.BrowseWindow.NullError:
+            QtWidgets.QMessageBox.warning(self,"Error","Is it possible there may be unnecessary spaces in your tsv? Two spaces next to each other will create a NaN column.Fix the file and upload it again.")
+            FileInput.BrowseWindow.__init__(UI_MainWindow.Ui_MainWindow)
+            FileInput.BrowseWindow.GetTrainingQualityFiles(UI_MainWindow.Ui_MainWindow)
         if hasattr(UI_MainWindow.Ui_MainWindow, "Numerictrainingmetrics"):
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
                                     QtCore.Qt.QueuedConnection,
@@ -154,6 +156,7 @@ class RandomForest(FigureCanvas):
         fig.savefig("RFPlot.png", dpi = 500)
 
     def createTable(self):
+        df = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn = QtWidgets.QPushButton(
                 'This is my selection for suboptimal quality.',
                 UI_MainWindow.Ui_MainWindow.TrainingOrTestSet)
@@ -163,8 +166,7 @@ class RandomForest(FigureCanvas):
         self.table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        df = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0]
-        self.table.setRowCount(len(df))
+        self.table.setRowCount(len(df.index))
         self.table.setColumnCount(len(df.columns))
         for i in range(len(df.index)):
             for j in range(len(df.columns)):
@@ -216,7 +218,7 @@ class RandomForest(FigureCanvas):
             # Output parameter train against input parameters
             response_column = 'GoodOrBad'
             # Split data into train and testing
-            jarpath = os.path.join(UI_MainWindow.Ui_MainWindow.assuranceDirectory,"h2o",#"backend","bin",
+            jarpath = os.path.join(UI_MainWindow.Ui_MainWindow.assuranceDirectory,"h2o","backend","bin",
                                    "h2o.jar")
             jarpath = jarpath.replace("\\", "\\\\")
             os.environ["H2O_JAR_PATH"] = jarpath
@@ -284,7 +286,7 @@ class RandomForest(FigureCanvas):
                 results = pd.DataFrame(data = results[1:], columns= results[0])
             results["B"] = pd.to_numeric(results["B"])
             results["G"] = pd.to_numeric(results["G"])
-            results.index = UI_MainWindow.Ui_MainWindow.metrics[0].index
+            results.index = UI_MainWindow.Ui_MainWindow.NumericMetrics[0].index
             RandomForest.results = results
             RandomForest.best_model = best_model
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
