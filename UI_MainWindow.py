@@ -36,6 +36,7 @@ import OutlierTab
 import indMetricsTab
 import maxQuantTxTReader
 import mzIdentMLReader
+import FileInput
 import os
 import Threads
 import Datasets
