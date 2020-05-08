@@ -604,6 +604,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.MTTextBox.setEnabled(True)
         Ui_MainWindow.RTLabel.setEnabled(True)
         Ui_MainWindow.RTTextBox.setEnabled(True)
+        Ui_MainWindow.minintensityLabel.setEnabled(True)
         Ui_MainWindow.SRUNButton.setEnabled(True)
         Ui_MainWindow.iRT.setEnabled(True)
         
@@ -619,6 +620,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.RTTextBox.setEnabled(False)
         Ui_MainWindow.SRUNButton.setEnabled(False)
         Ui_MainWindow.iRT.setEnabled(False)
+        Ui_MainWindow.minintensityLabel.setEnabled(False)
         Ui_MainWindow.DisableSwaMeIRTArguments(self)
 
     def EnableSwaMeIRTArguments(self):
@@ -629,6 +631,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.iRTminintensityTB.setEnabled(True)
         Ui_MainWindow.iRTminpeptidesTB.setEnabled(True)
         Ui_MainWindow.minintensityTB.setEnabled(True)
+        Ui_MainWindow.iRTFilelist.setEnabled(True)
         
 
     def DisableSwaMeIRTArguments(self):
@@ -639,6 +642,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.iRTminintensityTB.setEnabled(False)
         Ui_MainWindow.iRTminpeptidesTB.setEnabled(False)
         Ui_MainWindow.minintensityTB.setEnabled(False)
+        Ui_MainWindow.iRTFilelist.setEnabled(False)
 
     def EnableAnalysisButtons(self):
         Ui_MainWindow.browse.setEnabled(True)
