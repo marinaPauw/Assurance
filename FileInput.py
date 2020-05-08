@@ -16,6 +16,7 @@ import FileInput
 class BrowseWindow(QtWidgets.QMainWindow):
     def __init__(self):
         self.title = "Load file"
+        BrowseWindow.NullError = False
 
     def GetInputFile(self):
         files = QtWidgets. QFileDialog()
@@ -87,7 +88,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     
                     QtCore.QMetaObject.invokeMethod(self, "DisableBrowseButtons",
                                  QtCore.Qt.QueuedConnection)  
-                    return inputFile
             
             else:
                 possibleinputFile = possibleinputFiles[0]
@@ -110,6 +110,19 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     print(type(UI_MainWindow.Ui_MainWindow.metrics[0]))
                     if "Filename" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
                             UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
+                    for col in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
+                            if UI_MainWindow.Ui_MainWindow.metrics[0][col].isnull().all():
+                                UI_MainWindow.Ui_MainWindow.metrics[0]= UI_MainWindow.Ui_MainWindow.metrics[0].drop(columns = col)
+                                
+                    dropRows = []
+                    for index, row in UI_MainWindow.Ui_MainWindow.metrics[0].iterrows():
+                            if row.isnull().all():
+                                dropRows.append(row)
+                                print(row)
+                    if len(dropRows)>0:
+                        UI_MainWindow.Ui_MainWindow.metrics[0] = UI_MainWindow.Ui_MainWindow.metrics[0].drop(index = dropRows)
+                    print(UI_MainWindow.Ui_MainWindow.metrics[0].head())
+                    
                     UI_MainWindow.Ui_MainWindow.NumericMetrics = []
                     
                     NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, UI_MainWindow.Ui_MainWindow.metrics[0])
@@ -129,49 +142,58 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 return TrainingSetFiles
     
     def GetTrainingQualityFiles(self):
-        files = QtWidgets. QFileDialog()
-        files.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
-        possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(UI_MainWindow.Ui_MainWindow.tab, 
-                                                               "Locate the training set quality file(s):", "",
-                                                               "All Files (*)", 
-                                                               options=
-                                                               QtWidgets.QFileDialog.\
-                                                                   Options())
-        if(possibleinputFiles):
-            if(len(possibleinputFiles) > 1):
-                justJSONFiles = True
-                justTSVFiles = True
-                for possiblefile in possibleinputFiles:
-                    if(".json" not in possiblefile):
-                       justJSONFiles = False
-                    if(".tsv" not in possiblefile):
-                        justTSVFiles = False   
-            
-                if not justJSONFiles and not justTSVFiles:
-                   return False
+        try:
+            files = QtWidgets. QFileDialog()
+            files.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
+            possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(UI_MainWindow.Ui_MainWindow.tab, 
+                                                                "Locate the training set quality file(s):", "",
+                                                                "All Files (*)", 
+                                                                options=
+                                                                QtWidgets.QFileDialog.\
+                                                                    Options())
+            if(possibleinputFiles):
+                if(len(possibleinputFiles) > 1):
+                    justJSONFiles = True
+                    justTSVFiles = True
+                    for possiblefile in possibleinputFiles:
+                        if(".json" not in possiblefile):
+                            justJSONFiles = False
+                        if(".tsv" not in possiblefile):
+                            justTSVFiles = False   
+                
+                    if not justJSONFiles and not justTSVFiles:
+                        return False
 
-                elif(justJSONFiles): 
-                    inputFiles = possibleinputFiles
-                    trainingmetrics =  BrowseWindow.CombineJSONs(UI_MainWindow.Ui_MainWindow, inputFiles)
-                    #Check if both are DDA or both are DIA:
-                   
+                    elif(justJSONFiles): 
+                        inputFiles = possibleinputFiles
+                        UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics =  BrowseWindow.CombineJSONs(UI_MainWindow.Ui_MainWindow, inputFiles)
+                        #Check if both are DDA or both are DIA:
+                    
+                            
+                    elif justTSVFiles:
+                        inputFiles = possibleinputFiles
+                        UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)          
+                    
+                    else: 
+                        return False
                         
-                elif justTSVFiles:
-                    inputFiles = possibleinputFiles
-                    trainingmetrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)          
-                   
-                else: 
-                    return False
-                       
-                     
-            else:
-                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
-                    df = pd.read_csv(possibleinputFiles[0], sep="\t")
-                    if 'Filename' in df.columns:
-                        if ".mzML" in df['Filename'][0]:
-                            for item in range(0,len(df['Filename'])):
-                                df['Filename'].iloc[item] = df['Filename'].iloc[item].split('.')[0]
-                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(df)
+                        
+                else:
+                        UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
+                        df = pd.read_csv(possibleinputFiles[0], sep="\t")
+                        for col in df.columns:
+                            if df[col].isnull().values.any():
+                                BrowseWindow.NullError =True
+                                return
+                        if 'Filename' in df.columns:
+                            if ".mzML" in df['Filename'][0]:
+                                for item in range(0,len(df['Filename'])):
+                                    df['Filename'].iloc[item] = df['Filename'].iloc[item].split('.')[0]
+                        #Nan's creep in if you make the tsv with excel sometimes
+                        
+                        UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(df)
+        except:
+            QtWidgets.QMessageBox.warning(self,"Error","An error occured. Please double check the data.")
                    
     def checkTrainingQualityColumns(self, trainingmetrics):
                             UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
@@ -181,7 +203,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                     NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, trainingmetrics[i])
                                     UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
                                     NMColumnsonly))
-                        
         
     
     def fileTypeCheck(self,inputFile):
