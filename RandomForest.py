@@ -231,8 +231,13 @@ class RandomForest(FigureCanvas):
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 30))              
             #Check that the training set contains both groups else error is thrown:
-            while len(train["GoodOrBad"].unique())<2:
-                            train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
+            if len(train["GoodOrBad"].unique())<2:
+            #                train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
+            #                whilecount = whilecount+1
+            #                if whilecount>3:
+                                UI_MainWindow.Ui_MainWindow.TrainingError = True
+                                return
+                                
                          
             train = train.as_data_frame(use_pandas=False)
             if type(train) != pd.DataFrame:#In the exe it struggles to access pandas and returns a list instead
@@ -300,6 +305,9 @@ class RandomForest(FigureCanvas):
         results = RandomForest.computeTrainingSamplesFromArea(self)
         if results == True:
             RandomForest.RunRandomForest(self)
+        if UI_MainWindow.Ui_MainWindow.TrainingError:
+            return
+            
             
     def RFFromTable(self):
         if type(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[0]) != str and "Filename" in UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns:
