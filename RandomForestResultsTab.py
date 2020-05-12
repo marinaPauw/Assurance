@@ -68,7 +68,7 @@ class LongitudinalTab(QtWidgets.QTabWidget):
             TrainingOrTestSet.MetricsFrame.F1Label.setText("F1:")
             TrainingOrTestSet.MetricsFrame.F1Label.setFont(UI_MainWindow.Ui_MainWindow.boldfont)
             TrainingOrTestSet.MetricsFrame.F1results = QtWidgets.QLabel()
-            TrainingOrTestSet.MetricsFrame.F1results.setText(str(round(performance.F1()[0][0],4)))
+            TrainingOrTestSet.MetricsFrame.F1results.setText(str(round(performance.F1()[0][1],4)))
         else:
             print("No F1!!!")
         if hasattr(performance, "accuracy"):
@@ -76,13 +76,13 @@ class LongitudinalTab(QtWidgets.QTabWidget):
             TrainingOrTestSet.MetricsFrame.Accuracy.setText("Accuracy:")
             TrainingOrTestSet.MetricsFrame.Accuracy.setFont(UI_MainWindow.Ui_MainWindow.boldfont)
             TrainingOrTestSet.MetricsFrame.AccuracyResults = QtWidgets.QLabel()
-            TrainingOrTestSet.MetricsFrame.AccuracyResults.setText(str(round(performance.accuracy()[0][0],4)))        
+            TrainingOrTestSet.MetricsFrame.AccuracyResults.setText(str(round(performance.accuracy()[0][1],4)))        
         if hasattr(performance, "mcc"):
             TrainingOrTestSet.MetricsFrame.MCCLabel = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.MCCLabel.setText("MCC:")
             TrainingOrTestSet.MetricsFrame.MCCLabel.setFont(UI_MainWindow.Ui_MainWindow.boldfont)
             TrainingOrTestSet.MetricsFrame.MCCresults = QtWidgets.QLabel()
-            TrainingOrTestSet.MetricsFrame.MCCresults.setText(str(round(performance.mcc()[0][0],4)))        
+            TrainingOrTestSet.MetricsFrame.MCCresults.setText(str(round(performance.mcc()[0][1],4)))        
         if hasattr(performance, "logloss"):
             TrainingOrTestSet.MetricsFrame.LLLabel = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.LLLabel.setText("logloss:")
