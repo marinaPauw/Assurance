@@ -48,6 +48,9 @@ class BrowseWindow(QtWidgets.QMainWindow):
                            UI_MainWindow.Ui_MainWindow, inputFiles)
                     if "Filename" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
                             UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
+                    elif "Dataset" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
+                            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Dataset"]
+                    
                     UI_MainWindow.Ui_MainWindow.NumericMetrics = []
                     for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
                        #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
@@ -69,9 +72,15 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     
                     inputFiles = possibleinputFiles
                     metrics = BrowseWindow.CombineTSVs(self, inputFiles)          
+                    for col in metrics[0].columns:
+                        if metrics[0][col].isnull().values.all():
+                                    BrowseWindow.NullError =True
+                                    return
                     UI_MainWindow.Ui_MainWindow.NumericMetrics = []
                     if "Filename" in  metrics[0].columns:
                             metrics[0].index = metrics[0]["Filename"]
+                    elif "Dataset" in  metrics[0].columns:
+                            metrics[0].index = metrics[0]["Dataset"]
                     
                     for i in range(0,len(metrics)):
                         #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
@@ -110,6 +119,8 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     print(type(UI_MainWindow.Ui_MainWindow.metrics[0]))
                     if "Filename" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
                             UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
+                    elif "Dataset" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
+                            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Dataset"]
                     for col in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
                             if UI_MainWindow.Ui_MainWindow.metrics[0][col].isnull().all():
                                 UI_MainWindow.Ui_MainWindow.metrics[0]= UI_MainWindow.Ui_MainWindow.metrics[0].drop(columns = col)
@@ -182,7 +193,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                         UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
                         df = pd.read_csv(possibleinputFiles[0], sep="\t")
                         for col in df.columns:
-                            if df[col].isnull().values.any():
+                            if df[col].isnull().values.all():
                                 BrowseWindow.NullError =True
                                 return
                         if 'Filename' in df.columns:
@@ -241,10 +252,12 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
             elif inputFile.endswith('.csv'):
                 metrics = pd.DataFrame(pd.read_csv(inputFile, sep=","))
+                metrics = metrics.fillna(value=0)
                 return metrics
 
             elif inputFile.endswith('.tsv'):
                 metrics = pd.DataFrame(pd.read_csv(inputFile, sep="\t"))
+                metrics = metrics.fillna(value=0)
                 return metrics
 
         
@@ -266,12 +279,14 @@ class BrowseWindow(QtWidgets.QMainWindow):
     def TrainingSetParse(self,inputFile):
         if inputFile.endswith('.csv'):
             TrainingSet = pd.DataFrame(pd.read_csv(inputFile, sep=","))
+            TrainingSet = TrainingSet.fillna(value=0)
             BrowseWindow.TrainingSetFileMatchNames(BrowseWindow,
                                                       TrainingSet)
             return TrainingSet
 
         elif inputFile.endswith('.tsv'):
             TrainingSet = pd.DataFrame(pd.read_csv(inputFile, sep="\t"))
+            TrainingSet = TrainingSet.fillna(value=0)
             BrowseWindow.TrainingSetFileMatchNames(BrowseWindow,
                                                       TrainingSet)
             return TrainingSet
@@ -547,6 +562,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
         df = pd.DataFrame()
         for file in inputFiles:
             df = df.append(pd.read_csv(file, sep="\t"))
+            df = df.fillna(value=0)
         
         if "Filename" in df.columns:
             if ".mzML" in df["Filename"].iloc[0]:
