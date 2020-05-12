@@ -40,11 +40,15 @@ import FileInput
 import os
 import Threads
 import Datasets
+import ctypes
 
 
 class Ui_MainWindow(QtWidgets.QTabWidget):
     
     def setupUi(self):
+        self.setWindowIcon(QtGui.QIcon('AssuranceIcon.png'))
+        myappid = u'mycompany.myproduct.subproduct.version' # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
         Ui_MainWindow.threadpool = QtCore.QThreadPool()
         self.setWindowTitle("Assurance")
         self.resize(800,650)
