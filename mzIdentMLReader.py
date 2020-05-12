@@ -16,7 +16,7 @@ class mzIdentMLReader():
         filenames = []
         for file in files:
             filenames.append(os.path.splitext(os.path.basename(file))[0])
-        
+        UI_MainWindow.Ui_MainWindow.filenames = filenames
         pepTable = pd.DataFrame(index = filenames , columns = ["Filename","Number of distinct peptides","Number of spectra identified"])
         count = 0
         for file in files:
