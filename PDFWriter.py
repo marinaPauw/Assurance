@@ -74,7 +74,7 @@ class OutputWriter(object):
                         currentcolumn = currentcolumn+1    
             
         pdf.set_text_color(0, 0, 0)
-        pdf.cell(200, 10, txt='Assurance version: Development', ln=1, align="L")
+        pdf.cell(200, 10, txt='Assurance version: v1.0.0', ln=1, align="L")
         QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 15))
