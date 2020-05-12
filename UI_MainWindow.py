@@ -50,6 +50,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.resize(800,650)
         
         Ui_MainWindow.Nulvalues = []
+        Ui_MainWindow.firstOutlierlist = []
+        Ui_MainWindow.secondOutlierlist = []
+        Ui_MainWindow.TrainingError = False
         
         #Create an object for datasets:
         database = Datasets.Datasets()
@@ -559,6 +562,10 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                         # Need to correctly calculate euc distance in N dimension
                         outliers = PCA.PCA.CalculateOutliers(self)
                         Ui_MainWindow.outlierlist = outliers["Filename"]
+                        if len(Ui_MainWindow.firstOutlierlist)<1:#Either there were no outliers and the reanalysis is pointless, or this is the first.
+                            Ui_MainWindow.firstOutlierlist = outliers["Filename"]
+                        elif len(Ui_MainWindow.secondOutlierlist)<1:#Either there were no outliers and the reanalysis is pointless, or this is the second.
+                            Ui_MainWindow.secondOutlierlist = outliers["Filename"]
                         OutlierTab.OutlierTab.createTabWidget(self,now)
                         Ui_MainWindow.outliersDetected = True
 
