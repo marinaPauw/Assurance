@@ -55,9 +55,9 @@ class OutputWriter(object):
                         pdf.cell(50, 10, txt=str(filename), ln=0, align="C")
                         currentcolumn = currentcolumn+1    
         
-        elif "Filename" in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
+        elif "Dataset" in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
             currentcolumn = 0  
-            for filename in UI_MainWindow.Ui_MainWindow.metrics[0]['Filename']:
+            for filename in UI_MainWindow.Ui_MainWindow.metrics[0]['Dataset']:
                           
                 if len(filename)>20:
                     if currentcolumn >0:
