@@ -86,11 +86,11 @@ class OutputWriter(object):
             pdf.cell(200, 10, txt="Outlier detection with PCA", ln=1, align="C")
             
             #Outliers:
-            if len(UI_MainWindow.Ui_MainWindow.outlierlist)>0:
+            if len(UI_MainWindow.Ui_MainWindow.firstOutlierlist)>0:
                 pdf.cell(200, 10, txt="The following samples were identified as possible outliers:", ln=1, align="C")
-                for element in UI_MainWindow.Ui_MainWindow.outlierlist:
+                for element in UI_MainWindow.Ui_MainWindow.firstOutlierlist:
                     pdf.cell(50, 10, txt=str(element), ln=1, align="L")
-            elif len(UI_MainWindow.Ui_MainWindow.outlierlist)==0:
+            elif len(UI_MainWindow.Ui_MainWindow.firstOutlierlist)==0:
                pdf.cell(200, 10, txt="No samples were identified as possible outliers:", ln=1, align="C")
                  
             #Create images:
@@ -102,9 +102,19 @@ class OutputWriter(object):
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.pdf.progress, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 20))
+            
             image_path = os.path.join(os.getcwd(),"outlierDetection2.png")
             pdf.image(image_path, w=200)
             if os.path.exists("outlierDetectionAfterReanlysis1.png"):
+                    pdf.add_page(orientation='P')
+                    #Outliers:
+                    if len(UI_MainWindow.Ui_MainWindow.secondOutlierlist)>0:
+                        pdf.cell(200, 10, txt="The following samples were identified as possible outliers in the reanalysis:", ln=1, align="C")
+                        for element in UI_MainWindow.Ui_MainWindow.secondOutlierlist:
+                            pdf.cell(50, 10, txt=str(element), ln=1, align="L")
+                    elif len(UI_MainWindow.Ui_MainWindow.secondOutlierlist)==0:
+                        pdf.cell(200, 10, txt="No samples were identified as possible outliers in the reanalysis:", ln=1, align="C")
+                        
                     image_path = os.path.join(os.getcwd(),"outlierDetectionAfterReanlysis1.png")
                     pdf.image(image_path, w=200)
             if os.path.exists("outlierDetectionAfterReanlysis2.png"):
