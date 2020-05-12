@@ -476,13 +476,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
             try:
                 Ui_MainWindow.assuranceDirectory = os.getcwd()
-                os.chdir(os.path.dirname(os.path.abspath(inputFile)))
+                os.chdir(os.path.dirname(os.path.abspath(inputFiles[0])))
             except:
                 print("Changing the directory didn't work.")
-            #database.metrics = FileInput.BrowseWindow.metricsParsing(self, inputFile)
-            print(type(Ui_MainWindow.metrics))
-            print("476")
-            print(type(Ui_MainWindow.metrics[0]))
             database.metrics = Ui_MainWindow.metrics
             if type(database.metrics) != bool:
                 QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
