@@ -251,7 +251,11 @@ class RandomForest(FigureCanvas):
                 test = pd.DataFrame(data = test[1:], columns= test[0])
             if "Filename" in test.columns:
                 test.index = test["Filename"]
-            
+            elif "Dataset" in test.columns:
+                    test.index = test["Dataset"]
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 40))  
             RandomForest.test = test    
             # Search criteria
             search_criteria = {'strategy': 'RandomDiscrete',  'seed': 1}
