@@ -525,6 +525,8 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     
     
     def ThreadingFix(self, database):
+        if FileInput.BrowseWindow.NullError:
+            QtWidgets.QMessageBox.warning(self,"Error","Some format error occurred. Are there perhaps two spaces next to each other in the file? In a tsv these can be seen as two columns.")
         if len(Ui_MainWindow.Nulvalues) >0:
             QtWidgets.QMessageBox.warning(self, "Warning","There were metrics that did not have values in them:" + str(Ui_MainWindow.Nulvalues))
         Ui_MainWindow.EnableAnalysisButtons(self)
@@ -855,6 +857,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.TrainingOrTestSet.badbtn.clicked.connect(lambda: self.RandomForestSelection())
         
     def RFFinished(self,results):
+        if Ui_MainWindow.TrainingError:
+            QtWidgets.QMessageBox.warning(self, "Error","The training set did not contain enough of both good and bad data to perform the analysis")
+            Ui_MainWindow.EnableAnalysisButtons(self)
+            self.setCurrentIndex(0)
+            return
         RandomForestResultsTab.LongitudinalTab.printModelResults(self)
         Ui_MainWindow.EnableAnalysisButtons(self)
         
