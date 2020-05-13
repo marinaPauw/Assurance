@@ -26,9 +26,9 @@ import imblearn
 import h2o
 from h2o.estimators import H2ORandomForestEstimator
 from h2o.grid.grid_search import H2OGridSearch
-from PyQt5.QtWidgets import QTableWidget,QTableWidgetItem
 import Threads
 import os
+import subprocess
 
 class RandomForest(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -211,22 +211,37 @@ class RandomForest(FigureCanvas):
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 20))
             dataToBeSplit = RandomForest.guideSetDf      
+            
             dataToBeSplit.columns= RandomForest.guideSetDf.columns
                         
             dataToBeSplit["GoodOrBad"] = dataToBeSplit["GoodOrBad"].astype('category')
             training_columns = list(dataToBeSplit.columns[dataToBeSplit.columns != 'GoodOrBad'])
             # Output parameter train against input parameters
             response_column = 'GoodOrBad'
+            
+            javapath= os.path.join("C:\\Program Files\\Java","jre1.8.0_241")
+            javapath = javapath.replace("\\", "\\\\")
+            os.environ["H2O_JAVA_HOME"]=javapath
+            os.environ["JAVA_HOME"]=javapath
             # Split data into train and testing
             jarpath = os.path.join(UI_MainWindow.Ui_MainWindow.assuranceDirectory,"h2o","backend","bin",
                                    "h2o.jar")
             jarpath = jarpath.replace("\\", "\\\\")
             os.environ["H2O_JAR_PATH"] = jarpath
+            javapath2 = os.path.join(javapath, "bin", "java.exe")
+            javapath2 = javapath2.replace("\\", "\\\\")
+            try: 
+                print(subprocess.check_output([javapath2, "-version"], stderr=subprocess.STDOUT,stdin = subprocess.PIPE))
+            except:
+                print("Failed.")
             h2o.init(strict_version_check=False)
-            
+            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(int, 28))
             
             dataToBeSplit = h2o.H2OFrame(dataToBeSplit)
             train, test = dataToBeSplit.split_frame(ratios=[0.6], seed = 1)
+            RandomForest.train = train
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 30))              
@@ -240,6 +255,7 @@ class RandomForest(FigureCanvas):
                                 
                          
             train = train.as_data_frame(use_pandas=False)
+            RandomForest.train = train
             if type(train) != pd.DataFrame:#In the exe it struggles to access pandas and returns a list instead
                 train = pd.DataFrame(data = train[1:], columns= train[0])
             if "Filename" in train.columns:
