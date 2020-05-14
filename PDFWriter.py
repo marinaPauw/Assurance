@@ -158,9 +158,9 @@ class OutputWriter(object):
             
             #Find the names of training samples:
             trainingSampleNames = []
-            for element in RandomForest.RandomForest.train[RandomForest.RandomForest.train.columns[1]]:
+            for element in RandomForest.RandomForest.train[RandomForest.RandomForest.train.columns[0]]:
                 for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0])):
-                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns[1]].iloc[item]:
+                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns[0]].iloc[item]:
                         match = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns[0]].iloc[item]
                         if match not in trainingSampleNames:
                             trainingSampleNames.append(match)
@@ -169,9 +169,9 @@ class OutputWriter(object):
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 36))
             testSampleNames = []
-            for element in RandomForest.RandomForest.test[RandomForest.RandomForest.test.columns[1]]:
+            for element in RandomForest.RandomForest.test[RandomForest.RandomForest.test.columns[0]]:
                 for item in range(0,len(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0])):
-                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns[1]].iloc[item]:
+                    if element == UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns[0]].iloc[item]:
                         match = UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0][UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].columns[0]].iloc[item]
                         if match not in testSampleNames:
                             testSampleNames.append(match)
