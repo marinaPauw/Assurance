@@ -59,6 +59,7 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         Ui_MainWindow.firstOutlierlist = []
         Ui_MainWindow.secondOutlierlist = []
         Ui_MainWindow.TrainingError = False
+        Ui_MainWindow.h2oError= False
         
         #Create an object for datasets:
         database = Datasets.Datasets()
@@ -861,6 +862,11 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def RFFinished(self,results):
         if Ui_MainWindow.TrainingError:
             QtWidgets.QMessageBox.warning(self, "Error","The training set did not contain enough of both good and bad data to perform the analysis")
+            Ui_MainWindow.EnableAnalysisButtons(self)
+            self.setCurrentIndex(0)
+            return
+        elif Ui_MainWindow.TrainingError:
+            QtWidgets.QMessageBox.warning(self, "Error","H2O init failed. Try downgrading your java jdk to 8 and make sure the h2o jar is still in the h2o folder of the Assurance download. You can also check myerr.txt for more information.")
             Ui_MainWindow.EnableAnalysisButtons(self)
             self.setCurrentIndex(0)
             return
