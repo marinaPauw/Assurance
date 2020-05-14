@@ -10,6 +10,6 @@ Analysis of longitudinal data via random forest with h2o package
 
 Requirements: 
 The h2o package requires Java, preferrably jdk 8, no later version than 12. 
+If you do not plan to run random forest, Java is not required. You may also be asked by your computer to give permission when Java starts running.
 https://www.oracle.com/java/technologies/javase-jdk8-downloads.html 
-If you do not plan to run random forest, it not necessary to worry about Java.
 
