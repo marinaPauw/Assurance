@@ -219,22 +219,15 @@ class RandomForest(FigureCanvas):
             # Output parameter train against input parameters
             response_column = 'GoodOrBad'
             
-            javapath= os.path.join("C:\\Program Files\\Java","jre1.8.0_241")
-            javapath = javapath.replace("\\", "\\\\")
-            os.environ["H2O_JAVA_HOME"]=javapath
-            os.environ["JAVA_HOME"]=javapath
             # Split data into train and testing
-            jarpath = os.path.join(UI_MainWindow.Ui_MainWindow.assuranceDirectory,"h2o","backend","bin",
-                                   "h2o.jar")
+            jarpath = os.path.join(UI_MainWindow.Ui_MainWindow.assuranceDirectory,"h2o","h2o.jar")
             jarpath = jarpath.replace("\\", "\\\\")
             os.environ["H2O_JAR_PATH"] = jarpath
-            javapath2 = os.path.join(javapath, "bin", "java.exe")
-            javapath2 = javapath2.replace("\\", "\\\\")
-            try: 
-                print(subprocess.check_output([javapath2, "-version"], stderr=subprocess.STDOUT,stdin = subprocess.PIPE))
+            try:
+                h2o.init(strict_version_check=False)
             except:
-                print("Failed.")
-            h2o.init(strict_version_check=False)
+                UI_MainWindow.Ui_MainWindow.h2oError = True
+                return
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 28))
