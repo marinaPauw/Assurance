@@ -18,10 +18,14 @@ class OutlierTab(QtWidgets.QTabWidget):
                         OutlierTab.PCA = QtWidgets.QTabWidget()
                         OutlierTab.PCA.PCAplot = PCAGraph.PCAGraph(now)
                         
-
+                        OutlierTab.outliercolorlabel1 = QtWidgets.QLabel(OutlierTab.PCA)
+                        OutlierTab.outliercolorlabel2 = QtWidgets.QLabel(OutlierTab.PCA)
                         OutlierTab.outlierlistLabel = QtWidgets.QLabel(OutlierTab.PCA)
                         OutlierTab.OutlierSamples = QtWidgets.QLabel(OutlierTab.PCA)
                         OutlierTab.OutlierSamples.setAlignment(QtCore.Qt.AlignLeft)
+                        OutlierTab.possoutlierlistLabel = QtWidgets.QLabel(OutlierTab.PCA)
+                        OutlierTab.possOutlierSamples = QtWidgets.QLabel(OutlierTab.PCA)
+                        OutlierTab.possOutlierSamples.setAlignment(QtCore.Qt.AlignLeft)
 
                         oIndex = self.addTab(OutlierTab.PCA, "Outlier detection results")
                         OutlierTab.PCA.layout = QtWidgets.QVBoxLayout()
@@ -38,7 +42,7 @@ class OutlierTab(QtWidgets.QTabWidget):
 
                         
                         OutlierTab.PCA.Redolabel = QtWidgets.QLabel(OutlierTab.PCA)
-                        OutlierTab.PCA.Redolabel.setText("Redo analysis without the outliers:")
+                        OutlierTab.PCA.Redolabel.setText("Redo analysis without the extreme outliers:")
                         OutlierTab.PCA.Redobox = QtWidgets.QCheckBox("Redo",
                                                                          OutlierTab.PCA)
                         OutlierTab.PCA.Redobox.setChecked(False)
@@ -51,8 +55,12 @@ class OutlierTab(QtWidgets.QTabWidget):
                         hbox = QtWidgets.QHBoxLayout(OutlierTab.PCA)
                         vbox3 = QtWidgets.QVBoxLayout(OutlierTab.PCA)
                         vbox3.addStretch()
+                        vbox3.addWidget(OutlierTab.outliercolorlabel1)
+                        vbox3.addWidget(OutlierTab.outliercolorlabel2)
                         vbox3.addWidget(OutlierTab.outlierlistLabel)
                         vbox3.addWidget(OutlierTab.OutlierSamples)
+                        vbox3.addWidget(OutlierTab.possoutlierlistLabel)
+                        vbox3.addWidget(OutlierTab.possOutlierSamples)
                         vbox3.addWidget(OutlierTab.PCA.Checkboxlabel)
                         vbox3.addWidget(OutlierTab.PCA.Checkbox)
                         vbox3.addWidget(OutlierTab.LoadingsProgressBar)
@@ -123,8 +131,15 @@ class OutlierTab(QtWidgets.QTabWidget):
     
     def retranslateUi2(self):
         _translate = QtCore.QCoreApplication.translate
+        OutlierTab.outliercolorlabel1.setText("Possible outliers in blue")
+        OutlierTab.outliercolorlabel2.setText("Probable outliers in red")
+        OutlierTab.outliercolorlabel1.setFont(UI_MainWindow.Ui_MainWindow.boldfont)
+        OutlierTab.outliercolorlabel2.setFont(UI_MainWindow.Ui_MainWindow.boldfont)
+        OutlierTab.outliercolorlabel1.setStyleSheet( "color : blue; ")
+        OutlierTab.outliercolorlabel2.setStyleSheet( "color : red; ")
+        
         OutlierTab.outlierlistLabel.setText(
-            "Suggested outlier candidates: ")
+            "Candidates for probable outliers: ")
         font = QtGui.QFont()
         font.setPointSize(18)
         if(len(UI_MainWindow.Ui_MainWindow.outlierlist) > 0):
@@ -132,5 +147,16 @@ class OutlierTab(QtWidgets.QTabWidget):
             for element in UI_MainWindow.Ui_MainWindow.outlierlist:
                 outlierstring = str(outlierstring) + "\n" + str(element)
         else:
-            outlierstring = "No outliers found."
+            outlierstring = "No probable outliers found."
         OutlierTab.OutlierSamples.setText(outlierstring)
+        OutlierTab.possoutlierlistLabel.setText(
+            "Candidates for possible outliers: ")
+        font = QtGui.QFont()
+        font.setPointSize(18)
+        if(len(PCA.PCA.possOutlierList) > 0):
+            outlierstring = ""
+            for element in PCA.PCA.possOutlierList:
+                outlierstring = str(outlierstring) + "\n" + str(element)
+        else:
+            outlierstring = "No possible outliers found."
+        OutlierTab.possOutlierSamples.setText(outlierstring)

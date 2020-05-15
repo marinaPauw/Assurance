@@ -87,11 +87,18 @@ class OutputWriter(object):
             
             #Outliers:
             if len(UI_MainWindow.Ui_MainWindow.firstOutlierlist)>0:
-                pdf.cell(200, 10, txt="The following samples were identified as possible outliers:", ln=1, align="C")
+                pdf.cell(200, 10, txt="The following samples were identified as probable outliers:", ln=1, align="C")
                 for element in UI_MainWindow.Ui_MainWindow.firstOutlierlist:
                     pdf.cell(50, 10, txt=str(element), ln=1, align="L")
             elif len(UI_MainWindow.Ui_MainWindow.firstOutlierlist)==0:
+               pdf.cell(200, 10, txt="No samples were identified as probable outliers:", ln=1, align="C")
+            if len(UI_MainWindow.Ui_MainWindow.firstpossOutlierlist)>0:
+                pdf.cell(200, 10, txt="The following samples were identified as possible outliers:", ln=1, align="C")
+                for element in UI_MainWindow.Ui_MainWindow.firstpossOutlierlist:
+                    pdf.cell(50, 10, txt=str(element), ln=1, align="L")
+            elif len(UI_MainWindow.Ui_MainWindow.firstpossOutlierlist)==0:
                pdf.cell(200, 10, txt="No samples were identified as possible outliers:", ln=1, align="C")
+            
                  
             #Create images:
             if not os.path.exists("outlierDetection1.png"):
@@ -109,10 +116,16 @@ class OutputWriter(object):
                     pdf.add_page(orientation='P')
                     #Outliers:
                     if len(UI_MainWindow.Ui_MainWindow.secondOutlierlist)>0:
-                        pdf.cell(200, 10, txt="The following samples were identified as possible outliers in the reanalysis:", ln=1, align="C")
+                        pdf.cell(200, 10, txt="The following samples were identified as probable outliers in the reanalysis:", ln=1, align="C")
                         for element in UI_MainWindow.Ui_MainWindow.secondOutlierlist:
                             pdf.cell(50, 10, txt=str(element), ln=1, align="L")
                     elif len(UI_MainWindow.Ui_MainWindow.secondOutlierlist)==0:
+                        pdf.cell(200, 10, txt="No samples were identified as probable outliers in the reanalysis:", ln=1, align="C")
+                    if len(UI_MainWindow.Ui_MainWindow.secondpossOutlierlist)>0:
+                        pdf.cell(200, 10, txt="The following samples were identified as possible outliers in the reanalysis:", ln=1, align="C")
+                        for element in UI_MainWindow.Ui_MainWindow.secondpossOutlierlist:
+                            pdf.cell(50, 10, txt=str(element), ln=1, align="L")
+                    elif len(UI_MainWindow.Ui_MainWindow.secondpossOutlierlist)==0:
                         pdf.cell(200, 10, txt="No samples were identified as possible outliers in the reanalysis:", ln=1, align="C")
                         
                     image_path = os.path.join(os.getcwd(),"outlierDetectionAfterReanlysis1.png")

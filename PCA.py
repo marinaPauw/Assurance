@@ -78,27 +78,27 @@ class PCA(object):
         UI_MainWindow.Ui_MainWindow.progress1.setValue(60)
         #self.metrics.index = self.metrics.iloc[:,0]
         medianDistances = PCA.createMedianDistances(self, sampleSize)
-        outlierDistance = PCA.calculateOutLierDistances(self, medianDistances)
+        outlierDistance = PCA.calculateOutLierDistances(self, medianDistances,3)
         UI_MainWindow.Ui_MainWindow.progress1.setValue(65)
 
         for iterator in sampleSize:
             medianDistances["MedianDistance"][iterator] = np.percentile(PCA.Distances[iterator], 50)
-        print(medianDistances)      
-        Q1 = np.percentile(medianDistances["MedianDistance"], 25)
-        Q3 =np.percentile(medianDistances["MedianDistance"], 75)
-        IQR = Q3-Q1
-        outlierDistance = Q3 + 1.5*IQR
+        possoutlierDistance = PCA.calculateOutLierDistances(self, medianDistances, 1.5)
         UI_MainWindow.Ui_MainWindow.progress1.setValue(65)
        #Zscores:
         from scipy.stats import zscore
         medianDistances["zScore"] = zscore(medianDistances["MedianDistance"])
-        medianDistances["outlier"]= medianDistances["zScore"].apply(
-        lambda x: x <= -3.5 or x >= 3.5
+        medianDistances["outlier"]= medianDistances["MedianDistance"].apply(
+        lambda x: x >= outlierDistance
+        )
+        print("The following runs were identified as candidates for probable outliers based on their z-scores:")
+        
+        medianDistances["possoutlier"]= medianDistances["MedianDistance"].apply(
+        lambda x: x >= possoutlierDistance and x < outlierDistance
         )
         print("The following runs were identified as candidates for possible outliers based on their z-scores:")
-        Q3 = np.percentile(medianDistances["MedianDistance"], 75)  # Q3
-
-        UI_MainWindow.Ui_MainWindow.progress1.setValue(75)
+        PCA.possibleOutliers = medianDistances[medianDistances["possoutlier"]]
+        PCA.possOutlierList = PCA.possibleOutliers["Filename"]
         Outliers = medianDistances[medianDistances["outlier"]]
         return Outliers
 
@@ -114,11 +114,11 @@ class PCA(object):
                 PCA.Distances[iterator], 50)
         return medianDistances
 
-    def calculateOutLierDistances(self, medianDistances):
+    def calculateOutLierDistances(self, medianDistances, integer):
         Q1 = np.percentile(medianDistances["MedianDistance"], 25)
         Q3 = np.percentile(medianDistances["MedianDistance"], 75)
         IQR = Q3 - Q1
-        outlierDistance = Q3 + 1.5*IQR
+        outlierDistance = Q3 + integer*IQR
         return outlierDistance
 
 

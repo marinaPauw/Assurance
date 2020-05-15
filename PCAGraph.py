@@ -43,7 +43,11 @@ class PCAGraph(FigureCanvas):
             ax.plot(PCA.plotdata[iii, 0],  PCA.plotdata[iii, 1], linestyle="-",linewidth=0, marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
         for element in UI_MainWindow.Ui_MainWindow.outlierlist:
             outlierIndex = np.where([FileInput.BrowseWindow.currentDataset.index==element])
-            ax.plot(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1], linestyle="none",linewidth=0, marker='o', markerfacecolor='r', markeredgecolor='k')
+            ax.plot(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1], linestyle="none",linewidth=0, marker='o', markerfacecolor='red', markeredgecolor='k')
+        for item in PCA.PCA.possOutlierList:
+            outlierIndex = np.where([FileInput.BrowseWindow.currentDataset.index==item])
+            ax.plot(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1], linestyle="none",linewidth=0, marker='o', markerfacecolor='blue', markeredgecolor='k')
+        
             #if forReport:
             #    ax.annotate(element, xy=(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1]),color='green')
         ax.set_xlabel("PC1   "+ str(round(PCA.PCA.componentVariance[0],4))+ "%")
@@ -91,7 +95,7 @@ class PCAGraph(FigureCanvas):
         
         global loadingsAnnot
         loadingsAnnot = ax.quiver(middlex, middley,
-           PCA.loadings[0], PCA.loadings[1], angles='xy', scale_units='xy', scale=0.5, width = 0.001,color = "b") 
+           PCA.loadings[0], PCA.loadings[1], angles='xy', scale_units='xy', scale=0.5, width = 0.001,color = "purple") 
         loadingsAnnot.set_visible(True)
         # Add labels based on feature names (here just numbers)
         global loadingsTextAnnot
@@ -116,7 +120,7 @@ class PCAGraph(FigureCanvas):
          
              
          OutlierTab.OutlierTab.LoadingsProgressBar.setValue(60)
-         loadingsTextAnnot.append(ax.text(xvalue,yvalue , dataset.columns[i], color = 'b', ha = 'center', va = 'center'))
+         loadingsTextAnnot.append(ax.text(xvalue,yvalue , dataset.columns[i], color = 'purple', ha = 'center', va = 'center'))
         for ii in loadingsTextAnnot:
          ii.set_visible(True)
         
@@ -131,7 +135,10 @@ class PCAGraph(FigureCanvas):
     def printForReport(self, now):
         for element in UI_MainWindow.Ui_MainWindow.outlierlist:
             outlierIndex = np.where([FileInput.BrowseWindow.currentDataset.index==element])
-            ax.annotate(element, xy=(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1]),color='green')
+            ax.annotate(element, xy=(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1]),color='red')
+        for element in PCA.PCA.possOutlierList:
+            outlierIndex = np.where([FileInput.BrowseWindow.currentDataset.index==element])
+            ax.annotate(element, xy=(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1]),color='blue')
         if "AssuranceReport" not in os.getcwd():
             dirName = str(now) +"_AssuranceReport"
             dirName = dirName.replace(" ", "_")
