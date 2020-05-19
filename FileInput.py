@@ -201,7 +201,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                 for item in range(0,len(df['Filename'])):
                                     df['Filename'].iloc[item] = df['Filename'].iloc[item].split('.')[0]
                         #Nan's creep in if you make the tsv with excel sometimes
-                        
+                            df.index = df['Filename']
                         UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(df)
         except:
             QtWidgets.QMessageBox.warning(self,"Error","An error occured. Please double check the data.")
