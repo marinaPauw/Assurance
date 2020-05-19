@@ -25,3 +25,7 @@ var/
 .vscode/
 
 *.pdf
+
+myerr.txt
+
+mylog.txt
