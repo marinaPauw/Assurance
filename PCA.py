@@ -5,8 +5,6 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import math, sys
 import statistics
-import scipy
-from scipy.spatial import distance_matrix
 from sklearn import decomposition as sd
 from sklearn import preprocessing
 from sklearn.cluster import KMeans
@@ -85,9 +83,6 @@ class PCA(object):
             medianDistances["MedianDistance"][iterator] = np.percentile(PCA.Distances[iterator], 50)
         possoutlierDistance = PCA.calculateOutLierDistances(self, medianDistances, 1.5)
         UI_MainWindow.Ui_MainWindow.progress1.setValue(65)
-       #Zscores:
-        from scipy.stats import zscore
-        medianDistances["zScore"] = zscore(medianDistances["MedianDistance"])
         medianDistances["outlier"]= medianDistances["MedianDistance"].apply(
         lambda x: x >= outlierDistance
         )
@@ -123,9 +118,9 @@ class PCA(object):
 
 
     def calculateDistanceMatrix(self, df):
-        PCA.Distances = pd.DataFrame(distance_matrix(
-            df.values, df.values, p=2),
-            index=df.index, columns=df.index)
+        from sklearn.neighbors import DistanceMetric
+        dist = DistanceMetric.get_metric('euclidean')
+        PCA.Distances = pd.DataFrame(dist.pairwise(df.values),index=df.index, columns=df.index)
         return PCA.Distances
 
 
