@@ -145,16 +145,20 @@ class SwaMe():
             #UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(inputFile)
             #UI_MainWindow.Ui_MainWindow.checkColumnLength(self)
             if hasattr(UI_MainWindow.Ui_MainWindow,"metrics"):
-                UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-                FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
-                FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.ExtractNumericColumns(UI_MainWindow.Ui_MainWindow,
-                                FileInput.BrowseWindow.currentDataset)
-                FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.RemoveLowVarianceColumns(
-                                UI_MainWindow.Ui_MainWindow, FileInput.BrowseWindow.currentDataset)
-                UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
-                UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
-                UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(UI_MainWindow.Ui_MainWindow)
-                QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message","SwaMe has finished successfully.")
+                if len(UI_MainWindow.Ui_MainWindow.metrics)>0:
+                    UI_MainWindow.Ui_MainWindow.NumericMetrics = []
+                    FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
+                    FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.ExtractNumericColumns(UI_MainWindow.Ui_MainWindow,
+                                    FileInput.BrowseWindow.currentDataset)
+                    FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.RemoveLowVarianceColumns(
+                                    UI_MainWindow.Ui_MainWindow, FileInput.BrowseWindow.currentDataset)
+                    UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
+                    UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
+                    UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(UI_MainWindow.Ui_MainWindow)
+                    QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message","SwaMe has finished successfully.")
+                else:
+                    QtWidgets.QMessageBox.warning(self,"Error","An error occured and no metrics were created.")
+                    SwaMe.onSwaMeBrowseClicked(self)            
             else:
                 QtWidgets.QMessageBox.warning(self,"Error","An error occured and no metrics were created.")
                 SwaMe.onSwaMeBrowseClicked(self)
