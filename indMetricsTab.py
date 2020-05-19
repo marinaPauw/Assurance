@@ -10,6 +10,8 @@ import PCAGraph
 import DataPreparation
 import FileInput
 import IndividualMetrics
+from matplotlib.backends.backend_qt5agg import ( NavigationToolbar2QT as NavigationToolbar )
+from matplotlib import backend_bases
 import datetime
 import PCA
 
@@ -53,6 +55,14 @@ class IndMetricsTab(QtWidgets.QWidget):
         vbox.addLayout(hbox17)
         hbox2 = QtWidgets.QHBoxLayout()
         hbox2.addStretch()
+        plotlabel = QtWidgets.QLabel()
+        plotlabel.setText(UI_MainWindow.Ui_MainWindow.element)
+        boldfont = QtGui.QFont()
+        boldfont.setBold(True)
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setPointSize(14)
+        plotlabel.setFont(font)
         try:
             indMetPlot
             indMetPlot.clear()
@@ -60,9 +70,17 @@ class IndMetricsTab(QtWidgets.QWidget):
             indMetPlot = None
         indMetPlot = IndividualMetrics.MyIndMetricsCanvas(UI_MainWindow.Ui_MainWindow.NumericMetrics[whichds],
                             UI_MainWindow.Ui_MainWindow.NumericMetrics[whichds], UI_MainWindow.Ui_MainWindow.element, False)
-        hbox2.addWidget(indMetPlot)
+        IndMetricsTab.indMetPlot = indMetPlot
+        mpl_toolbar = NavigationToolbar(indMetPlot, IndMetricsTab.itab)
+        IndMetricsTab.mpl_toolbar = mpl_toolbar
+        plotvbox = QtWidgets.QVBoxLayout()
+        plotvbox.addWidget(plotlabel)
+        plotvbox.addWidget(indMetPlot)
+        plotvbox.addWidget(mpl_toolbar)
+        hbox2.addLayout(plotvbox)
         hbox2.addStretch()
         vbox.addLayout(hbox2)
+        
         hbox3 =  QtWidgets.QHBoxLayout()
         hbox3.addStretch()
         hbox3.addWidget(IndMetricsTab.comboBox)
@@ -149,3 +167,4 @@ class IndMetricsTab(QtWidgets.QWidget):
             IndividualMetrics.MyIndMetricsCanvas.ax.set_xticklabels(IndividualMetrics.MyIndMetricsCanvas.samplenames)
         
         IndividualMetrics.MyIndMetricsCanvas.fig.canvas.draw()  
+    
