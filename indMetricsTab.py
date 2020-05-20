@@ -39,7 +39,10 @@ class IndMetricsTab(QtWidgets.QWidget):
             IndMetricsTab.sampleBox.addItem(str(sample))
         IndMetricsTab.sampleBox.activated[str].connect(lambda x: IndMetricsTab.sample_change(self, text=IndMetricsTab.sampleBox.currentText()))
         IndMetricsTab.tickBox.toggled.connect(IndMetricsTab.hideTickMarks)
-        
+        Undozoombutton = QtWidgets.QPushButton()
+        Undozoombutton.clicked.connect(IndMetricsTab.home)
+        Undozoombutton.setStyleSheet("background-color: rgb(240,240,240);padding: 3px;")
+        Undozoombutton.setText("Undo zoom")
         UI_MainWindow.Ui_MainWindow.progress1.setValue(80)
         
         #Create layout
@@ -71,21 +74,29 @@ class IndMetricsTab(QtWidgets.QWidget):
         indMetPlot = IndividualMetrics.MyIndMetricsCanvas(UI_MainWindow.Ui_MainWindow.NumericMetrics[whichds],
                             UI_MainWindow.Ui_MainWindow.NumericMetrics[whichds], UI_MainWindow.Ui_MainWindow.element, False)
         IndMetricsTab.indMetPlot = indMetPlot
+        IndMetricsTab.originalylim = indMetPlot.ax.get_ylim()
+        IndMetricsTab.originalxlim = indMetPlot.ax.get_xlim()
         mpl_toolbar = NavigationToolbar(indMetPlot, IndMetricsTab.itab)
         IndMetricsTab.mpl_toolbar = mpl_toolbar
         plotvbox = QtWidgets.QVBoxLayout()
         plotvbox.addWidget(plotlabel)
         plotvbox.addWidget(indMetPlot)
-        plotvbox.addWidget(mpl_toolbar)
+        toolbarhbox = QtWidgets.QHBoxLayout()
+        toolbarhbox.addWidget(mpl_toolbar)
+        toolbarhbox.addStretch()
+        toolbarhbox.addWidget(IndMetricsTab.comboBox)
+        toolbarhbox.addStretch()
+        toolbarhbox.addWidget(Undozoombutton)
+        plotvbox.addLayout(toolbarhbox)
         hbox2.addLayout(plotvbox)
         hbox2.addStretch()
         vbox.addLayout(hbox2)
         
-        hbox3 =  QtWidgets.QHBoxLayout()
-        hbox3.addStretch()
-        hbox3.addWidget(IndMetricsTab.comboBox)
-        hbox3.addStretch()
-        vbox.addLayout(hbox3)
+        #hbox3 =  QtWidgets.QHBoxLayout()
+        #hbox3.addStretch()
+        #hbox3.addWidget(IndMetricsTab.comboBox)
+        #hbox3.addStretch()
+        #vbox.addLayout(hbox3)
         vbox.setContentsMargins(30, 20, 30, 100)
         self.setCurrentIndex(self.iIndex)
         UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(self)
@@ -167,4 +178,9 @@ class IndMetricsTab(QtWidgets.QWidget):
             IndividualMetrics.MyIndMetricsCanvas.ax.set_xticklabels(IndividualMetrics.MyIndMetricsCanvas.samplenames)
         
         IndividualMetrics.MyIndMetricsCanvas.fig.canvas.draw()  
+        
+    def home(self):
+        IndividualMetrics.MyIndMetricsCanvas.ax.set_xlim(IndMetricsTab.originalxlim)
+        IndividualMetrics.MyIndMetricsCanvas.ax.set_ylim(IndMetricsTab.originalylim)
+        IndividualMetrics.MyIndMetricsCanvas.fig.canvas.draw()
     

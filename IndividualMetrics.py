@@ -280,7 +280,6 @@ class MyIndMetricsCanvas(FigureCanvas):
                         MyIndMetricsCanvas.ax.set_xticklabels(labels)
             
                 indMetricsTab.IndMetricsTab.sampleBox.setCurrentIndex(tableIndex.index(UI_MainWindow.Ui_MainWindow.sampleSelected)+1)                 
-                        
                 MyIndMetricsCanvas.fig.canvas.draw()
                 
             
