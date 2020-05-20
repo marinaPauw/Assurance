@@ -31,8 +31,8 @@ class QuaMeter():
             QuaMeter.CLO = UI_MainWindow.Ui_MainWindow.CLOTextBox.text()
         if(UI_MainWindow.Ui_MainWindow.CUOTextBox.text()):
             QuaMeter.CUO = UI_MainWindow.Ui_MainWindow.CLOTextBox.text()
-        if(UI_MainWindow.Ui_MainWindow.cpusTextBox.text()):
-            QuaMeter.CPU = UI_MainWindow.Ui_MainWindow.cpusTextBox.text()
+        #if(UI_MainWindow.Ui_MainWindow.cpusTextBox.text()):
+        #    QuaMeter.CPU = UI_MainWindow.Ui_MainWindow.cpusTextBox.text()
        
         argument1 = "cd/d " + QuaMeter.Dir 
         
@@ -56,17 +56,17 @@ class QuaMeter():
         QuaMeter.process.setProcessChannelMode(QtCore.QProcess.MergedChannels)
         QuaMeter.process.readyReadStandardOutput.connect(lambda: QuaMeter.on_readyReadStandardOutput(self))
 
-        cputext = 1
-        cpus = ""
+        #cputext = 1
+        #cpus = ""
         CUO = ''
         CLO = ""
-        if  UI_MainWindow.Ui_MainWindow.cpusTextBox.text(): 
-            try:
-                cputext = int(UI_MainWindow.Ui_MainWindow.cpusTextBox.text())
-                if cputext>0 and cputext<6:
-                    cpus = " -cpus "+UI_MainWindow.Ui_MainWindow.cpusTextBox.text()
-            except:
-                QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow,"Error","cpus value could not be converted to integer and was ignored")
+       # if  UI_MainWindow.Ui_MainWindow.cpusTextBox.text(): 
+        #    try:
+        #        cputext = int(UI_MainWindow.Ui_MainWindow.cpusTextBox.text())
+        #        if cputext>0 and cputext<6:
+        #            cpus = " -cpus "+UI_MainWindow.Ui_MainWindow.cpusTextBox.text()
+        #    except:
+        #        QtWidgets.QMessageBox.warning(UI_MainWindow.Ui_MainWindow,"Error","cpus value could not be converted to integer and was ignored")
             
                 
         if UI_MainWindow.Ui_MainWindow.CUOTextBox.text():
@@ -77,7 +77,7 @@ class QuaMeter():
         
         QuaMeter.process.setWorkingDirectory(QtCore.QDir.toNativeSeparators(QuaMeter.Dir))
         try:
-            arguments2 = QtCore.QDir.toNativeSeparators(QuaMeter.QuaMeterPath)+" " +files[file] +" " +cpus +  CUO + CLO +" -MetricsType idfree"
+            arguments2 = QtCore.QDir.toNativeSeparators(QuaMeter.QuaMeterPath)+" " +files[file] +" "  +  CUO + CLO +" -MetricsType idfree"
             QuaMeter.process.start(arguments2)        
         except IndexError:
             QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Warning","No mzML files were found in the folder selected.")
