@@ -91,12 +91,11 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     
                     str1 = " " 
                     inputs = str1.join(inputFiles)
+                    UI_MainWindow.Ui_MainWindow.metrics = metrics
                     QtCore.QMetaObject.invokeMethod(self.filename, "setText",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(str, inputs))
                     
-                    QtCore.QMetaObject.invokeMethod(self, "DisableBrowseButtons",
-                                 QtCore.Qt.QueuedConnection)  
             
             else:
                 possibleinputFile = possibleinputFiles[0]
