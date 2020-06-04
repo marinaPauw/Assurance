@@ -583,6 +583,9 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
     def setProgressVal(self, val):
         OutlierTab.OutlierTab.LoadingsProgressBar.setValue(val)                        
 
+    def EnableBrowseButtons(self):
+        Ui_MainWindow.browse.setEnabled(True)
+
     def DisableBrowseButtons(self):
         Ui_MainWindow.browse.setEnabled(False)
 

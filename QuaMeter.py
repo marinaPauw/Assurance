@@ -76,17 +76,31 @@ class QuaMeter():
             CLO = " -ChromatogramMzLowerOffset " + UI_MainWindow.Ui_MainWindow.CLOTextBox.text()
         
         QuaMeter.process.setWorkingDirectory(QtCore.QDir.toNativeSeparators(QuaMeter.Dir))
+        print("The current working directory is:", flush=True)
+        print(QuaMeter.process.workingDirectory(), flush=True)
+        
         try:
             arguments2 = QtCore.QDir.toNativeSeparators(QuaMeter.QuaMeterPath)+" " +files[file] +" "  +  CUO + CLO +" -MetricsType idfree"
+            print("The following command line instruction was run:", flush=True)
+            print(arguments2, flush=True)
             QuaMeter.process.start(arguments2)        
         except IndexError:
             QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Warning","No mzML files were found in the folder selected.")
             QuaMeter.onQuaMeterBrowseClicked(self)
+            UI_MainWindow.Ui_MainWindow.EnableQuaMeterArguments(self)
+        except Exception as ex:
+            template = "An exception of type {0} occurred and QuaMeter run was not performed. Arguments:\n{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            print(message, flush=True)
+            QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Warning",message)
+            UI_MainWindow.Ui_MainWindow.EnableBrowseButtons(self)
+            UI_MainWindow.Ui_MainWindow.EnableQuaMeterArguments(self)
        
     @QtCore.pyqtSlot()
     def on_readyReadStandardOutput(self):
         text = QuaMeter.process.readAllStandardOutput().data().decode()
         UI_MainWindow.Ui_MainWindow.textedit.append(text)
+        print(text)
         if "error" in text.lower():
             QuaMeter.errors.append(text)
 
@@ -95,7 +109,7 @@ class QuaMeter():
         if files[file] ==files[-1]:#If the last file:
             if len(QuaMeter.errors)>0:
                 str1 = ""
-                QtWidgets.QtMessageBox(self, "Warning", "The following errors occurred: " + str1.join(QuaMeter.errors))
+                QtWidgets.QMessageBox(self, "Warning", "The following errors occurred: " + str1.join(QuaMeter.errors))
                 
                 
                 
