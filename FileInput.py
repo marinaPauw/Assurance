@@ -529,7 +529,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         #if len(AllMetricSizesDf[dfIndex].index) >1:
                                             AllMetricSizesDf[dfIndex][metricname] = pd.Series() 
                                             if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
-                                                if type(iii['value'][0]) != dict:
+                                                if type(iii['value'][0]) != dict and type(iii['value'][0]) != list:
                                                     AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
                                                 else:
                                                     continue # No support for the irtpeptide double nested dictionaries at the moment.

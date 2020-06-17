@@ -869,17 +869,23 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         self.TrainingOrTestSet.badbtn.clicked.connect(lambda: self.RandomForestSelection())
         
     def RFFinished(self,results):
-        if Ui_MainWindow.TrainingError:
+        if Ui_MainWindow.h2oError:
             QtWidgets.QMessageBox.warning(self, "Error","The training set did not contain enough of both good and bad data to perform the analysis")
             Ui_MainWindow.EnableAnalysisButtons(self)
             self.setCurrentIndex(0)
             return
-        elif Ui_MainWindow.TrainingError:
+        elif Ui_MainWindow.h2oError:
             QtWidgets.QMessageBox.warning(self, "Error","H2O init failed. Try downgrading your java jdk to 8 and make sure the h2o jar is still in the h2o folder of the Assurance download. You can also check myerr.txt for more information.")
             Ui_MainWindow.EnableAnalysisButtons(self)
             self.setCurrentIndex(0)
             return
-        RandomForestResultsTab.LongitudinalTab.printModelResults(self)
+        if hasattr(RandomForest.RandomForest, "performance"):
+            RandomForestResultsTab.LongitudinalTab.printModelResults(self)
+        else:
+            QtWidgets.QMessageBox.warning(self, "Error","Something went wrong with h2o analysis.")
+            Ui_MainWindow.EnableAnalysisButtons(self)
+            self.setCurrentIndex(0)
+        
         Ui_MainWindow.EnableAnalysisButtons(self)
         
             
