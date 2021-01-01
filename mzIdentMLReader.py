@@ -7,6 +7,7 @@ import re
 import dateutil.parser
 import time
 from PyQt5 import QtCore
+import logging
 
 
 class mzIdentMLReader():
@@ -33,7 +34,7 @@ class mzIdentMLReader():
                 allpeptides = re.findall('Peptide id=', file)
                 spectrumIDs = re.findall("<SpectrumIdentificationResult", file)
                 pepTable.loc[filename] =  [filename, len(allpeptides), len(spectrumIDs)]
-        print("Parsing took " + str(time.perf_counter()-startParseTime) + "seconds.")
+        logging.info("Parsing took " + str(time.perf_counter()-startParseTime) + "seconds.")
         QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.progress1, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 90))

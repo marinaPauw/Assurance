@@ -7,6 +7,7 @@ import os
 import re
 import dateutil.parser
 import time
+import logging
 
 
 class pepXMLReader():
@@ -19,7 +20,6 @@ class pepXMLReader():
         QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.progress1, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 30))
-        print("30")
         pepTable = pd.DataFrame(index = filenames , columns = ["Filename","Number of distinct peptides","Number of spectra identified"])
         count = 0
         for file in files:
@@ -36,7 +36,7 @@ class pepXMLReader():
                 allpeptides = re.findall('peptide=\"\w+\"', file)
                 uniquepeptides = (list(set(allpeptides))) 
                 pepTable.loc[filename] =  [filename, len(uniquepeptides), len(allpeptides)]
-        print("Parsing took " + str(time.perf_counter()-startParseTime) + "seconds.")
+        logging.info("Parsing took " + str(time.perf_counter()-startParseTime) + "seconds.")
         QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.progress1, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 90))

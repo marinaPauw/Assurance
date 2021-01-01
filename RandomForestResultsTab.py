@@ -36,6 +36,7 @@ import datetime
 import OutlierTab
 import indMetricsTab
 import UI_MainWindow
+import logging
 
 
 class LongitudinalTab(QtWidgets.QTabWidget):
@@ -70,7 +71,7 @@ class LongitudinalTab(QtWidgets.QTabWidget):
             TrainingOrTestSet.MetricsFrame.F1results = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.F1results.setText(str(round(performance.F1()[0][1],4)))
         else:
-            print("No F1!!!")
+            logging.info("No F1!!!")
         if hasattr(performance, "accuracy"):
             TrainingOrTestSet.MetricsFrame.Accuracy = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.Accuracy.setText("Accuracy:")
@@ -112,7 +113,7 @@ class LongitudinalTab(QtWidgets.QTabWidget):
                 accuracyWarning.setText("The low accuracy of this model may indicate that conclusions should be approached with caution.")
                 pgrid.addWidget(accuracyWarning,2,0,1,10)
         except:
-            print("Could not evaluate Accuracy/ add label.")
+            logging.info("Could not evaluate Accuracy/ add label.")
         phbox2.addLayout(pgrid)
         pvbox.addLayout(phbox2)
     

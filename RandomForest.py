@@ -29,6 +29,7 @@ from h2o.grid.grid_search import H2OGridSearch
 import Threads
 import os
 import subprocess
+import logging
 
 class RandomForest(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -114,8 +115,8 @@ class RandomForest(FigureCanvas):
         badset["predict"] = RandomForest.results["predict"]
         badset.index = RandomForest.results.index
         badset = badset.sort_values("B")
-        print(type(badset["B"].iloc[0]))
-        print(type(badset.index[0]))
+        logging.info(type(badset["B"].iloc[0]))
+        logging.info(type(badset.index[0]))
         badset["X"] = range(0,len(badset.index)) #Later the annotations get added to this column
         global fig
         fig = Figure()#figsize=(width, height), dpi=dpi)
@@ -129,8 +130,8 @@ class RandomForest(FigureCanvas):
                 ax.plot(badset.index[i], badset["B"].iloc[i],  marker='o', markerfacecolor='dimgrey', markeredgecolor='k')
             else:
                 ax.plot(badset.index[i], badset["B"].iloc[i],  marker='o', markerfacecolor='red', markeredgecolor='r')
-                print(badset.index[i])
-                print(badset["B"].iloc[i])
+                logging.info(badset.index[i])
+                logging.info(badset["B"].iloc[i])
         ax.set_ylabel("Probability of sample being classified as 'bad'")
         FigureCanvas.__init__(self, fig)
         #self.setParent(parent)
@@ -277,7 +278,6 @@ class RandomForest(FigureCanvas):
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 50)) 
-            print(training_columns)     
             models.train(x=training_columns, y=response_column, training_frame=h2o.H2OFrame(train), seed=1)
             QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.progress2, "setValue",
                                     QtCore.Qt.QueuedConnection,
@@ -328,7 +328,7 @@ class RandomForest(FigureCanvas):
         
         for item in self.table.selectionModel().selectedRows():
             UI_MainWindow.Ui_MainWindow.badpredictionList.append(UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics[0].index[item.row()])
-        print(len(UI_MainWindow.Ui_MainWindow.badpredictionList))
+        logging.info(len(UI_MainWindow.Ui_MainWindow.badpredictionList))
         if len(UI_MainWindow.Ui_MainWindow.badpredictionList)>2:
             RandomForest.RunRandomForest(self)
                     

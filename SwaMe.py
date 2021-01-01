@@ -7,10 +7,9 @@ import FileInput
 import UI_MainWindow
 from PyQt5.QtWidgets import QMessageBox
 import os
-import glob
 import DataPreparation
 import time
-import shutil
+import logging
 
 
 class SwaMe():
@@ -39,7 +38,7 @@ class SwaMe():
                     UI_MainWindow.Ui_MainWindow.assuranceDirectory = os.getcwd()
                     os.chdir(SwaMe.Dir)
                 except:
-                    print("Changing the directory didn't work.")
+                    logging.info("Changing the directory didn't work.")
 
                 
     def onSwaMeRUNClicked(self):
@@ -121,7 +120,7 @@ class SwaMe():
             except Exception as ex:
                 template = "An exception of type {0} occurred and QuaMeter run was not performed. Arguments:\n{1!r}"
                 message = template.format(type(ex).__name__, ex.args)
-                print(message, flush=True)
+                logging.info(message, flush=True)
                 QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Warning",message)
                 UI_MainWindow.Ui_MainWindow.EnableBrowseButtons(self)
                 UI_MainWindow.Ui_MainWindow.EnableQuaMeterArguments(self)
