@@ -224,6 +224,7 @@ class MyIndMetricsCanvas(FigureCanvas):
             image_path = os.path.join(os.getcwd(), element +".pdf")
             MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.5)
             if forReport:
+                MyIndMetricsCanvas.ax.set_title(element)
                 MyIndMetricsCanvas.fig.savefig(image_path)
             MyIndMetricsCanvas.table = table
             MyIndMetricsCanvas.element = element
