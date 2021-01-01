@@ -34,7 +34,7 @@ class PCA(object):
         global loadings
         loadings = pca.components_
         varianceArray = pca.explained_variance_ratio_
-        PCA.componentVariance = pca.explained_variance_
+        PCA.componentVariance = pca.explained_variance_ratio_
         temprange = range(1,(len(varianceArray)-1))
         maxDerivative = 0
         secondDerivative =[]
