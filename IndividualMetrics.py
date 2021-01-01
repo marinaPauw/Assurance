@@ -29,6 +29,7 @@ import os
 import numbers
 import decimal
 from datetime import timedelta
+import logging
 
 class MyIndMetricsCanvas(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -50,7 +51,9 @@ class MyIndMetricsCanvas(FigureCanvas):
             if element == "StartTimeStamp":
                 table = UI_MainWindow.Ui_MainWindow.metrics[0]
                 tableContainingRownames = UI_MainWindow.Ui_MainWindow.metrics[0]
+                logging.info(UI_MainWindow.Ui_MainWindow.metrics[0])
                 if "dates" in UI_MainWindow.Ui_MainWindow.metrics[0]:
+                    logging.info("IM56")
                     table["runDate"]= "Default"
                     for x in range(0,len(UI_MainWindow.Ui_MainWindow.metrics[0]["dates"])):
                         table["runDate"].iloc[x] = datetime.datetime.strptime(table["dates"].iloc[x], '%Y-%m-%d')
@@ -302,7 +305,7 @@ class MyIndMetricsCanvas(FigureCanvas):
             else:
                 # deal with something that should never happen
                 scale_factor = 1
-                print (event.button)
+                logging.info(event.button)
             # set new limits
             MyIndMetricsCanvas.ax.set_xlim([xdata - cur_xrange*scale_factor,
                         xdata + cur_xrange*scale_factor])

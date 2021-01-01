@@ -11,6 +11,7 @@ import json
 import DataPreparation
 import Datasets
 import FileInput
+import logging
 
 
 class BrowseWindow(QtWidgets.QMainWindow):
@@ -41,7 +42,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 if not justJSONFiles and not justTSVFiles:
                     return False
 
-                if(justJSONFiles==True):
+                if(justJSONFiles==True):     
                     inputFiles = possibleinputFiles
                     UI_MainWindow.Ui_MainWindow.metrics =  \
                        BrowseWindow.CombineJSONs(
@@ -49,17 +50,16 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     if "Filename" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
                             UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
                     elif "Dataset" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
-                            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Dataset"]
-                    
+                            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Dataset"]            
                     UI_MainWindow.Ui_MainWindow.NumericMetrics = []
                     for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
                        #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
                         #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
                        BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
-                       BrowseWindow.currentDataset =DataPreparation.DataPrep.ExtractNumericColumns(self,
-                           BrowseWindow.currentDataset)
-                       BrowseWindow.currentDataset =DataPreparation.DataPrep.RemoveLowVarianceColumns(
-                           UI_MainWindow.Ui_MainWindow, BrowseWindow.currentDataset)
+                       #BrowseWindow.currentDataset =DataPreparation.DataPrep.ExtractNumericColumns(self,
+                       #    BrowseWindow.currentDataset)
+                       #BrowseWindow.currentDataset =DataPreparation.DataPrep.RemoveLowVarianceColumns(
+                       #    UI_MainWindow.Ui_MainWindow, BrowseWindow.currentDataset)
                        UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
                     str1 = " " 
                     inputs = str1.join(inputFiles)
@@ -88,6 +88,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                             NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, metrics[i])
                             UI_MainWindow.Ui_MainWindow.NumericMetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
                             NMColumnsonly))
+                    logging.info(UI_MainWindow.Ui_MainWindow.NumericMetrics)
                     
                     str1 = " " 
                     inputs = str1.join(inputFiles)
@@ -115,7 +116,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                  QtCore.Q_ARG(str, str(inputFile)))
                     UI_MainWindow.Ui_MainWindow.metrics = []
                     UI_MainWindow.Ui_MainWindow.metrics.append(FileInput.BrowseWindow.metricsParsing(self, inputFile))
-                    print(type(UI_MainWindow.Ui_MainWindow.metrics[0]))
+                    logging.info(type(UI_MainWindow.Ui_MainWindow.metrics[0]))
                     if "Filename" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
                             UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
                     elif "Dataset" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
@@ -123,21 +124,21 @@ class BrowseWindow(QtWidgets.QMainWindow):
                     for col in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
                             if UI_MainWindow.Ui_MainWindow.metrics[0][col].isnull().all():
                                 UI_MainWindow.Ui_MainWindow.metrics[0]= UI_MainWindow.Ui_MainWindow.metrics[0].drop(columns = col)
-                                
                     dropRows = []
                     for index, row in UI_MainWindow.Ui_MainWindow.metrics[0].iterrows():
                             if row.isnull().all():
                                 dropRows.append(row)
-                                print(row)
                     if len(dropRows)>0:
                         UI_MainWindow.Ui_MainWindow.metrics[0] = UI_MainWindow.Ui_MainWindow.metrics[0].drop(index = dropRows)
-                    print(UI_MainWindow.Ui_MainWindow.metrics[0].head())
+                    logging.info(UI_MainWindow.Ui_MainWindow.metrics[0].head())
                     
                     UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-                    
                     NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, UI_MainWindow.Ui_MainWindow.metrics[0])
-                    UI_MainWindow.Ui_MainWindow.NumericMetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
+                    try:
+                        UI_MainWindow.Ui_MainWindow.NumericMetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
                             NMColumnsonly))
+                    except Exception as er:
+                        logging.info(er)
    
     def GetTrainingSetFiles(self):
         possibleInputFiles, _ =QtWidgets. QFileDialog.getOpenFileNames(
@@ -237,7 +238,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                         try:
                             tempVec.append(iii["value"])
                         except:
-                            print("For "+ str(iii)+"there was no value.")
+                            logging.info("For "+ str(iii)+"there was no value.")
                             tempVec.append(0)
                             str1 = str(iii)
                             str1 = str1.join(str(inputFile))
@@ -453,7 +454,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                 AllMetricSizesDf[dfIndex]["Name"].loc[str(temp[iiii])] = temp[iiii]
                                                 AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii['value'][iiii]
                                                 if metricname == "Target mz":
-                                                    print(AllMetricSizesDf[dfIndex]["Target mz"])
+                                                    logging.info(AllMetricSizesDf[dfIndex]["Target mz"])
                                         else:
                                             for iiii in range(0,len(temp)):
                                                  AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii["value"][iiii]
@@ -502,7 +503,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                 AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value']
                                              
                                       else:
-                                          print("Error creating filename row.")
+                                          logging.info("Error creating filename row.")
                                     
                                     else: #this file has other values, but not this metric
                                         if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:

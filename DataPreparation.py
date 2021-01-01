@@ -22,6 +22,7 @@ import UI_MainWindow
 import numpy as np
 import pandas as pd
 import Datasets
+import logging
 
 
 class DataPrep(object):
@@ -41,30 +42,37 @@ class DataPrep(object):
                 if "Name" in col:
                     namecolumn = True
         if dateColumn:
-            metrics["dates"] = "Default"
             dateVector = []
-            for row in metrics["StartTimeStamp"]:
-                dateVector.append(row[:10])
-            metrics["dates"] = dateVector
-            print("Date column added. There are now %d columns",
-                  len(metrics.columns))
+            dateColumnSuccess = True
+            if "StartTimeStamp" in metrics.columns.values:
+                for row in metrics["StartTimeStamp"]:
+                    row = str(row)#This is for sciex converter where the timestamp column is not present and therefore read as a float
+                    if len(row)==20:
+                        dateVector.append(row[:10])
+                    else:
+                        dateColumnSuccess = False
+                if(dateColumnSuccess):
+                    metrics["dates"] = dateVector
+                    logging.info("Date column added. There are now %d columns",
+                    len(metrics.columns))
+                else:
+                    logging.info("Something is wrong with the startTimeStamp, date calculation abandoned.This may cause problems later on and startTimeStamp column was removed.")
+                    NumericMetrics = NumericMetrics.drop('StartTimeStamp', axis=1)
         
         if namecolumn:
             del NumericMetrics[NumericMetrics.columns[0]]
         
         NumericMetrics = NumericMetrics.select_dtypes(['number'])
-        print("Non-numeric columns removed. There are now %d columns",
+        logging.info("Non-numeric columns removed. There are now %d columns",
               len(NumericMetrics.columns))
-        print(NumericMetrics.columns.values)
+        logging.info(NumericMetrics.columns.values)
         # Now remove all columns that are not numeric, \
         # including date and starttimestamp
-        NumericMetrics = NumericMetrics.replace([np.inf, -np.inf], np.nan)
+        #NumericMetrics = NumericMetrics.replace([np.inf, -np.inf], np.nan)
         NumericMetrics = NumericMetrics.fillna(0)
-
         return NumericMetrics
 
     def RemoveLowVarianceColumns(self, Nm):
-        
         Files = []
         if "Filename" in Nm.columns:
             Files = Nm["Filename"]
@@ -75,15 +83,18 @@ class DataPrep(object):
                 return
 
         for i in range(0, len(Nm.columns)):
-            variance = np.var(Nm.iloc[:,i])
-            if (variance < threshold):
+            try: 
+                variance = np.var(Nm.iloc[:,i])
+                if (variance < threshold):
+                    droppedColumns.append(Nm.columns[i])
+                    dpIndex.append(i)
+            except:
+                logging.info("column variance could not be calculated possibly due to a missing value in the column that could not be dealt with earlier. Column is dropped from analysis.")
                 droppedColumns.append(Nm.columns[i])
-                dpIndex.append(i)
         Nm.drop(columns = droppedColumns, axis=1)
 
         if len(Files)>0:
             Nm.index = Files
-        
         return Nm
 
     def FindRealSampleNames(self, rawSampleNames):

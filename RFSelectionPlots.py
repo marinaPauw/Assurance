@@ -20,6 +20,7 @@ import PCA
 import FileInput
 import re
 from matplotlib.widgets  import RectangleSelector
+import logging
 
 
 
@@ -62,19 +63,18 @@ class RFSelectionPlots(FigureCanvas):
         pass    
 
     def toggle_selector(event):
-        print(' Key pressed.')
         if event.key in ['Q', 'q'] and RFSelectionPlots.toggle_selector.RS.active:
-            print(' RectangleSelector deactivated.')
+            logging.info(' RectangleSelector deactivated.')
             RFSelectionPlots.toggle_selector.RS.set_active(False)
         if event.key in ['A', 'a'] and not RFSelectionPlots.toggle_selector.RS.active:
-            print(' RectangleSelector activated.')
+            logging.info(' RectangleSelector activated.')
             RFSelectionPlots.toggle_selector.RS.set_active(True)
 
     def line_select_callback(eclick, erelease):
         'eclick and erelease are the press and release events'
         x1 = eclick.xdata
         x2 = erelease.xdata
-        print("(%3.2f, %3.2f) --> (%3.2f, %3.2f)" % (x1, 0, x2, RFSelectionPlots.Ymax))
+        logging.info("(%3.2f, %3.2f) --> (%3.2f, %3.2f)" % (x1, 0, x2, RFSelectionPlots.Ymax))
         UI_MainWindow.Ui_MainWindow.predictionArea = [math.ceil(x1), math.ceil(x2)]
         UI_MainWindow.Ui_MainWindow.TrainingOrTestSet.badbtn.setEnabled(True)
             

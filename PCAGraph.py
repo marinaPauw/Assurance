@@ -21,6 +21,7 @@ import OutlierTab
 import re
 import os
 import PDFWriter
+import logging
 
 class PCAGraph(FigureCanvas):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
@@ -51,10 +52,9 @@ class PCAGraph(FigureCanvas):
             #if forReport:
             #    ax.annotate(element, xy=(PCA.plotdata[outlierIndex[1], 0],  PCA.plotdata[outlierIndex[1], 1]),color='green')
         ax.set_xlabel("PC1   "+ str(round(PCA.PCA.componentVariance[0]*100,4))+ "%")
-        print(PCA.PCA.componentVariance)
+        logging.info(PCA.PCA.componentVariance)
         ax.set_ylabel("PC2   "+ str(round(PCA.PCA.componentVariance[1]*100,4))+ "%")
         FigureCanvas.__init__(self, fig)
-        #self.setParent(parent)
 
         FigureCanvas.setSizePolicy(self,
                                    QtWidgets.QSizePolicy.Expanding,

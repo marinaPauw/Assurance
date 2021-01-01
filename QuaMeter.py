@@ -8,6 +8,7 @@ import UI_MainWindow
 import DataPreparation
 from PyQt5.QtWidgets import QMessageBox
 import os
+import logging
 
 
 class QuaMeter():
@@ -22,7 +23,7 @@ class QuaMeter():
                 UI_MainWindow.Ui_MainWindow.assuranceDirectory = os.getcwd()
                 os.chdir(QuaMeter.Dir)
             except:
-                print("Changing the directory didn't work.")
+                logging.info("Changing the directory didn't work.")
     
     def onQuaMeterRUNClicked(self):
         UI_MainWindow.Ui_MainWindow.DisableQuaMeterArguments(self)
@@ -76,13 +77,13 @@ class QuaMeter():
             CLO = " -ChromatogramMzLowerOffset " + UI_MainWindow.Ui_MainWindow.CLOTextBox.text()
         
         QuaMeter.process.setWorkingDirectory(QtCore.QDir.toNativeSeparators(QuaMeter.Dir))
-        print("The current working directory is:", flush=True)
-        print(QuaMeter.process.workingDirectory(), flush=True)
+        logging.info("The current working directory is:", flush=True)
+        logging.info(QuaMeter.process.workingDirectory(), flush=True)
         
         try:
             arguments2 = QtCore.QDir.toNativeSeparators(QuaMeter.QuaMeterPath)+" " +files[file] +" "  +  CUO + CLO +" -MetricsType idfree"
-            print("The following command line instruction was run:", flush=True)
-            print(arguments2, flush=True)
+            logging.info("The following command line instruction was run:", flush=True)
+            logging.info(arguments2, flush=True)
             QuaMeter.process.start(arguments2)        
         except IndexError:
             QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Warning","No mzML files were found in the folder selected.")
@@ -91,7 +92,7 @@ class QuaMeter():
         except Exception as ex:
             template = "An exception of type {0} occurred and QuaMeter run was not performed. Arguments:\n{1!r}"
             message = template.format(type(ex).__name__, ex.args)
-            print(message, flush=True)
+            logging.info(message, flush=True)
             QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Warning",message)
             UI_MainWindow.Ui_MainWindow.EnableBrowseButtons(self)
             UI_MainWindow.Ui_MainWindow.EnableQuaMeterArguments(self)
@@ -100,7 +101,6 @@ class QuaMeter():
     def on_readyReadStandardOutput(self):
         text = QuaMeter.process.readAllStandardOutput().data().decode()
         UI_MainWindow.Ui_MainWindow.textedit.append(text)
-        print(text)
         if "error" in text.lower():
             QuaMeter.errors.append(text)
 

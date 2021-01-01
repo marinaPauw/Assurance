@@ -42,19 +42,23 @@ import Threads
 import Datasets
 import ctypes
 import subprocess
+import logging
 
 
 class Ui_MainWindow(QtWidgets.QTabWidget):
     def setupUi(self):
-        sys.stdout = open("mylog.txt", "w")
+        #sys.stdout = open("mylog.txt", "w")
+        logging.basicConfig(level=logging.DEBUG, filename="mylog.txt", filemode="a+",
+                        format="%(asctime)-15s %(levelname)-8s %(message)s")
         sys.stderr = open("myerr.txt", "w")
+        #Set the icon in the lefthand corner
         self.setWindowIcon(QtGui.QIcon('AssuranceIcon.png'))
-        myappid = u'mycompany.myproduct.subproduct.version' # arbitrary string
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+        #Set the taskbar icon
+        #myappid = u'mycompany.myproduct.subproduct.version' # arbitrary string
+        #ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
         Ui_MainWindow.threadpool = QtCore.QThreadPool()
         self.setWindowTitle("Assurance")
         self.resize(800,650)
-        #print(str(os.environ["JAVA_HOME"]))
         Ui_MainWindow.Nulvalues = []
         Ui_MainWindow.firstOutlierlist = []
         Ui_MainWindow.secondOutlierlist = []
@@ -474,7 +478,12 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
         
     def ParseFiles(self, inputFiles, database):                
-            FileInput.BrowseWindow.parseInputFiles(self, inputFiles)
+            try:
+                FileInput.BrowseWindow.parseInputFiles(self, inputFiles)
+            except Exception as ex:
+                logging.info(ex)
+                QtWidgets.QMessageBox.warning(self, "Error","Failed to parse file, please doublecheck file column integrity.")
+                
             QtCore.QMetaObject.invokeMethod(self.UploadProgress, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 20))
@@ -483,48 +492,41 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
                 Ui_MainWindow.assuranceDirectory = os.getcwd()
                 os.chdir(os.path.dirname(os.path.abspath(inputFiles[0])))
             except:
-                print("Changing the directory didn't work.")
+                logging.info("Changing the directory didn't work.")
             database.metrics = Ui_MainWindow.metrics
-            if type(database.metrics) != bool:
-                QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
-                                    QtCore.Qt.QueuedConnection,
-                                    QtCore.Q_ARG(int, 30))
-                if "Filename " in database.metrics[0].columns:
-                    database.metrics[0] = database.metrics[0].rename(columns={"Filename ": 'Filename'})               
-                if  "Filename" in database.metrics[0].columns:
-                    filenames = database.metrics[0]["Filename"]
-                    if ".mzml" in filenames[0].lower():
-                        for item in range(0,len(filenames)):
-                                if ".mzml" in filenames[item].lower():
-                                    filenames[item] = filenames[item].split('.')[0]
-                                if item == round(len(filenames)/4):
-                                    QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
-                                    QtCore.Qt.QueuedConnection,
-                                    QtCore.Q_ARG(int, 50))
-                                elif item == round(len(filenames)/2):
-                                    QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
-                                    QtCore.Qt.QueuedConnection,
-                                    QtCore.Q_ARG(int, 70))
-                    database.metrics[0].index = filenames
-                    QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
-                                    QtCore.Qt.QueuedConnection,
-                                    QtCore.Q_ARG(int, 80))
-                Nm = DataPreparation.DataPrep.ExtractNumericColumns(self, database.metrics[0])
-                
-                QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
-                                    QtCore.Qt.QueuedConnection,
-                                    QtCore.Q_ARG(int, 90))
-                database.NumericMetrics = []
-                database.NumericMetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self, Nm))
-                
-                #database.NumericMetrics[0].index = database.metrics[0].index
-                
-                
-                QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
-                                    QtCore.Qt.QueuedConnection,
-                                    QtCore.Q_ARG(int, 100))
-            return database
-            
+            logging.info(type(database.metrics))
+            try: 
+                if type(database.metrics) != bool:
+                        QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                            QtCore.Qt.QueuedConnection,
+                                            QtCore.Q_ARG(int, 30))
+                        logging.info(database.metrics[0].columns)
+                        if "Filename " in database.metrics[0].columns:
+                            database.metrics[0] = database.metrics[0].rename(columns={"Filename ": 'Filename'})               
+                        if  "Filename" in database.metrics[0].columns:
+
+                            database.metrics[0]['Filename'].replace( { r"[\.mzML]+" : '' }, inplace= True, regex = True)
+                            database.metrics[0].index = database.metrics[0]['Filename']
+                            QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                            QtCore.Qt.QueuedConnection,
+                                            QtCore.Q_ARG(int, 80))
+                        Nm = DataPreparation.DataPrep.ExtractNumericColumns(self, database.metrics[0])
+                        
+                        QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                            QtCore.Qt.QueuedConnection,
+                                            QtCore.Q_ARG(int, 90))
+                        database.NumericMetrics = []
+                        database.NumericMetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self, Nm))
+                        
+                        
+                        QtCore.QMetaObject.invokeMethod(Ui_MainWindow.UploadProgress, "setValue",
+                                            QtCore.Qt.QueuedConnection,
+                                            QtCore.Q_ARG(int, 100))
+            except Exception as ex:
+                logging.info(ex)
+                QtWidgets.QMessageBox.warning(self, "Error","Something went wrong while parsing the file.")
+              
+            return database         
        
     
     
@@ -870,11 +872,6 @@ class Ui_MainWindow(QtWidgets.QTabWidget):
         
     def RFFinished(self,results):
         if Ui_MainWindow.h2oError:
-            QtWidgets.QMessageBox.warning(self, "Error","The training set did not contain enough of both good and bad data to perform the analysis")
-            Ui_MainWindow.EnableAnalysisButtons(self)
-            self.setCurrentIndex(0)
-            return
-        elif Ui_MainWindow.h2oError:
             QtWidgets.QMessageBox.warning(self, "Error","H2O init failed. Try downgrading your java jdk to 8 and make sure the h2o jar is still in the h2o folder of the Assurance download. You can also check myerr.txt for more information.")
             Ui_MainWindow.EnableAnalysisButtons(self)
             self.setCurrentIndex(0)

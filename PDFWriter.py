@@ -361,14 +361,14 @@ class OutputWriter(object):
             # Create target Directory
             os.mkdir(dirName)
         except:
-                print("Directory creation " , dirName ,  " failed") 
+                logging.info("Directory creation " , dirName ,  " failed") 
                 
     def changeDir(self, dirName):
         try:
             # Change to target Directory
             os.chdir(dirName)
         except:
-            print("Directory couldn't be changed to " , dirName) 
+            logging.info("Directory couldn't be changed to " , dirName) 
             
     def deleteExtraFiles(self,dirName):
         try:
@@ -382,5 +382,5 @@ class OutputWriter(object):
                 for f in pngs:
                     os.remove(f)
         except:
-            print("Could not delete extra pdfs..")
+            logging.info("Could not delete extra pdfs..")
     

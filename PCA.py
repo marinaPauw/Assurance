@@ -18,14 +18,12 @@ import FileInput
 import UI_MainWindow
 import numpy as np
 import pandas as pd
+import logging
 
 class PCA(object):
     """description of class"""
 
     def CreatePCAGraph(data):
-        #np.set_printoptions(suppress=True)
-        ################Need to figure ut how many dimensions are needed:
-        #NormalisedData = preprocessing.scale(NumericMetrics)
         robust_scaler = RobustScaler()
         np.nan_to_num(data)
         NormalisedData = robust_scaler.fit_transform(data)
@@ -86,12 +84,12 @@ class PCA(object):
         medianDistances["outlier"]= medianDistances["MedianDistance"].apply(
         lambda x: x >= outlierDistance
         )
-        print("The following runs were identified as candidates for probable outliers based on their z-scores:")
+        logging.info("The following runs were identified as candidates for probable outliers based on their z-scores:")
         
         medianDistances["possoutlier"]= medianDistances["MedianDistance"].apply(
         lambda x: x >= possoutlierDistance and x < outlierDistance
         )
-        print("The following runs were identified as candidates for possible outliers based on their z-scores:")
+        logging.info("The following runs were identified as candidates for possible outliers based on their z-scores:")
         PCA.possibleOutliers = medianDistances[medianDistances["possoutlier"]]
         PCA.possOutlierList = PCA.possibleOutliers["Filename"]
         Outliers = medianDistances[medianDistances["outlier"]]
