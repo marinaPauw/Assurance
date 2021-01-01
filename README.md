@@ -13,3 +13,9 @@ The h2o package requires Java, preferrably jdk 8, no later version than 12.
 If you do not plan to run random forest, Java is not required. You may also be asked by your computer to give permission when Java starts running.
 https://www.oracle.com/java/technologies/javase-jdk8-downloads.html 
 
+For developers:
+A requirements.txt file exists to ease the installation of packages. 
+Run the following from your virtual environment/root project directory:
+pip install requirements.txt
+
+
