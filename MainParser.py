@@ -1,39 +1,42 @@
 import sys
 from PyQt5 import QtWidgets, QtCore
 import datetime
-import UI_MainWindow
-import DataPreparation
+import Main
+import globalVars
 import pandas as pd
 import numpy as np
 import os
 import collections
 import json
-import DataPreparation
-import Datasets
-import FileInput
+from Datasets import Datasets
+import logging
 
 
-class BrowseWindow(QtWidgets.QMainWindow):
+class Parser():
     def __init__(self):
-        self.title = "Load file"
-        BrowseWindow.NullError = False
+        self.possibleInputFiles = list()
+        self.trainingsetQualityFiles = list()
+        self.trainingsetIDFiles = list()
+        self.combinedList = list()
+        self.NullError = False
 
     def GetInputFile(self):
+        #This function sets possibleInputFiles if the upload option is selected (as opposed to running Qua/SwaMe)
         files = QtWidgets. QFileDialog()
         files.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
-        possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(parent=None,caption = "Browse", directory="",
+        self.possibleInputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(parent=None,caption = "Browse", directory="",
                                                                filter = "All Files (*)", 
                                                                options=
                                                                QtWidgets.QFileDialog.\
                                                                    Options())
-        if(possibleinputFiles):
-            return possibleinputFiles
-        
-    def parseInputFiles(self, possibleinputFiles):
-            if(len(possibleinputFiles) > 1):
+                               
+    def parseInputFiles(self):
+        #This function takes the variable possibleinputfiles and parses the files into the datasets obj created in the Main function
+            logging.info(self.possibleInputFiles)
+            if(len(self.possibleInputFiles) > 1):
                 justJSONFiles = True
                 justTSVFiles = True
-                for possiblefile in possibleinputFiles:
+                for possiblefile in self.possibleInputFiles:
                     if(".json" not in possiblefile):
                        justJSONFiles = False
                     if(".tsv" not in possiblefile):
@@ -41,132 +44,88 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 if not justJSONFiles and not justTSVFiles:
                     return False
 
-                if(justJSONFiles==True):
-                    inputFiles = possibleinputFiles
-                    UI_MainWindow.Ui_MainWindow.metrics =  \
-                       BrowseWindow.CombineJSONs(
-                           UI_MainWindow.Ui_MainWindow, inputFiles)
-                    if "Filename" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
-                            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
-                    elif "Dataset" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
-                            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Dataset"]
-                    
-                    UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-                    for i in range(1,len(UI_MainWindow.Ui_MainWindow.metrics)):
-                       #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
-                        #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-                       BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
-                       BrowseWindow.currentDataset =DataPreparation.DataPrep.ExtractNumericColumns(self,
-                           BrowseWindow.currentDataset)
-                       BrowseWindow.currentDataset =DataPreparation.DataPrep.RemoveLowVarianceColumns(
-                           UI_MainWindow.Ui_MainWindow, BrowseWindow.currentDataset)
-                       UI_MainWindow.Ui_MainWindow.NumericMetrics.append(BrowseWindow.currentDataset)
+                if(justJSONFiles==True):     
+                    self.CombineJSONs(False)
+                    if "Filename" in  globalVars.var.database.metrics[0].columns:
+                            globalVars.var.database.metrics[0].index = globalVars.var.database.metrics[0]["Filename"]
+                    elif "Dataset" in  globalVars.var.database.metrics[0].columns:
+                            globalVars.var.database.metrics[0].index = globalVars.var.database.metrics[0]["Dataset"]        
                     str1 = " " 
-                    inputs = str1.join(inputFiles)
-                    QtCore.QMetaObject.invokeMethod(self.filename, "setText",
+                    inputs = str1.join(self.possibleInputFiles)
+                    QtCore.QMetaObject.invokeMethod(globalVars.var.filenameDisplay, "setText",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(str, inputs))
                     
             
                 elif(justTSVFiles == True):
-                    
-                    inputFiles = possibleinputFiles
-                    metrics = BrowseWindow.CombineTSVs(self, inputFiles)          
-                    for col in metrics[0].columns:
-                        if metrics[0][col].isnull().values.all():
-                                    BrowseWindow.NullError =True
+                    self.CombineTSVs(False)          
+                    for col in globalVars.var.database.metrics[0].columns:
+                        if globalVars.var.database.metrics[0][col].isnull().values.all():
+                                    self.NullError =True
                                     return
-                    UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-                    if "Filename" in  metrics[0].columns:
-                            metrics[0].index = metrics[0]["Filename"]
-                    elif "Dataset" in  metrics[0].columns:
-                            metrics[0].index = metrics[0]["Dataset"]
-                    
-                    for i in range(0,len(metrics)):
-                        #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
-                            #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-                            NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, metrics[i])
-                            UI_MainWindow.Ui_MainWindow.NumericMetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
-                            NMColumnsonly))
-                    
+                    if "Filename" in  globalVars.var.database.metrics[0].columns:
+                            globalVars.var.database.metrics[0].index = globalVars.var.database.metrics[0]["Filename"]
+                    elif "Dataset" in  globalVars.var.database.metrics[0].columns:
+                            globalVars.var.database.metrics[0].index = globalVars.var.database.metrics[0]["Dataset"]
+                                        
                     str1 = " " 
-                    inputs = str1.join(inputFiles)
-                    QtCore.QMetaObject.invokeMethod(self.filename, "setText",
+                    inputs = str1.join(self.possibleInputFiles)
+                    QtCore.QMetaObject.invokeMethod(globalVars.var.filenameDisplay, "setText",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(str, inputs))
                     
-                    QtCore.QMetaObject.invokeMethod(self, "DisableBrowseButtons",
-                                 QtCore.Qt.QueuedConnection)  
             
             else:
-                possibleinputFile = possibleinputFiles[0]
-                inputFile = BrowseWindow.fileTypeCheck(self, possibleinputFile)
-                if(inputFile):
-                    counter = inputFile.count('.') 
-                    if(counter==1):# .mzML
-                         BrowseWindow.datasetname, throw = inputFile.split('.')
-                    elif(counter==2):#If the program lists .wiff.scan
-                         BrowseWindow.datasetname,throw,throw = inputFile.split('.')
-                    elif(counter==3):
-                         BrowseWindow.datasetname,throw,throw,throw = inputFile.split('.')
-                    else:
-                         BrowseWindow.datasetname = inputFile
-                    QtCore.QMetaObject.invokeMethod(self.filename, "setText",
-                                 QtCore.Qt.QueuedConnection,
-                                 QtCore.Q_ARG(str, str(inputFile)))
-                    UI_MainWindow.Ui_MainWindow.metrics = []
-                    UI_MainWindow.Ui_MainWindow.metrics.append(FileInput.BrowseWindow.metricsParsing(self, inputFile))
-                    print(type(UI_MainWindow.Ui_MainWindow.metrics[0]))
-                    if "Filename" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
-                            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Filename"]
-                    elif "Dataset" in  UI_MainWindow.Ui_MainWindow.metrics[0].columns:
-                            UI_MainWindow.Ui_MainWindow.metrics[0].index = UI_MainWindow.Ui_MainWindow.metrics[0]["Dataset"]
-                    for col in UI_MainWindow.Ui_MainWindow.metrics[0].columns:
-                            if UI_MainWindow.Ui_MainWindow.metrics[0][col].isnull().all():
-                                UI_MainWindow.Ui_MainWindow.metrics[0]= UI_MainWindow.Ui_MainWindow.metrics[0].drop(columns = col)
-                                
-                    dropRows = []
-                    for index, row in UI_MainWindow.Ui_MainWindow.metrics[0].iterrows():
-                            if row.isnull().all():
-                                dropRows.append(row)
-                                print(row)
-                    if len(dropRows)>0:
-                        UI_MainWindow.Ui_MainWindow.metrics[0] = UI_MainWindow.Ui_MainWindow.metrics[0].drop(index = dropRows)
-                    print(UI_MainWindow.Ui_MainWindow.metrics[0].head())
+                logging.info(77)
+                try:
+                    if(self.fileTypeCheck(self.possibleInputFiles[0])):
+                        QtCore.QMetaObject.invokeMethod(globalVars.var.filenameDisplay, "setText",
+                                    QtCore.Qt.QueuedConnection,
+                                    QtCore.Q_ARG(str, str(self.possibleInputFiles[0])))
+                        globalVars.var.database.metrics = []
+                        Parser.metricsParsing(self)
+                        if "Filename" in  globalVars.var.database.metrics[0].columns:
+                                globalVars.var.database.metrics[0].index = globalVars.var.database.metrics[0]["Filename"]
+                        elif "Dataset" in  globalVars.var.database.metrics[0].columns:
+                                globalVars.var.database.metrics[0].index = globalVars.var.database.metrics[0]["Dataset"]
+                        for col in globalVars.var.database.metrics[0].columns:
+                                if globalVars.var.database.metrics[0][col].isnull().all():                         
+                                    globalVars.var.database.metrics[0]= globalVars.var.database.metrics[0].drop(columns = col)
+                        dropRows = []
+                        for index, row in globalVars.var.database.metrics[0].iterrows():
+                                if row.isnull().all():
+                                    dropRows.append(row)
+                        if len(dropRows)>0:
+                            globalVars.var.database.metrics[0] = globalVars.var.database.metrics[0].drop(index = dropRows)
+                        logging.info(globalVars.var.database.metrics[0].head())
+                except Exception as ex:
+                    logging.info(ex)
                     
-                    UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-                    
-                    NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, UI_MainWindow.Ui_MainWindow.metrics[0])
-                    UI_MainWindow.Ui_MainWindow.NumericMetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
-                            NMColumnsonly))
-   
     def GetTrainingSetFiles(self):
-        possibleInputFiles, _ =QtWidgets. QFileDialog.getOpenFileNames(
-            UI_MainWindow.Ui_MainWindow.tab,"Select the files from which to create the training set:", "","All files (*)", options = QtWidgets.QFileDialog.Options())
-        TrainingSetFiles = []
-        if(possibleInputFiles):
-            for file in possibleInputFiles:
-                inputFile = BrowseWindow.TrainingSetFileTypeCheck(self, file)
-                if inputFile:
-                    TrainingSetFiles.append(inputFile)
-            if(TrainingSetFiles):
-                return TrainingSetFiles
+        #This function sets the trainingsetFiles property of this class if the training files are ID files
+        temp, _ =QtWidgets. QFileDialog.getOpenFileNames(
+            globalVars.var.tab,"Select the files from which to create the training set:", "","All files (*)", options = QtWidgets.QFileDialog.Options())
+        if(temp):
+            for file in temp:
+                if self.TrainingSetFileTypeCheck(file):
+                    self.trainingsetIDFiles.append(file)
     
     def GetTrainingQualityFiles(self):
+        #This function sets the trainingset for the training quality files
         try:
             files = QtWidgets. QFileDialog()
             files.setFileMode(QtWidgets.QFileDialog.ExistingFiles)
-            possibleinputFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(UI_MainWindow.Ui_MainWindow.tab, 
+            self.trainingsetQualityFiles,_ = QtWidgets. QFileDialog.getOpenFileNames(globalVars.var.tab, 
                                                                 "Locate the training set quality file(s):", "",
                                                                 "All Files (*)", 
                                                                 options=
                                                                 QtWidgets.QFileDialog.\
                                                                     Options())
-            if(possibleinputFiles):
-                if(len(possibleinputFiles) > 1):
+            if(self.trainingsetQualityFiles):
+                if(len(self.trainingsetQualityFiles) > 1):
                     justJSONFiles = True
                     justTSVFiles = True
-                    for possiblefile in possibleinputFiles:
+                    for possiblefile in self.trainingsetQualityFiles:
                         if(".json" not in possiblefile):
                             justJSONFiles = False
                         if(".tsv" not in possiblefile):
@@ -176,52 +135,48 @@ class BrowseWindow(QtWidgets.QMainWindow):
                         return False
 
                     elif(justJSONFiles): 
-                        inputFiles = possibleinputFiles
-                        UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics =  BrowseWindow.CombineJSONs(UI_MainWindow.Ui_MainWindow, inputFiles)
+                        self.CombineJSONs(True)
                         #Check if both are DDA or both are DIA:
                     
                             
                     elif justTSVFiles:
-                        inputFiles = possibleinputFiles
-                        UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = BrowseWindow.CombineTSVs(UI_MainWindow.Ui_MainWindow, inputFiles)          
+                        self.CombineTSVs(True)          
                     
                     else: 
                         return False
                         
                         
                 else:
-                        UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
-                        df = pd.read_csv(possibleinputFiles[0], sep="\t")
+                        globalVars.var.Numerictrainingmetrics = []
+                        df = pd.read_csv(self.possibleInputFiles[0], sep="\t")
                         for col in df.columns:
                             if df[col].isnull().values.all():
-                                BrowseWindow.NullError =True
+                                self.NullError =True
                                 return
                         if 'Filename' in df.columns:
                             if ".mzML" in df['Filename'][0]:
                                 for item in range(0,len(df['Filename'])):
                                     df['Filename'].iloc[item] = df['Filename'].iloc[item].split('.')[0]
                         #Nan's creep in if you make the tsv with excel sometimes
-                        
-                        UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(df)
+                            df.index = df['Filename']
+                        globalVars.var.Numerictrainingmetrics.append(df)
         except:
             QtWidgets.QMessageBox.warning(self,"Error","An error occured. Please double check the data.")
                    
-    def checkTrainingQualityColumns(self, trainingmetrics):
-                            UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics = []
-                            for i in range(0,len(trainingmetrics)):
-                                #UI_MainWindow.Ui_MainWindow.metrics.set_dfIndex(
-                                    #   UI_MainWindow.Ui_MainWindow.metrics.iloc[:,0])
-                                    NMColumnsonly = DataPreparation.DataPrep.ExtractNumericColumns(self, trainingmetrics[i])
-                                    UI_MainWindow.Ui_MainWindow.Numerictrainingmetrics.append(DataPreparation.DataPrep.RemoveLowVarianceColumns(self,
-                                    NMColumnsonly))
+    def checkTrainingQualityColumns(self):
+        #Prepare the training quality data for Analysis
+        globalVars.var.database.ExtractNumericColumns(True)#True referring to training dataset
+        globalVars.var.database.RemoveLowVarianceColumns(True)
         
-    
     def fileTypeCheck(self,inputFile):
+        logging.info(169)
         if inputFile.endswith('.json') or inputFile.endswith('.csv') or inputFile.endswith('.tsv'):
-            return inputFile
-        
-
-    def metricsParsing(self,inputFile):
+            return True
+       
+    def metricsParsing(self):
+        #This function is invoked if there is only one file. It could be a mistake/ it could be a file that contains the results for the dataset all in one file:
+        #Like if you add the -o argument to running QuaMeter
+            inputFile = self.possibleInputFiles[0]
             if inputFile.endswith('.json'):
                 with open(inputFile) as f:
                     metrics = json.loads(f.read())
@@ -238,65 +193,54 @@ class BrowseWindow(QtWidgets.QMainWindow):
                         try:
                             tempVec.append(iii["value"])
                         except:
-                            print("For "+ str(iii)+"there was no value.")
+                            logging.info("For "+ str(iii)+"there was no value.")
                             tempVec.append(0)
                             str1 = str(iii)
                             str1 = str1.join(str(inputFile))
-                            UI_MainWindow.Ui_MainWindow.Nulvalues.append(str1)      
+                            globalVars.var.Nulvalues.append(str1)      
             
                 myPIArray = np.vstack((myPIArray, tempVec)) 
-                
                 PCAInput = pd.DataFrame(myPIArray, columns=columnNames)
                 metrics = PCAInput
-                return metrics
 
             elif inputFile.endswith('.csv'):
                 metrics = pd.DataFrame(pd.read_csv(inputFile, sep=","))
                 metrics = metrics.fillna(value=0)
-                return metrics
 
             elif inputFile.endswith('.tsv'):
                 metrics = pd.DataFrame(pd.read_csv(inputFile, sep="\t"))
                 metrics = metrics.fillna(value=0)
-                return metrics
+            
+            globalVars.var.database.metrics.append(metrics)
+            return
 
-        
-     
-    def FileCheck(self, path):       
+    def FileCheck(self, path):      
+        #This function checks that the file exists and can be opened 
         try:
             return(open(path,'rb'))
         except IOError:
             return False
     
     def TrainingSetFileTypeCheck(self, inputFile):
+          #Checks that the ID files are the right file type
           if inputFile.endswith('.pepXML') or inputFile.endswith('.txt') or inputFile.endswith('.mzid'):
-            return inputFile
+            return True
 
           else:
             return False
             
-            
-    def TrainingSetParse(self,inputFile):
-        if inputFile.endswith('.csv'):
-            TrainingSet = pd.DataFrame(pd.read_csv(inputFile, sep=","))
-            TrainingSet = TrainingSet.fillna(value=0)
-            BrowseWindow.TrainingSetFileMatchNames(BrowseWindow,
-                                                      TrainingSet)
-            return TrainingSet
-
-        elif inputFile.endswith('.tsv'):
-            TrainingSet = pd.DataFrame(pd.read_csv(inputFile, sep="\t"))
-            TrainingSet = TrainingSet.fillna(value=0)
-            BrowseWindow.TrainingSetFileMatchNames(BrowseWindow,
-                                                      TrainingSet)
-            return TrainingSet
-
     def TrainingSetFileMatchNames(self, TrainingSet):
+        #This function checks that the for the ID files supplied for the training set, the 
         for i in range(0, len(TrainingSet.iloc[:, 0])):
-            if(UI_MainWindow.Ui_MainWindow.metrics[0].iloc[i, 0] != TrainingSet.iloc[i, 0]):
+            if(globalVars.var.database.metrics[0].iloc[i, 0] != TrainingSet.iloc[i, 0]):
                 return False
 
-    def CombineJSONs(self, inputFiles):
+    def CombineJSONs(self, training):
+        if training:
+            inputFiles = self.trainingsetQualityFiles
+        else:
+            inputFiles = self.possibleInputFiles
+        
         AllMetricSizesDf = list()
         uniqueSizes = []
         for file in inputFiles:
@@ -305,18 +249,16 @@ class BrowseWindow(QtWidgets.QMainWindow):
                 string1 = file1.read()
                 metrics = json.loads(string1)
                 filename = os.path.splitext(os.path.basename(file))[0]
-                #Input reading of jsonfiles here:
             except:
                    return False
             metricsDf = pd.DataFrame(metrics)
-            # Create dataframes - for SwaMe we need one for comprehensive, one for swath, one for rt, one for quartiles, one for quantiles
             fileIndexInFiles = 0
             i=0
             while i < len(inputFiles):
                 if file == inputFiles[i]:
                     fileIndexInFiles = i+1
                 i=i+1
-            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.UploadProgress, "setValue",
+            QtCore.QMetaObject.invokeMethod(globalVars.var.UploadProgress, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, fileIndexInFiles/(len(inputFiles)+1)*100))
             
@@ -454,7 +396,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                 AllMetricSizesDf[dfIndex]["Name"].loc[str(temp[iiii])] = temp[iiii]
                                                 AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii['value'][iiii]
                                                 if metricname == "Target mz":
-                                                    print(AllMetricSizesDf[dfIndex]["Target mz"])
+                                                    logging.info(AllMetricSizesDf[dfIndex]["Target mz"])
                                         else:
                                             for iiii in range(0,len(temp)):
                                                  AllMetricSizesDf[dfIndex][metricname].loc[temp[iiii]] = iii["value"][iiii]
@@ -503,7 +445,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                                 AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value']
                                              
                                       else:
-                                          print("Error creating filename row.")
+                                          logging.info("Error creating filename row.")
                                     
                                     else: #this file has other values, but not this metric
                                         if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
@@ -530,7 +472,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                         #if len(AllMetricSizesDf[dfIndex].index) >1:
                                             AllMetricSizesDf[dfIndex][metricname] = pd.Series() 
                                             if isinstance(iii["value"], collections.Sequence) and len(iii["value"]) == 1:
-                                                if type(iii['value'][0]) != dict:
+                                                if type(iii['value'][0]) != dict and type(iii['value'][0]) != list:
                                                     AllMetricSizesDf[dfIndex][metricname].loc[filename]  = iii['value'][0]
                                                 else:
                                                     continue # No support for the irtpeptide double nested dictionaries at the moment.
@@ -552,26 +494,37 @@ class BrowseWindow(QtWidgets.QMainWindow):
                                 AllMetricSizesDf[dfIndex]["Name"].loc[filename] = iii["name"]
                                 AllMetricSizesDf[dfIndex][metricname].loc[filename] = iii['value']
         
-        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.UploadProgress, "setValue",
+        QtCore.QMetaObject.invokeMethod(globalVars.var.UploadProgress, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int,100))
-        return AllMetricSizesDf
+        if training:
+            globalVars.var.database.trainingmetrics = AllMetricSizesDf
+            globalVars.var.database.numericTrainingMetrics = globalVars.var.database.trainingmetrics
+        else:
+            globalVars.var.database.metrics = AllMetricSizesDf
 
-    def CombineTSVs(self, inputFiles):
-        DfList = list()
+    def CombineTSVs(self, training):
+        if training:
+            inputFiles = self.trainingsetQualityFiles
+        else:
+            inputFiles = self.possibleInputFiles
+        
         df = pd.DataFrame()
         for file in inputFiles:
             df = df.append(pd.read_csv(file, sep="\t"))
             df = df.fillna(value=0)
-        
+            
         if "Filename" in df.columns:
             if ".mzML" in df["Filename"].iloc[0]:
-              for file in range(0,len(df.index)):
+                for file in range(0,len(df.index)):
                     df["Filename"].iloc[file] =   os.path.splitext(df["Filename"].iloc[file])[0]
-            
+                
             df.index = df["Filename"]    
-        DfList.append(df)
-        return DfList
+        if training:
+            globalVars.var.database.trainingmetrics.append(df)
+            globalVars.var.database.numericTrainingMetrics = globalVars.var.database.trainingmetrics
+        else:
+            globalVars.var.database.metrics.append(df)
 
     def QuaMeterFileTypeCheck(self, inputFile):
         if inputFile.endswith('.wiff') or inputFile.endswith('.raw') or inputFile.endswith('.mzML'):
@@ -592,7 +545,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
         if(QuaMeterPath):
             return QuaMeterPath
             
-
     def SwaMeFileTypeCheck(self, inputFile):
         
         
@@ -608,9 +560,9 @@ class BrowseWindow(QtWidgets.QMainWindow):
 
     def GetSwaMePath(self):
         SwaMePath = ""
-        if hasattr(UI_MainWindow.Ui_MainWindow, "assuranceDirectory"):
-            if "SwaMe" in os.listdir(UI_MainWindow.Ui_MainWindow.assuranceDirectory):
-                folderDir = os.path.join(UI_MainWindow.Ui_MainWindow.assuranceDirectory, "SwaMe")
+        if hasattr(globalVars.var, "assuranceDirectory"):
+            if "SwaMe" in os.listdir(globalVars.var.assuranceDirectory):
+                folderDir = os.path.join(globalVars.var.assuranceDirectory, "SwaMe")
                 if "SwaMe.Console.exe" in os.listdir(folderDir):
                     SwaMePath = os.path.join(folderDir, "SwaMe.Console.exe")
         if len(SwaMePath)>2:
@@ -626,7 +578,7 @@ class BrowseWindow(QtWidgets.QMainWindow):
     def GetIRTInputFile(self):
         file = QtWidgets. QFileDialog()
         file.setFileMode(QtWidgets.QFileDialog.ExistingFile)
-        possibleinputFile,_ = QtWidgets. QFileDialog.getOpenFileName(UI_MainWindow.Ui_MainWindow.tab, 
+        possibleinputFile,_ = QtWidgets. QFileDialog.getOpenFileName(globalVars.var.tab, 
                                                                "Browse", "",
                                                                "TraML Files (*.TraML)", 
                                                                options=
@@ -636,8 +588,6 @@ class BrowseWindow(QtWidgets.QMainWindow):
             if possibleinputFile.endswith('.TraML') or possibleinputFile.endswith('.tsv') or possibleinputFile.endswith('.csv'):
                 return possibleinputFile
 
-    def find_indices(self, lst, condition):
-            return [i for i, elem in enumerate(lst) if condition(elem)]
    
         
 

@@ -1,7 +1,8 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-import UI_MainWindow
+import Main
 import traceback, sys
+import globalVars
 
 class SideThread(QtCore.QRunnable):
     def __init__(self, fn, *args, **kwargs):

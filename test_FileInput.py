@@ -14,33 +14,33 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import datetime
 import re
-import UI_MainWindow
-import DataPreparation
-import FileInput
+import Main
+from Datasets import Datasets
+import MainParser
 import pandas as pd
 import json
 import numpy as np
 import unittest
 
-class Test_test_FileInput(unittest.TestCase):
+class Test_test_MainParser(unittest.TestCase):
     def setUp(self):
-        UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.filetypeCheck("HeunisMetrics.tsv")
-        UI_MainWindow.Ui_MainWindow.tab = QtWidgets.QWidget()
-        UI_MainWindow.Ui_MainWindow.tab.browse = QtWidgets.QPushButton(UI_MainWindow.Ui_MainWindow.tab)
-        UI_MainWindow.Ui_MainWindow.tab.Outliers = QtWidgets.QPushButton(UI_MainWindow.Ui_MainWindow.tab)
-        UI_MainWindow.Ui_MainWindow.tab.Longitudinal = QtWidgets.QPushButton(UI_MainWindow.Ui_MainWindow.tab)
-        UI_MainWindow.Ui_MainWindow.tab.IndMetrics = QtWidgets.QPushButton(UI_MainWindow.Ui_MainWindow.tab)
-        UI_MainWindow.Ui_MainWindow.filename = QtWidgets.QLabel(UI_MainWindow.Ui_MainWindow.tab)
+        Datasets.metrics = "HeunisMetrics.tsv"
+        globalVars.var.tab = QtWidgets.QWidget()
+        globalVars.var.tab.browse = QtWidgets.QPushButton(globalVars.var.tab)
+        globalVars.var.tab.Outliers = QtWidgets.QPushButton(globalVars.var.tab)
+        globalVars.var.tab.Longitudinal = QtWidgets.QPushButton(globalVars.var.tab)
+        globalVars.var.tab.IndMetrics = QtWidgets.QPushButton(globalVars.var.tab)
+        globalVars.var.filename = QtWidgets.QLabel(globalVars.var.tab)
         column1 = list(range(1,40))
         self.TrainingSet = pd.DataFrame()
         self.TrainingSet = pd.DataFrame(columns=['A','B','C','D','E'], index=range(1, 6))
     
     def test_FileTypeCheck(self):
-        self.assertTrue(len(UI_MainWindow.Ui_MainWindow.metrics.columns)==51)
+        self.assertTrue(len(Datasets.metrics.columns)==51)
     
     def test_TrainingSetWarning(self):
-        #UI_MainWindow.Ui_MainWindow.metrics = UI_MainWindow.Ui_MainWindow.metrics
-        self.assertWarns(UserWarning, FileInput.BrowseWindow.TrainingSetFileMatchNames(UI_MainWindow.Ui_MainWindow, self.TrainingSet))
+        #Datasets.metrics = Datasets.metrics
+        self.assertWarns(UserWarning, MainParser.Parser.TrainingSetFileMatchNames(globalVars.var, self.TrainingSet))
 
  
 if __name__ == '__main__':

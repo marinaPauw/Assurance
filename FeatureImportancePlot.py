@@ -4,9 +4,10 @@ from matplotlib.figure import Figure
 import RandomForest
 import pandas as pd
 import numpy as np
-import UI_MainWindow
+import Main
 import matplotlib.pyplot as plt
 from PyQt5 import QtCore, QtGui, QtWidgets
+import globalVars
 
 class FeaturePlot(FigureCanvas):
     def  __init__(self, model,width=25, height=40, dpi=100):

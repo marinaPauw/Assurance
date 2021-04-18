@@ -16,18 +16,17 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import datetime
 import re
-import FileInput
+import MainParser
 import numpy as np
 import pandas as pd
-
+from Main import Main
+import globalVars
 
 class PCAGraphCreation():
     def CreatePCAGraph(NumericMetrics):
         # Now test for variance and remove anything with low variance. (run \
         # numpy.var() on each column))
         np.set_printoptions(suppress=True)
-        NumericMetrics = Ui_MainWindow.NumericMetrics
-        var = NumericMetrics.var()
         threshold = 0.01
         for iii in NumericMetrics:
             print(NumericMetrics[iii].var())
@@ -58,15 +57,15 @@ class PCAGraphCreation():
             if fff > maxDerivative:
                 Elbow = element
                 maxDerivative = max(maxDerivative, fff)
-        Ui_MainWindow.tab.progress1.setValue(12)
+        Main.tab.progress1.setValue(12)
         plotPCA = sd.PCA(n_components=2)
         global plotdata
         plotdata = plotPCA.fit_transform(NormalisedData)
-        Ui_MainWindow.pca = sd.PCA(n_components=Elbow)
+        Main.pca = sd.PCA(n_components=Elbow)
         loadingspca = sd.PCA().fit(NormalisedData)
-        Ui_MainWindow.loadings = loadingspca.components_
-        data = Ui_MainWindow.pca.fit_transform(NormalisedData)
-        Ui_MainWindow.tab.progress1.setValue(28)
+        Main.loadings = loadingspca.components_
+        data = Main.pca.fit_transform(NormalisedData)
+        Main.tab.progress1.setValue(28)
         finalDf = pd.DataFrame(data)
         Distances = pd.DataFrame()
         plt.rcParams['axes.facecolor'] = 'lightgray'

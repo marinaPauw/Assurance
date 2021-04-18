@@ -38,7 +38,7 @@
     <Compile Include="RandomForest.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FileInput.py">
+    <Compile Include="MainParser.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IndividualMetrics.py">
@@ -53,7 +53,7 @@
     <Compile Include="test_DataPreparation.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="test_FileInput.py">
+    <Compile Include="test_MainParser.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="test_IndividualMetrics.py">
@@ -66,7 +66,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="test_Ui_Mainwindow.py" />
-    <Compile Include="UI_MainWindow.py">
+    <Compile Include="Main.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

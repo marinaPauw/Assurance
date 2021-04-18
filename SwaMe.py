@@ -3,20 +3,20 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-import FileInput
-import UI_MainWindow
-from PyQt5.QtWidgets import QMessageBox
+import MainParser
+import Main
+import PyQt5.QtWidgets 
 import os
-import glob
-import DataPreparation
+from Datasets import Datasets
 import time
-import shutil
+import logging
+import globalVars
 
 
 class SwaMe():
     """description of class"""
     def setupUI(self, parent=None): 
-        UI_MainWindow.Ui_MainWindow.EnableSwaMeArguments(self)
+        globalVars.var.EnableSwaMeArguments(self)
         #SwaMe.Dir = ""
         SwaMe.Division = ''
         SwaMe.MassTolerance = ""
@@ -25,27 +25,26 @@ class SwaMe():
         
 
         #Actions for when buttons are clicked:
-        UI_MainWindow.Ui_MainWindow.SBrowseButton.clicked.connect(SwaMe.onSwaMeBrowseClicked)
-        UI_MainWindow.Ui_MainWindow.SRUNButton.clicked.connect(SwaMe.onSwaMeRUNClicked)
+        globalVars.var.SBrowseButton.clicked.connect(SwaMe.onSwaMeBrowseClicked)
+        globalVars.var.SRUNButton.clicked.connect(SwaMe.onSwaMeRUNClicked)
 
 
     def onSwaMeBrowseClicked(self):
-        #FileInput.BrowseWindow.__init__(FileInput.BrowseWindow, self)
-        UI_MainWindow.Ui_MainWindow.Sfiles.show()
-        SwaMe.Dir = FileInput.BrowseWindow.GetSwaMeInputFile(SwaMe)
+        globalVars.var.Sfiles.show()
+        SwaMe.Dir = MainParser.Parser.GetSwaMeInputFile(SwaMe)
         if(SwaMe.Dir):
-                UI_MainWindow.Ui_MainWindow.SfileList.setText(SwaMe.Dir)
+                globalVars.var.SfileList.setText(SwaMe.Dir)
                 try:
-                    UI_MainWindow.Ui_MainWindow.assuranceDirectory = os.getcwd()
+                    globalVars.var.assuranceDirectory = os.getcwd()
                     os.chdir(SwaMe.Dir)
                 except:
-                    print("Changing the directory didn't work.")
+                    logging.info("Changing the directory didn't work.")
 
                 
     def onSwaMeRUNClicked(self):
-        UI_MainWindow.Ui_MainWindow.DisableSwaMeArguments(self)
-        UI_MainWindow.Ui_MainWindow.DisableAnalysisButtons(self)
-        SwaMe.Path = FileInput.BrowseWindow.GetSwaMePath(SwaMe)
+        globalVars.var.DisableSwaMeArguments(self)
+        globalVars.var.DisableAnalysisButtons(self)
+        SwaMe.Path = MainParser.Parser.GetSwaMePath(SwaMe)
         if SwaMe.Path:
             SwaMe.timestr = time.strftime("%Y%m%d-%H%M%S")
             os.chdir(SwaMe.Dir)
@@ -88,24 +87,24 @@ class SwaMe():
                         SwaMe.onSwaMeBrowseClicked(self)
                         SwaMe.onSwaMeRUNClicked(self)
                     
-                    if(UI_MainWindow.Ui_MainWindow.minintensityTB.text()):
-                        SwaMe.Minintensity = arguments.join([" --minimumIntensity ", str(UI_MainWindow.Ui_MainWindow.minintensityTB.text())])
-                    if(UI_MainWindow.Ui_MainWindow.MTTextBox.text()):
-                        SwaMe.MassTolerance = arguments.join([" -m ", str(UI_MainWindow.Ui_MainWindow.MTTextBox.text())])
-                    if(UI_MainWindow.Ui_MainWindow.RTTextBox.text()):
-                        SwaMe.RTTolerance = arguments.join([" --rttolerance " , str(UI_MainWindow.Ui_MainWindow.RTTextBox.text())])
-                    if(UI_MainWindow.Ui_MainWindow.divisionTextBox.text()):
-                        SwaMe.Division = arguments.join([" -d " , str(UI_MainWindow.Ui_MainWindow.divisionTextBox.text())])
-                    #if(UI_MainWindow.Ui_MainWindow.Dir.isChecked):
+                    if(globalVars.var.minintensityTB.text()):
+                        SwaMe.Minintensity = arguments.join([" --minimumIntensity ", str(globalVars.var.minintensityTB.text())])
+                    if(globalVars.var.MTTextBox.text()):
+                        SwaMe.MassTolerance = arguments.join([" -m ", str(globalVars.var.MTTextBox.text())])
+                    if(globalVars.var.RTTextBox.text()):
+                        SwaMe.RTTolerance = arguments.join([" --rttolerance " , str(globalVars.var.RTTextBox.text())])
+                    if(globalVars.var.divisionTextBox.text()):
+                        SwaMe.Division = arguments.join([" -d " , str(globalVars.var.divisionTextBox.text())])
+                    #if(globalVars.var.Dir.isChecked):
                     #    SwaMe.Dir = str.join(" -dir " , "true")
-                    if(UI_MainWindow.Ui_MainWindow.IRTinputFile):
-                        SwaMe.IRT = arguments.join([" -r " , str(UI_MainWindow.Ui_MainWindow.IRTinputFile)])
-                        if(UI_MainWindow.Ui_MainWindow.iRTtoleranceTB.text()):
-                            SwaMe.IRTolerance = arguments.join([" --irttolerance " , str(UI_MainWindow.Ui_MainWindow.iRTtoleranceTB.text())])
-                        if(UI_MainWindow.Ui_MainWindow.iRTminintensityTB.text()):
-                            SwaMe.iRTminintensityTB = arguments.join([" --irtminintensity " , str(UI_MainWindow.Ui_MainWindow.iRTminintensityTB.text())])
-                        if(UI_MainWindow.Ui_MainWindow.iRTminpeptidesTB.text()):
-                            SwaMe.iRTminpeptidesTB = arguments.join([" --irtmintransitions " , str(UI_MainWindow.Ui_MainWindow.iRTminpeptidesTB.text())])
+                    if(globalVars.var.IRTinputFile):
+                        SwaMe.IRT = arguments.join([" -r " , str(globalVars.var.IRTinputFile)])
+                        if(globalVars.var.iRTtoleranceTB.text()):
+                            SwaMe.IRTolerance = arguments.join([" --irttolerance " , str(globalVars.var.iRTtoleranceTB.text())])
+                        if(globalVars.var.iRTminintensityTB.text()):
+                            SwaMe.iRTminintensityTB = arguments.join([" --irtminintensity " , str(globalVars.var.iRTminintensityTB.text())])
+                        if(globalVars.var.iRTminpeptidesTB.text()):
+                            SwaMe.iRTminpeptidesTB = arguments.join([" --irtmintransitions " , str(globalVars.var.iRTminpeptidesTB.text())])
                         
                     SwaMe.outputFile = " -o "+ str(SwaMe.timestr) +"_"+ os.path.splitext(os.path.basename(SwaMe.filename))[0] + ".json"
 
@@ -115,46 +114,57 @@ class SwaMe():
                     SwaMe.process.start(arguments)
                     
             except IndexError:
-                QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Warning","No mzML files were found in the folder selected.")
+                QtWidgets.QMessageBox.about(globalVars.var.tab, "Warning","No mzML files were found in the folder selected.")
                 SwaMe.onSwaMeBrowseClicked(self)
+                globalVars.var.EnableQuaMeterArguments(self)
+            except Exception as ex:
+                template = "An exception of type {0} occurred and SwaMe run was not performed. Arguments:\n{1!r}"
+                message = template.format(type(ex).__name__, ex.args)
+                logging.info(message, flush=True)
+                QtWidgets.QMessageBox.about(globalVars.var.tab, "Warning",message)
+                globalVars.var.EnableBrowseButtons(self)
+                globalVars.var.EnableQuaMeterArguments(self)
 
     @QtCore.pyqtSlot()
     def on_readyReadStandardOutput(self):
         text = SwaMe.process.readAllStandardOutput().data().decode()
-        UI_MainWindow.Ui_MainWindow.Stextedit.append(text)
+        globalVars.var.Stextedit.append(text)
         if "loading file" in text.lower():
             SwaMe.lastfile = text
         if "error" in text.lower():
             fullMessage = "For file: "+ SwaMe.lastfile+" - " +text
-            UI_MainWindow.Ui_MainWindow.errors.append(fullMessage)
+            globalVars.var.errors.append(fullMessage)
         
     @QtCore.pyqtSlot()
     def on_Finished(self, files, file, paths):
         if SwaMe.filename ==files[-1]:#If the last file:
-            if len(UI_MainWindow.Ui_MainWindow.errors)>0:
+            if len(globalVars.var.errors)>0:
                 str1 = ""
-                QtWidgets.QMessageBox(self, "Warning", "The following errors occurred: " + str1.join(UI_MainWindow.Ui_MainWindow.errors))
+                QtWidgets.QMessageBox(self, "Warning", "The following errors occurred: " + str1.join(globalVars.var.errors))
                            
+            #Grab all the mzQC files SwaMe created:
             files = []
             with os.scandir(SwaMe.Dir) as allfiles:
                 for file in allfiles:
                     if file.name.endswith(".json"):
                         if file.name.startswith(SwaMe.timestr):
                             files.append(file.name)
-            UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.CombineJSONs(UI_MainWindow.Ui_MainWindow, files)
-            #UI_MainWindow.Ui_MainWindow.metrics = FileInput.BrowseWindow.metricsParsing(inputFile)
-            #UI_MainWindow.Ui_MainWindow.checkColumnLength(self)
-            if hasattr(UI_MainWindow.Ui_MainWindow,"metrics"):
-                UI_MainWindow.Ui_MainWindow.NumericMetrics = []
-                FileInput.BrowseWindow.currentDataset = UI_MainWindow.Ui_MainWindow.metrics[0]
-                FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.ExtractNumericColumns(UI_MainWindow.Ui_MainWindow,
-                                FileInput.BrowseWindow.currentDataset)
-                FileInput.BrowseWindow.currentDataset = DataPreparation.DataPrep.RemoveLowVarianceColumns(
-                                UI_MainWindow.Ui_MainWindow, FileInput.BrowseWindow.currentDataset)
-                UI_MainWindow.Ui_MainWindow.NumericMetrics.append(FileInput.BrowseWindow.currentDataset)
-                UI_MainWindow.Ui_MainWindow.DisableBrowseButtons(UI_MainWindow.Ui_MainWindow)
-                UI_MainWindow.Ui_MainWindow.EnableAnalysisButtons(UI_MainWindow.Ui_MainWindow)
-                QtWidgets.QMessageBox.about(UI_MainWindow.Ui_MainWindow.tab, "Message","SwaMe has finished successfully.")
+            Parser = MainParser.Parser()
+            Parser.CombineJSONs(False)
+            #Datasets.metrics = MainParser.Parser.metricsParsing(inputFile)
+            #globalVars.var.checkColumnLength(self)
+            if hasattr(globalVars.var.database,"metrics"):
+                if len(globalVars.var.database.metrics)>0:
+                    globalVars.var.database.ExtractNumericColumns(False)
+                    globalVars.var.database.RemoveLowVarianceColumns(
+                                    False)
+
+                    globalVars.var.DisableBrowseButtons(globalVars.var)
+                    globalVars.var.EnableAnalysisButtons(globalVars.var)
+                    QtWidgets.QMessageBox.about(globalVars.var.tab, "Message","SwaMe has finished successfully.")
+                else:
+                    QtWidgets.QMessageBox.warning(self,"Error","An error occured and no metrics were created.")
+                    SwaMe.onSwaMeBrowseClicked(self)            
             else:
                 QtWidgets.QMessageBox.warning(self,"Error","An error occured and no metrics were created.")
                 SwaMe.onSwaMeBrowseClicked(self)

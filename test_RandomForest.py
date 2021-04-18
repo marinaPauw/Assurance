@@ -14,8 +14,8 @@ from sklearn.ensemble import RandomForestClassifier
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import datetime
-import FileInput
-import UI_MainWindow
+import MainParser
+import Main
 import re
 import pandas as pd
 import numpy as np
@@ -26,27 +26,27 @@ app = QtWidgets.QApplication(sys.argv)
 
 class Test_RandomForest(unittest.TestCase):
     def setUp(self):
-        UI_MainWindow.Ui_MainWindow.goodpredictionList = list(range(1,120))
-        UI_MainWindow.Ui_MainWindow.badpredictionList = list(range(1,120))
-        UI_MainWindow.Ui_MainWindow.tab = QtWidgets.QWidget()
-        UI_MainWindow.Ui_MainWindow.TrainingSet = QtWidgets.QWidget()
-        UI_MainWindow.Ui_MainWindow.TrainingSet.goodbtn = QtWidgets.QPushButton(
+        globalVars.var.goodpredictionList = list(range(1,120))
+        globalVars.var.badpredictionList = list(range(1,120))
+        globalVars.var.tab = QtWidgets.QWidget()
+        globalVars.var.TrainingSet = QtWidgets.QWidget()
+        globalVars.var.TrainingSet.goodbtn = QtWidgets.QPushButton(
             'This is my selection for desired quality.',
-            UI_MainWindow.Ui_MainWindow.TrainingSet)
-        UI_MainWindow.Ui_MainWindow.TrainingSet.goodbtn.setEnabled(False)
-        UI_MainWindow.Ui_MainWindow.TrainingSet.badbtn = QtWidgets.QPushButton(
+            globalVars.var.TrainingSet)
+        globalVars.var.TrainingSet.goodbtn.setEnabled(False)
+        globalVars.var.TrainingSet.badbtn = QtWidgets.QPushButton(
             'This is my selection for suboptimal quality.',
-            UI_MainWindow.Ui_MainWindow.TrainingSet)
-        UI_MainWindow.Ui_MainWindow.TrainingSet.badbtn.setEnabled(False)
+            globalVars.var.TrainingSet)
+        globalVars.var.TrainingSet.badbtn.setEnabled(False)
     
     
     def test_GoodAndBadAreSame_goodCleared(self):
         RandomForest.RandomForest.GoodAndBadAreSame(self)
-        self.assertTrue(UI_MainWindow.Ui_MainWindow.goodpredictionList==[])
+        self.assertTrue(globalVars.var.goodpredictionList==[])
 
     def test_GoodAndBadAreSame_badCleared(self):
         RandomForest.RandomForest.GoodAndBadAreSame(self)
-        self.assertTrue(UI_MainWindow.Ui_MainWindow.badpredictionList==[])
+        self.assertTrue(globalVars.var.badpredictionList==[])
 
 if __name__ == '__main__':
     unittest.main()

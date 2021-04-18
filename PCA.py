@@ -3,10 +3,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+import globalVars
 import math, sys
 import statistics
-import scipy
-from scipy.spatial import distance_matrix
 from sklearn import decomposition as sd
 from sklearn import preprocessing
 from sklearn.cluster import KMeans
@@ -16,18 +15,16 @@ from matplotlib.figure import Figure
 import datetime
 import matplotlib.pyplot as plt
 import re
-import FileInput
-import UI_MainWindow
+import MainParser
+import Main
 import numpy as np
 import pandas as pd
+import logging
 
 class PCA(object):
     """description of class"""
 
     def CreatePCAGraph(data):
-        #np.set_printoptions(suppress=True)
-        ################Need to figure ut how many dimensions are needed:
-        #NormalisedData = preprocessing.scale(NumericMetrics)
         robust_scaler = RobustScaler()
         np.nan_to_num(data)
         NormalisedData = robust_scaler.fit_transform(data)
@@ -36,7 +33,7 @@ class PCA(object):
         global loadings
         loadings = pca.components_
         varianceArray = pca.explained_variance_ratio_
-        PCA.componentVariance = pca.explained_variance_
+        PCA.componentVariance = pca.explained_variance_ratio_
         temprange = range(1,(len(varianceArray)-1))
         maxDerivative = 0
         secondDerivative =[]
@@ -50,15 +47,15 @@ class PCA(object):
             if fff > maxDerivative:
                Elbow = element
                maxDerivative = max(maxDerivative,fff)
-        UI_MainWindow.Ui_MainWindow.progress1.setValue(12)
+        globalVars.var.progress1.setValue(12)
         plotPCA = sd.PCA(n_components=2)
         global plotdata
         plotdata = plotPCA.fit_transform(NormalisedData)
-        UI_MainWindow.Ui_MainWindow.pca = sd.PCA(n_components = Elbow)
+        globalVars.var.pca = sd.PCA(n_components = Elbow)
         loadingspca = sd.PCA().fit(NormalisedData)
-        UI_MainWindow.Ui_MainWindow.loadings = loadingspca.components_
-        data = UI_MainWindow.Ui_MainWindow.pca.fit_transform(NormalisedData)
-        UI_MainWindow.Ui_MainWindow.progress1.setValue(28)
+        globalVars.var.loadings = loadingspca.components_
+        data = globalVars.var.pca.fit_transform(NormalisedData)
+        globalVars.var.progress1.setValue(28)
         PCA.finalDf = pd.DataFrame(data)
         global Distances
         Distances = pd.DataFrame()
@@ -73,59 +70,56 @@ class PCA(object):
         return ratio
     
     def CalculateOutliers(self):
-        sampleSize = range(len(FileInput.BrowseWindow.currentDataset.index))
+        sampleSize = range(len(globalVars.var.database.currentDataset.index))
         PCA.Distances = PCA.calculateDistanceMatrix(self, PCA.finalDf)
-        UI_MainWindow.Ui_MainWindow.progress1.setValue(60)
+        globalVars.var.progress1.setValue(60)
         #self.metrics.index = self.metrics.iloc[:,0]
         medianDistances = PCA.createMedianDistances(self, sampleSize)
-        outlierDistance = PCA.calculateOutLierDistances(self, medianDistances)
-        UI_MainWindow.Ui_MainWindow.progress1.setValue(65)
+        outlierDistance = PCA.calculateOutLierDistances(self, medianDistances,3)
+        globalVars.var.progress1.setValue(65)
 
         for iterator in sampleSize:
             medianDistances["MedianDistance"][iterator] = np.percentile(PCA.Distances[iterator], 50)
-        print(medianDistances)      
-        Q1 = np.percentile(medianDistances["MedianDistance"], 25)
-        Q3 =np.percentile(medianDistances["MedianDistance"], 75)
-        IQR = Q3-Q1
-        outlierDistance = Q3 + 1.5*IQR
-        UI_MainWindow.Ui_MainWindow.progress1.setValue(65)
-       #Zscores:
-        from scipy.stats import zscore
-        medianDistances["zScore"] = zscore(medianDistances["MedianDistance"])
-        medianDistances["outlier"]= medianDistances["zScore"].apply(
-        lambda x: x <= -3.5 or x >= 3.5
+        possoutlierDistance = PCA.calculateOutLierDistances(self, medianDistances, 1.5)
+        globalVars.var.progress1.setValue(65)
+        medianDistances["outlier"]= medianDistances["MedianDistance"].apply(
+        lambda x: x >= outlierDistance
         )
-        print("The following runs were identified as candidates for possible outliers based on their z-scores:")
-        Q3 = np.percentile(medianDistances["MedianDistance"], 75)  # Q3
-
-        UI_MainWindow.Ui_MainWindow.progress1.setValue(75)
+        logging.info("The following runs were identified as candidates for probable outliers based on their z-scores:")
+        
+        medianDistances["possoutlier"]= medianDistances["MedianDistance"].apply(
+        lambda x: x >= possoutlierDistance and x < outlierDistance
+        )
+        logging.info("The following runs were identified as candidates for possible outliers based on their z-scores:")
+        PCA.possibleOutliers = medianDistances[medianDistances["possoutlier"]]
+        PCA.possOutlierList = PCA.possibleOutliers["Filename"]
         Outliers = medianDistances[medianDistances["outlier"]]
         return Outliers
 
     def createMedianDistances(self, sampleSize):
         medianDistances = pd.DataFrame()
-        if FileInput.BrowseWindow.currentDataset.index[0] != 1:
-            medianDistances["Filename"] = FileInput.BrowseWindow.currentDataset.index
+        if globalVars.var.database.currentDataset.index[0] != 1:
+            medianDistances["Filename"] = globalVars.var.database.currentDataset.index
         else:
-            medianDistances["Filename"] = FileInput.BrowseWindow.currentDataset["Filename"]
+            medianDistances["Filename"] = globalVars.var.database.currentDataset["Filename"]
         medianDistances["MedianDistance"] = 'default value'
         for iterator in sampleSize:
             medianDistances["MedianDistance"][iterator] = np.percentile(
                 PCA.Distances[iterator], 50)
         return medianDistances
 
-    def calculateOutLierDistances(self, medianDistances):
+    def calculateOutLierDistances(self, medianDistances, integer):
         Q1 = np.percentile(medianDistances["MedianDistance"], 25)
         Q3 = np.percentile(medianDistances["MedianDistance"], 75)
         IQR = Q3 - Q1
-        outlierDistance = Q3 + 1.5*IQR
+        outlierDistance = Q3 + integer*IQR
         return outlierDistance
 
 
     def calculateDistanceMatrix(self, df):
-        PCA.Distances = pd.DataFrame(distance_matrix(
-            df.values, df.values, p=2),
-            index=df.index, columns=df.index)
+        from sklearn.neighbors import DistanceMetric
+        dist = DistanceMetric.get_metric('euclidean')
+        PCA.Distances = pd.DataFrame(dist.pairwise(df.values),index=df.index, columns=df.index)
         return PCA.Distances
 
 

@@ -17,7 +17,7 @@ from matplotlib.widgets  import RectangleSelector
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime
-import UI_MainWindow
+import Main
 import re
 import Legend
 import pylab

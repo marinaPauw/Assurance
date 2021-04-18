@@ -18,11 +18,11 @@ from matplotlib.figure import Figure
 import datetime
 import matplotlib.pyplot as plt
 import re
-import FileInput
+import MainParser
 import IndividualMetrics
 import PCA
 import PCAGraph
-import DataPreparation
+from Datasets import Datasets
 import RandomForest
 import numpy as np
 import pandas as pd
@@ -34,7 +34,7 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
     global MainWindow
 
     def setUp(self):
-        self.form = Assurance.UI_MainWindow.Ui_MainWindow()
+        self.form = Assurance.globalVars.var()
         self.form.setupUi()
 
     # Default tests:
@@ -125,15 +125,15 @@ class Test_test_Ui_Mainwindow(unittest.TestCase):
 
     # OnOutliersClicked
     def test_columnNumberWarningPCA(self):
-        FileInput.BrowseWindow.currentDataset =  pd.DataFrame()
+        globalVars.var.database.currentDataset =  pd.DataFrame()
         self.assertWarns(UserWarning,self.form.checkColumnNumberForPCA())
 
     def test_sampleNumberWarningPCA(self):
-        FileInput.BrowseWindow.currentDataset =  pd.DataFrame()
+        globalVars.var.database.currentDataset =  pd.DataFrame()
         self.assertWarns(UserWarning,self.form.checkSampleNumberForPCA())
 
     def test_sampleToVariableRatio(self):
-        FileInput.BrowseWindow.currentDataset =  pd.DataFrame()
+        globalVars.var.database.currentDataset =  pd.DataFrame()
         self.assertWarns(UserWarning,self.form.checkSampleToVariableRatio(2))
 
     def test_checkDistanceMatrix(self):

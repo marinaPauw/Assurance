@@ -4,7 +4,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-env/
+
 build/
 dist/
 downloads/
@@ -15,6 +15,9 @@ lib64/
 parts/
 sdist/
 var/
+env/
+
+env/lib/python3.8/site-packages/h2o/backend/bin/h2o.jar
 
 *.iml
 
@@ -25,3 +28,7 @@ var/
 .vscode/
 
 *.pdf
+
+myerr.txt
+
+mylog.txt

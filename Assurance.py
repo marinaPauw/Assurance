@@ -14,6 +14,7 @@ import math
 import matplotlib.pyplot as plt
 import statistics
 import scipy
+import threadpoolctl
 from sklearn import decomposition as sd
 from sklearn import preprocessing
 from sklearn.cluster import KMeans
@@ -25,14 +26,13 @@ from matplotlib.backends.backend_qt5agg import \
 from matplotlib.figure import Figure
 import datetime
 import re
-import UI_MainWindow
+import globalVars
 
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    global MainWindow
-    MainWindow = UI_MainWindow.Ui_MainWindow()
-    MainWindow.setupUi()
-    MainWindow.show()
+    globalVars.init()
+    globalVars.var.setupUi()
+    globalVars.var.show()
     sys.exit(app.exec_())
           

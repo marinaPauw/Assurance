@@ -13,10 +13,10 @@ from matplotlib.figure import Figure
 import datetime
 import matplotlib.pyplot as plt
 import re
-import FileInput
+import MainParser
 import PCA
-import DataPreparation
-import UI_MainWindow
+from Datasets import Datasets
+import Main
 import numpy as np
 import pandas as pd
 import csv  
@@ -25,10 +25,11 @@ import unittest
 class Test_test_PCA(unittest.TestCase):
     def setUp(self):
         df = pd.read_csv("HeunisMetrics.tsv", sep="\t")
-        UI_MainWindow.Ui_MainWindow.tab = QtWidgets.QWidget()
-        UI_MainWindow.Ui_MainWindow.tab.AnalysisFrame.progress1 = QtWidgets.QProgressBar()
-        df = DataPreparation.DataPrep.ExtractNumericColumns(df)
-        df = DataPreparation.DataPrep.RemoveLowVarianceColumns(self)
+        globalVars.var.tab = QtWidgets.QWidget()
+        globalVars.var.tab.AnalysisFrame.progress1 = QtWidgets.QProgressBar()
+        globalVars.var.database.metrics.append(df)
+        globalVars.var.database.ExtractNumericColumns(False)
+        globalVars.var.database.RemoveLowVarianceColumns(False)
     
     def test_PCA(self):
         PCA.PCA.CreatePCAGraph(data)

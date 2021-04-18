@@ -3,6 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+import globalVars
 import math
 import statistics
 import scipy
@@ -17,12 +18,12 @@ from matplotlib.figure import Figure
 import datetime
 import matplotlib.pyplot as plt
 import re
-import FileInput
+import MainParser
 import QuaMeter
 import IndividualMetrics
 import PCA
 import PCAGraph
-import DataPreparation
+from Datasets import Datasets
 import RandomForest
 import numpy as np
 import pandas as pd
@@ -35,7 +36,8 @@ import tempfile
 import datetime
 import OutlierTab
 import indMetricsTab
-import UI_MainWindow
+import Main
+import logging
 
 
 class LongitudinalTab(QtWidgets.QTabWidget):
@@ -44,8 +46,8 @@ class LongitudinalTab(QtWidgets.QTabWidget):
         performance= RandomForest.RandomForest.performance
         results = RandomForest.RandomForest.results
         model = RandomForest.RandomForest.best_model
-        UI_MainWindow.Ui_MainWindow.removeTab(self, self.sIndex)
-        #self.TrainingOrTestSet.removeTab(self, UI_MainWindow.Ui_MainWindow.sIndex)
+        globalVars.var.removeTab(self, self.sIndex)
+        #self.TrainingOrTestSet.removeTab(self, globalVars.var.sIndex)
         self.setCurrentIndex(0)
         
         TrainingOrTestSet = QtWidgets.QTabWidget()
@@ -62,31 +64,31 @@ class LongitudinalTab(QtWidgets.QTabWidget):
         #Labels declare:
         TrainingOrTestSet.MetricsFrame.MainLabel = QtWidgets.QLabel()
         TrainingOrTestSet.MetricsFrame.MainLabel.setText("Performance metrics:")
-        TrainingOrTestSet.MetricsFrame.MainLabel.setFont(UI_MainWindow.Ui_MainWindow.boldfont)
+        TrainingOrTestSet.MetricsFrame.MainLabel.setFont(globalVars.var.boldfont)
         if hasattr(performance, "F1"):
             TrainingOrTestSet.MetricsFrame.F1Label = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.F1Label.setText("F1:")
-            TrainingOrTestSet.MetricsFrame.F1Label.setFont(UI_MainWindow.Ui_MainWindow.boldfont)
+            TrainingOrTestSet.MetricsFrame.F1Label.setFont(globalVars.var.boldfont)
             TrainingOrTestSet.MetricsFrame.F1results = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.F1results.setText(str(round(performance.F1()[0][1],4)))
         else:
-            print("No F1!!!")
+            logging.info("No F1!!!")
         if hasattr(performance, "accuracy"):
             TrainingOrTestSet.MetricsFrame.Accuracy = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.Accuracy.setText("Accuracy:")
-            TrainingOrTestSet.MetricsFrame.Accuracy.setFont(UI_MainWindow.Ui_MainWindow.boldfont)
+            TrainingOrTestSet.MetricsFrame.Accuracy.setFont(globalVars.var.boldfont)
             TrainingOrTestSet.MetricsFrame.AccuracyResults = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.AccuracyResults.setText(str(round(performance.accuracy()[0][1],4)))        
         if hasattr(performance, "mcc"):
             TrainingOrTestSet.MetricsFrame.MCCLabel = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.MCCLabel.setText("MCC:")
-            TrainingOrTestSet.MetricsFrame.MCCLabel.setFont(UI_MainWindow.Ui_MainWindow.boldfont)
+            TrainingOrTestSet.MetricsFrame.MCCLabel.setFont(globalVars.var.boldfont)
             TrainingOrTestSet.MetricsFrame.MCCresults = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.MCCresults.setText(str(round(performance.mcc()[0][1],4)))        
         if hasattr(performance, "logloss"):
             TrainingOrTestSet.MetricsFrame.LLLabel = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.LLLabel.setText("logloss:")
-            TrainingOrTestSet.MetricsFrame.LLLabel.setFont(UI_MainWindow.Ui_MainWindow.boldfont)
+            TrainingOrTestSet.MetricsFrame.LLLabel.setFont(globalVars.var.boldfont)
             TrainingOrTestSet.MetricsFrame.LLresults = QtWidgets.QLabel()
             TrainingOrTestSet.MetricsFrame.LLresults.setText(str(round(performance._metric_json["logloss"],4)))       
            
@@ -112,7 +114,7 @@ class LongitudinalTab(QtWidgets.QTabWidget):
                 accuracyWarning.setText("The low accuracy of this model may indicate that conclusions should be approached with caution.")
                 pgrid.addWidget(accuracyWarning,2,0,1,10)
         except:
-            print("Could not evaluate Accuracy/ add label.")
+            logging.info("Could not evaluate Accuracy/ add label.")
         phbox2.addLayout(pgrid)
         pvbox.addLayout(phbox2)
     
@@ -127,10 +129,10 @@ class LongitudinalTab(QtWidgets.QTabWidget):
         #Labels declare:
         TrainingOrTestSet.ResultsFrame.MainLabel = QtWidgets.QLabel()
         TrainingOrTestSet.ResultsFrame.MainLabel.setText("Random Forest results:")
-        TrainingOrTestSet.ResultsFrame.MainLabel.setFont(UI_MainWindow.Ui_MainWindow.boldfont)        
+        TrainingOrTestSet.ResultsFrame.MainLabel.setFont(globalVars.var.boldfont)        
         TrainingOrTestSet.ResultsFrame.predictedLabel = QtWidgets.QLabel()
         TrainingOrTestSet.ResultsFrame.predictedLabel.setText("The following samples were predicted by Random Forest to resemble the group labelled 'bad' quality:")
-        TrainingOrTestSet.ResultsFrame.predictedLabel.setFont(UI_MainWindow.Ui_MainWindow.boldfont)        
+        TrainingOrTestSet.ResultsFrame.predictedLabel.setFont(globalVars.var.boldfont)        
 
         #Bad samples grid:
         badsamplesgrid = QtWidgets.QGridLayout()
@@ -152,7 +154,7 @@ class LongitudinalTab(QtWidgets.QTabWidget):
                 badsamplesgrid.addWidget(label,currentrow,currentcolumn)
                 currentcolumn = currentcolumn+1
             
-        UI_MainWindow.Ui_MainWindow.badlist = badlist
+        globalVars.var.badlist = badlist
                         
         #Layout within Frame:
         rvbox = QtWidgets.QVBoxLayout(TrainingOrTestSet.ResultsFrame)
@@ -202,7 +204,7 @@ class LongitudinalTab(QtWidgets.QTabWidget):
         vLayout.addWidget(scroll)
      
         RandomForest.fig.canvas.mpl_connect("motion_notify_event", LongitudinalTab.RFonhover)                        
-        self.setCurrentIndex(UI_MainWindow.Ui_MainWindow.sIndex)
+        self.setCurrentIndex(globalVars.var.sIndex)
         
     
     def RFonhover(event):

@@ -1,10 +1,11 @@
 import sys
-import UI_MainWindow
+import Main
 import pandas as pd
 import os
-from PyQt5 import QtWidgets
-import FileInput
+from PyQt5 import QtWidgets,QtCore
+import MainParser
 import pepXMLReader
+import globalVars
 
 class maxQuantTxtReader(object):
     def parseTxt(self, file):
@@ -26,7 +27,7 @@ class maxQuantTxtReader(object):
             pepTable["Filename"] = df["Raw file"]
         if "MS/MS Identified" in df.columns:
             pepTable["Number of spectra identified"] = df["MS/MS Identified"]
-        QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.progress1, "setValue",
+        QtCore.QMetaObject.invokeMethod(globalVars.var.progress1, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 40))
         #summary.txt contains a total which we are not interested in
@@ -35,15 +36,15 @@ class maxQuantTxtReader(object):
             
         if len(pepTable["Number of distinct peptides"])==0 or len(pepTable["Filename"])==0 or len(pepTable["Number of spectra identified"])==0:
             QtWidgets.QMessageBox.warning("","Something went wrong, please try a different file.")
-            TrainingSetfiles = FileInput.BrowseWindow.GetTrainingSetFiles(self)       
-            if TrainingSetfiles:
-                if "pepxml" in TrainingSetfiles[0].lower():
-                    UI_MainWindow.Ui_MainWindow.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetfiles)
-                elif ".txt" in TrainingSetfiles[0].lower():
-                    UI_MainWindow.Ui_MainWindow.TrainingSetTable = maxQuantTxtReader.parseTxt(self, TrainingSetfiles[0])
+            globalVars.var.parser.GetTrainingSetFiles()       
+            if globalVars.var.TrainingSetTable:
+                if "pepxml" in globalVars.var.TrainingSetfiles[0].lower():
+                    globalVars.var.TrainingSetTable = pepXMLReader.pepXMLReader.parsePepXML(self, TrainingSetfiles)
+                elif ".txt" in globalVars.var.TrainingSetfiles[0].lower():
+                    globalVars.var.TrainingSetTable = maxQuantTxtReader.parseTxt(self, TrainingSetfiles[0])
              
         else:
-            QtCore.QMetaObject.invokeMethod(UI_MainWindow.Ui_MainWindow.progress1, "setValue",
+            QtCore.QMetaObject.invokeMethod(globalVars.var.progress1, "setValue",
                                  QtCore.Qt.QueuedConnection,
                                  QtCore.Q_ARG(int, 90))
             return pepTable    
