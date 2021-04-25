@@ -148,7 +148,7 @@ class Parser():
                         
                 else:
                         globalVars.var.Numerictrainingmetrics = []
-                        df = pd.read_csv(self.possibleInputFiles[0], sep="\t")
+                        df = pd.read_csv(self.trainingsetQualityFiles[0], sep="\t")   
                         for col in df.columns:
                             if df[col].isnull().values.all():
                                 self.NullError =True
@@ -161,7 +161,7 @@ class Parser():
                             df.index = df['Filename']
                         globalVars.var.Numerictrainingmetrics.append(df)
         except:
-            QtWidgets.QMessageBox.warning(self,"Error","An error occured. Please double check the data.")
+            QtWidgets.QMessageBox.warning(globalVars.var,"Error","An error occured. Please double check the data.")
                    
     def checkTrainingQualityColumns(self):
         #Prepare the training quality data for Analysis

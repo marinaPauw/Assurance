@@ -34,8 +34,8 @@ class Datasets(QtCore.QObject):
         # we assign a variable named data and reassign the variable in the end
         if training:
             #This function is the first time we will need to make a numerictraining metrics obj:
-            self.numericTrainingMetrics = self.trainingMetrics
-            data = self.numericTrainingMetrics
+            self.numericTrainingMetrics = self.trainingMetrics.copy()
+            data = self.numericTrainingMetrics.copy()
         else:
             #This function is the first time we will need to make a numericMetrics obj:
             data = self.metrics.copy()#Else stupid python will perform changes to self.metrics I kid you not!
@@ -85,9 +85,9 @@ class Datasets(QtCore.QObject):
     def RemoveLowVarianceColumns(self, training):
         #Again to make this universally applicable, we assign to a temp variable and reassign
         if training:
-            data = self.numericTrainingMetrics
+            data = self.numericTrainingMetrics.copy()
         else:
-            data = self.numericMetrics
+            data = self.numericMetrics.copy()
         
         for i in range(0,len(data)):
             Files = []
