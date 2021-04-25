@@ -202,10 +202,9 @@ class RandomForest(FigureCanvas):
                                     QtCore.Qt.QueuedConnection,
                                     QtCore.Q_ARG(int, 15))
             for column in globalVars.var.Numerictrainingmetrics[0].columns:
-                if column not in Datasets.metrics[0].columns and column != "GoodOrBad":
+                if column not in globalVars.var.database.numericMetrics[0].columns and column != "GoodOrBad":
                     globalVars.var.Numerictrainingmetrics[0] = globalVars.var.Numerictrainingmetrics[0].drop(columns=[column])
-                    
-        
+                  
             RandomForest.createguideSet(RandomForest)
             QtCore.QMetaObject.invokeMethod(globalVars.var.TrainingOrTestSet.progress2, "setValue",
                                     QtCore.Qt.QueuedConnection,
