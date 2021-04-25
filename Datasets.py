@@ -38,7 +38,7 @@ class Datasets(QtCore.QObject):
             data = self.numericTrainingMetrics
         else:
             #This function is the first time we will need to make a numericMetrics obj:
-            data = self.metrics
+            data = self.metrics.copy()#Else stupid python will perform changes to self.metrics I kid you not!
         
         for i in range(0,len(data)):
         
@@ -65,6 +65,7 @@ class Datasets(QtCore.QObject):
                     
                     if(dateColumnSuccess):
                         data[i]["dates"] = dateVector
+                        self.metrics[i]['dates'] = dateVector
                     else:
                         logging.info("Something is wrong with the startTimeStamp, date calculation abandoned.This may cause problems later on and startTimeStamp column was removed.")
                         data[i] = data[i].drop('StartTimeStamp', axis=1)
@@ -79,7 +80,7 @@ class Datasets(QtCore.QObject):
         if training:
             self.numericTrainingMetrics = data
         else:
-            self.numericMetrics = data
+            self.numericMetrics = data        
 
     def RemoveLowVarianceColumns(self, training):
         #Again to make this universally applicable, we assign to a temp variable and reassign

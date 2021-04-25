@@ -35,8 +35,6 @@ import logging
 
 class MyIndMetricsCanvas(FigureCanvas):
     def __init__(self, tableContainingRownames, table,element, forReport, parent=None, width=25, height=15, dpi=100):
-                 
-
             if element == "StartTimeStamp":
                 table = globalVars.var.database.metrics[0]
                 tableContainingRownames = globalVars.var.database.metrics[0]
