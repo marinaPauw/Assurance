@@ -84,6 +84,7 @@ class MyIndMetricsCanvas(FigureCanvas):
             MyIndMetricsCanvas.fig.subplots_adjust(bottom=0.2)
             sampleSize = range(0,len(table))
             MyIndMetricsCanvas.ax = MyIndMetricsCanvas.fig.add_subplot(1,1,1)
+            MyIndMetricsCanvas.ax.set_title(element);
             MyIndMetricsCanvas.samplenames = []
             
             if isinstance(table[element].iloc[0], int) or isinstance(table[element].iloc[0], float)  or isinstance(table[element].iloc[0], np.float64) or isinstance(table[element].iloc[0],np.int64):
